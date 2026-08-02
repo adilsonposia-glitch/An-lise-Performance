@@ -560,14 +560,34 @@ body {
 .chart-legend .dot.previous { background: #d5dee2; }
 .chart-legend .dot.regressao { background: #f0a8a2; }
 
+.chart-scroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 6px;
+  margin: 0 -4px;
+  scrollbar-width: thin;
+  scrollbar-color: #9bb7bf transparent;
+}
+
+.chart-scroll::-webkit-scrollbar {
+  height: 8px;
+}
+
+.chart-scroll::-webkit-scrollbar-thumb {
+  background: #9bb7bf;
+  border-radius: 999px;
+}
+
 .chart {
   display: grid;
-  grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr));
-  gap: clamp(16px, 3vw, 36px);
+  grid-template-columns: repeat(var(--cols, 4), minmax(var(--col-min, 110px), 1fr));
+  gap: clamp(12px, 2vw, 28px);
   align-items: end;
   min-height: 240px;
+  min-width: max(100%, calc(var(--cols, 4) * var(--col-min, 110px)));
   padding: 14px 8px 0;
-  width: 100%;
+  width: max-content;
+  max-width: none;
 }
 
 .bar-group {

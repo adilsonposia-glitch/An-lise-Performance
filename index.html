@@ -123,6 +123,7 @@
             <div class="chip-group metric-group" id="metricGroup" role="group" aria-label="Métrica da análise">
               <button type="button" class="chip active" data-metric="venda">Venda</button>
               <button type="button" class="chip" data-metric="lucro">Lucro bruto</button>
+              <button type="button" class="chip hidden" data-metric="clientes" id="metricClientes">Clientes</button>
             </div>
             <div class="chart-legend">
               <span><i class="dot current"></i> Atual</span>
@@ -131,7 +132,9 @@
             </div>
           </div>
         </div>
-        <div class="chart" id="salesChart" role="img" aria-label="Gráfico comparativo"></div>
+        <div class="chart-scroll">
+          <div class="chart" id="salesChart" role="img" aria-label="Gráfico comparativo"></div>
+        </div>
       </section>
 
       <section class="spotlight-grid">

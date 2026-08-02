@@ -199,6 +199,18 @@
         varPct: "varLucroPct",
         label: "lucro bruto",
         labelShort: "Lucro",
+        isCount: false,
+      };
+    }
+    if (state.metric === "clientes") {
+      return {
+        key25: "clientes2025",
+        key26: "clientes2026",
+        delta: "deltaClientes",
+        varPct: "varClientesPct",
+        label: "clientes",
+        labelShort: "Clientes",
+        isCount: true,
       };
     }
     return {
@@ -208,15 +220,29 @@
       varPct: "varVendaPct",
       label: "venda",
       labelShort: "Venda",
+      isCount: false,
     };
+  }
+
+  function rowDelta(r, m) {
+    if (m.delta === "deltaClientes") {
+      return (Number(r.clientes2026) || 0) - (Number(r.clientes2025) || 0);
+    }
+    return Number(r[m.delta]) || 0;
+  }
+
+  function fmtMetric(v, m) {
+    if (m.isCount) return num.format(v || 0);
+    return fmtMoney(v);
   }
 
   function buildMetricHighlights(rows) {
     const m = metricKeys();
-    const sortedAsc = [...rows].sort((a, b) => Number(a[m.delta]) - Number(b[m.delta]));
-    const melhores = [...rows].sort((a, b) => Number(b[m.delta]) - Number(a[m.delta])).slice(0, 3);
+    const enriched = rows.map((r) => ({ ...r, _delta: rowDelta(r, m) }));
+    const sortedAsc = [...enriched].sort((a, b) => a._delta - b._delta);
+    const melhores = [...enriched].sort((a, b) => b._delta - a._delta).slice(0, 3);
     const topNames = new Set(melhores.map((r) => r.nome));
-    const neg = sortedAsc.filter((r) => Number(r[m.delta]) < 0);
+    const neg = sortedAsc.filter((r) => r._delta < 0);
     const agressores =
       neg.length > 0
         ? neg.slice(0, 5)
@@ -224,39 +250,52 @@
     return { melhores, agressores, m };
   }
 
-  function renderChart(phase) {
-    const m = metricKeys();
-    const isLucro = state.metric === "lucro";
+  function updateMetricButtons(phase) {
+    const clientesBtn = document.getElementById("metricClientes");
+    const showClientes = !!phase.hasClients;
+    if (clientesBtn) clientesBtn.classList.toggle("hidden", !showClientes);
 
-    if (els.chartTitle) {
-      els.chartTitle.textContent = isLucro ? "Comparativo de lucro bruto" : "Comparativo de vendas";
+    if (!showClientes && state.metric === "clientes") {
+      state.metric = "venda";
     }
-    if (els.chartSubtitle) {
-      els.chartSubtitle.textContent = "Período atual (2026) × período anterior (2025)";
-    }
-    els.salesChart.setAttribute(
-      "aria-label",
-      isLucro ? "Gráfico comparativo de lucro bruto" : "Gráfico comparativo de vendas"
-    );
 
     document.querySelectorAll("[data-metric]").forEach((btn) => {
       btn.classList.toggle("active", btn.dataset.metric === state.metric);
     });
+  }
 
-    const top = [...phase.rows]
-      .sort((a, b) => Number(b[m.key26]) - Number(a[m.key26]))
-      .slice(0, phase.key === "grupos" ? 8 : Math.min(8, phase.rows.length));
+  function renderChart(phase) {
+    const m = metricKeys();
+    updateMetricButtons(phase);
 
-    if (!top.length) {
+    const titles = {
+      venda: "Comparativo de vendas",
+      lucro: "Comparativo de lucro bruto",
+      clientes: "Comparativo de fluxo de clientes",
+    };
+    if (els.chartTitle) els.chartTitle.textContent = titles[state.metric] || titles.venda;
+    if (els.chartSubtitle) {
+      els.chartSubtitle.textContent = "Período atual (2026) × período anterior (2025) · todos os itens";
+    }
+    els.salesChart.setAttribute("aria-label", titles[state.metric] || titles.venda);
+
+    // Mostrar todos os itens (lojas, seções, grupos, departamentos)
+    const items = [...phase.rows].sort((a, b) => (Number(b[m.key26]) || 0) - (Number(a[m.key26]) || 0));
+
+    if (!items.length) {
       els.salesChart.style.removeProperty("--cols");
+      els.salesChart.style.removeProperty("--col-min");
       els.salesChart.innerHTML = `<div class="empty">Sem dados para o gráfico.</div>`;
       return;
     }
 
-    const maxVal = Math.max(...top.flatMap((r) => [Number(r[m.key25]) || 0, Number(r[m.key26]) || 0]), 1);
-    els.salesChart.style.setProperty("--cols", String(top.length));
+    const colMin = phase.key === "grupos" ? 92 : phase.key === "secao" ? 108 : 120;
+    els.salesChart.style.setProperty("--cols", String(items.length));
+    els.salesChart.style.setProperty("--col-min", `${colMin}px`);
 
-    els.salesChart.innerHTML = top
+    const maxVal = Math.max(...items.flatMap((r) => [Number(r[m.key25]) || 0, Number(r[m.key26]) || 0]), 1);
+
+    els.salesChart.innerHTML = items
       .map((r) => {
         const v25 = Number(r[m.key25]) || 0;
         const v26 = Number(r[m.key26]) || 0;
@@ -264,7 +303,7 @@
         const h26 = Math.max(10, Math.round((v26 / maxVal) * 160));
         const regressao = v26 < v25;
         return `
-          <div class="bar-group${regressao ? " regressao" : ""}" title="${cleanName(r.nome)} · 2025 ${fmtMoney(v25)} · 2026 ${fmtMoney(v26)}${regressao ? " · regressão" : ""}">
+          <div class="bar-group${regressao ? " regressao" : ""}" title="${cleanName(r.nome)} · 2025 ${fmtMetric(v25, m)} · 2026 ${fmtMetric(v26, m)}${regressao ? " · regressão" : ""}">
             <div class="bars">
               <div class="bar previous" style="height:${h25}px"></div>
               <div class="bar current${regressao ? " regressao" : ""}" style="height:${h26}px"></div>
@@ -351,17 +390,20 @@
   function renderLists(phase) {
     const { melhores, agressores, m } = buildMetricHighlights(phase.rows);
     const isLucro = state.metric === "lucro";
+    const isClientes = state.metric === "clientes";
 
     if (els.bestTitle) els.bestTitle.textContent = "Três melhores resultados";
     if (els.bestHint) {
-      els.bestHint.textContent = isLucro
-        ? "Maior contribuição ao lucro bruto YoY"
-        : "Maior contribuição à venda YoY";
+      els.bestHint.textContent = isClientes
+        ? "Maior contribuição ao fluxo de clientes YoY"
+        : isLucro
+          ? "Maior contribuição ao lucro bruto YoY"
+          : "Maior contribuição à venda YoY";
     }
 
     els.bestList.innerHTML = melhores
       .map((r, i) => {
-        const delta = Number(r[m.delta]) || 0;
+        const delta = r._delta;
         const sign = delta >= 0 ? "+" : "";
         return `
         <li>
@@ -371,30 +413,30 @@
             <p class="rank-sub">${m.labelShort} ${fmtPct(r[m.varPct])} · Margem ${fmtPp(r.varMargemPp)}</p>
           </div>
           <div class="rank-metric">
-            <strong class="num" style="color:var(--success)">${sign}${fmtMoney(delta)}</strong>
+            <strong class="num" style="color:var(--success)">${sign}${fmtMetric(delta, m)}</strong>
             <span>Δ ${m.label}</span>
           </div>
         </li>`;
       })
       .join("");
 
-    const hasNeg = agressores.some((a) => Number(a[m.delta]) < 0);
+    const hasNeg = agressores.some((a) => a._delta < 0);
     els.aggressorTitle.textContent = hasNeg
       ? "Principais agressores"
       : agressores.length
         ? "Sob pressão no resultado"
         : "Agressores ao resultado";
     els.aggressorHint.textContent = hasNeg
-      ? `Maior pressão negativa sobre ${isLucro ? "o lucro bruto" : "a venda"}`
+      ? `Maior pressão negativa sobre ${isClientes ? "o fluxo de clientes" : isLucro ? "o lucro bruto" : "a venda"}`
       : agressores.length
-        ? `Menor contribuição relativa ao avanço d${isLucro ? "o lucro" : "a venda"}`
+        ? `Menor contribuição relativa ao avanço d${isClientes ? "os clientes" : isLucro ? "o lucro" : "a venda"}`
         : "Nenhum agressor neste recorte (Não Revenda, Inativos, Serviços e Recicláveis excluídos)";
 
     els.aggressorList.innerHTML = agressores.length
       ? agressores
           .slice(0, 5)
           .map((r, i) => {
-            const delta = Number(r[m.delta]) || 0;
+            const delta = r._delta;
             const sign = delta >= 0 ? "+" : "";
             return `
         <li>
@@ -404,7 +446,7 @@
             <p class="rank-sub">${m.labelShort} ${fmtPct(r[m.varPct])} · Lucro ${fmtPct(r.varLucroPct)}</p>
           </div>
           <div class="rank-metric">
-            <strong class="num" style="color:${delta < 0 ? "var(--danger)" : "var(--ink-soft)"}">${sign}${fmtMoney(delta)}</strong>
+            <strong class="num" style="color:${delta < 0 ? "var(--danger)" : "var(--ink-soft)"}">${sign}${fmtMetric(delta, m)}</strong>
             <span>Δ ${m.label}</span>
           </div>
         </li>`;
