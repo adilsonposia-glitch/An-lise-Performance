@@ -1,15 +1,19 @@
 (() => {
   "use strict";
 
+  const WEEK_LABELS = ["1ª Semana", "2ª Semana", "3ª Semana", "4ª Semana"];
+
   const state = {
-    data: null,
+    bundle: null,
+    data: null, // semana ativa (payload com meta/storeMeta/phases)
+    weekOrdem: 1,
     phaseKey: "departamentos",
     filter: "todos",
     search: "",
     sortKey: "deltaLucro",
     sortDir: "asc",
     storeBase: "mesma",
-    metric: "venda", // 'venda' | 'lucro'
+    metric: "venda", // 'venda' | 'lucro' | 'clientes'
   };
 
   const els = {
@@ -44,6 +48,15 @@
     profitArc: document.getElementById("profitArc"),
     profitNeedle: document.getElementById("profitNeedle"),
     moneyRain: document.getElementById("moneyRain"),
+    weekGroup: document.getElementById("weekGroup"),
+    weekBarHint: document.getElementById("weekBarHint"),
+    emptyWeekPanel: document.getElementById("emptyWeekPanel"),
+    emptyWeekTitle: document.getElementById("emptyWeekTitle"),
+    emptyWeekMessage: document.getElementById("emptyWeekMessage"),
+    analysisContent: document.getElementById("analysisContent"),
+    periodTitle: document.getElementById("periodTitle"),
+    periodDetail: document.getElementById("periodDetail"),
+    footerMeta: document.getElementById("footerMeta"),
   };
 
   const icons = {
@@ -94,6 +107,158 @@
     grupos: "Mercadológico — Grupos",
   };
 
+  function weekLabel(ordem) {
+    return WEEK_LABELS[ordem - 1] || `${ordem}ª Semana`;
+  }
+
+  function emptyWeekSlot(ordem) {
+    return {
+      key: `semana-${ordem}`,
+      label: weekLabel(ordem),
+      ordem,
+      hasData: false,
+      meta: null,
+      storeMeta: null,
+      phases: null,
+    };
+  }
+
+  /** Aceita formato antigo (meta/phases no root) ou bundle de 4 semanas. */
+  function normalizeBundle(raw) {
+    if (!raw) return null;
+
+    if (Array.isArray(raw.weeks)) {
+      const weeks = [];
+      for (let i = 1; i <= 4; i++) {
+        const found = raw.weeks.find((w) => Number(w.ordem) === i) || raw.weeks[i - 1];
+        if (found && found.hasData && found.phases) {
+          weeks.push({
+            key: found.key || `semana-${i}`,
+            label: found.label || weekLabel(i),
+            ordem: i,
+            hasData: true,
+            meta: found.meta || null,
+            storeMeta: found.storeMeta || null,
+            phases: found.phases,
+          });
+        } else {
+          weeks.push(emptyWeekSlot(i));
+        }
+      }
+      return {
+        maxWeeks: 4,
+        selectedWeek: Number(raw.selectedWeek) || weeks.find((w) => w.hasData)?.ordem || 1,
+        weeks,
+      };
+    }
+
+    if (raw.phases) {
+      return {
+        maxWeeks: 4,
+        selectedWeek: 1,
+        weeks: [
+          {
+            key: "semana-1",
+            label: weekLabel(1),
+            ordem: 1,
+            hasData: true,
+            meta: raw.meta || null,
+            storeMeta: raw.storeMeta || null,
+            phases: raw.phases,
+          },
+          emptyWeekSlot(2),
+          emptyWeekSlot(3),
+          emptyWeekSlot(4),
+        ],
+      };
+    }
+
+    return null;
+  }
+
+  function currentWeek() {
+    return state.bundle?.weeks?.find((w) => w.ordem === state.weekOrdem) || null;
+  }
+
+  function applyWeek(ordem) {
+    state.weekOrdem = ordem;
+    const week = currentWeek();
+    state.data = week?.hasData
+      ? { meta: week.meta, storeMeta: week.storeMeta, phases: week.phases }
+      : null;
+  }
+
+  function shortPeriod(periodo) {
+    if (!periodo) return "";
+    // "17/07/2026 a 23/07/2026" → "17–23/07/2026"
+    const m = String(periodo).match(/(\d{2})\/(\d{2})\/(\d{4})\s*a\s*(\d{2})\/(\d{2})\/(\d{4})/i);
+    if (!m) return String(periodo);
+    if (m[2] === m[5] && m[3] === m[6]) return `${m[1]}–${m[4]}/${m[2]}/${m[3]}`;
+    return `${m[1]}/${m[2]}–${m[4]}/${m[5]}/${m[6]}`;
+  }
+
+  function updateWeekUi() {
+    const weeks = state.bundle?.weeks || [];
+    const filled = weeks.filter((w) => w.hasData).length;
+
+    if (els.weekBarHint) {
+      els.weekBarHint.textContent = `${filled} de 4 semanas com dados · Sex→Qui`;
+    }
+
+    if (els.weekGroup) {
+      els.weekGroup.querySelectorAll("[data-week]").forEach((btn) => {
+        const ordem = Number(btn.dataset.week);
+        const week = weeks.find((w) => w.ordem === ordem) || emptyWeekSlot(ordem);
+        const active = ordem === state.weekOrdem;
+        btn.classList.toggle("active", active);
+        btn.classList.toggle("empty-week", !week.hasData);
+        btn.innerHTML = week.hasData
+          ? `${week.label}`
+          : `${week.label}<span class="week-status">sem dados</span>`;
+        btn.title = week.hasData
+          ? `${week.label} · ${week.meta?.periodo2026 || "com dados"}`
+          : `${week.label} · Sem dados`;
+      });
+    }
+
+    const week = currentWeek();
+    const hasData = !!(week && week.hasData && state.data);
+
+    if (els.emptyWeekPanel) els.emptyWeekPanel.classList.toggle("hidden", hasData);
+    if (els.analysisContent) els.analysisContent.classList.toggle("hidden", !hasData);
+
+    if (!hasData) {
+      const label = week?.label || weekLabel(state.weekOrdem);
+      if (els.emptyWeekTitle) els.emptyWeekTitle.textContent = label;
+      if (els.emptyWeekMessage) els.emptyWeekMessage.textContent = "Sem dados";
+      if (els.phaseTitle) els.phaseTitle.textContent = `${label} · Sem dados`;
+      if (els.phaseSubtitle) {
+        els.phaseSubtitle.textContent =
+          "Esta semana ainda não possui análise carregada. Os dados das semanas preenchidas permanecem disponíveis no filtro.";
+      }
+      if (els.periodTitle) els.periodTitle.textContent = label;
+      if (els.periodDetail) els.periodDetail.textContent = "Sem dados";
+      if (els.storeBaseNote) els.storeBaseNote.textContent = "";
+      if (els.footerMeta) els.footerMeta.textContent = `${label} · Sem dados`;
+      return false;
+    }
+
+    const meta = week.meta || {};
+    if (els.periodTitle) {
+      els.periodTitle.textContent = `${meta.anoAtual || 2026} × ${meta.anoBase || 2025}`;
+    }
+    if (els.periodDetail) {
+      const atual = shortPeriod(meta.periodo2026);
+      const base = shortPeriod(meta.periodo2025);
+      els.periodDetail.textContent =
+        atual && base ? `${atual} vs ${base}` : meta.periodoLabel || "Comparativo semanal";
+    }
+    if (els.footerMeta) {
+      els.footerMeta.textContent = `${week.label} · ${meta.periodo2026 || "YoY"} · Inteligência de negócio`;
+    }
+    return true;
+  }
+
   function isNewStore(row) {
     return Boolean(row.nova) || (Number(row.venda2025) <= 0 && Number(row.venda2026) > 0);
   }
@@ -110,6 +275,7 @@
   }
 
   function currentPhase() {
+    if (!state.data?.phases) return null;
     const phase = state.data.phases.find((p) => p.key === state.phaseKey);
     if (!phase) return null;
     const baseKey = state.storeBase === "mesma" ? "mesma" : "todas";
@@ -557,17 +723,22 @@
   }
 
   function render() {
-    const phase = currentPhase();
-    if (!phase) return;
-
-    els.phaseTitle.textContent = phase.label;
-    els.phaseSubtitle.textContent = phase.hasClients
-      ? "Monitoramento em tempo de performance · inclui fluxo de clientes, margem e lucro bruto."
-      : "Monitoramento de performance comercial e análise ano contra ano.";
+    const hasData = updateWeekUi();
 
     document.querySelectorAll(".nav-link").forEach((btn) => {
       btn.classList.toggle("active", btn.dataset.phase === state.phaseKey);
     });
+
+    if (!hasData) return;
+
+    const phase = currentPhase();
+    if (!phase) return;
+
+    const week = currentWeek();
+    els.phaseTitle.textContent = `${week.label} · ${phase.label}`;
+    els.phaseSubtitle.textContent = phase.hasClients
+      ? "Monitoramento em tempo de performance · inclui fluxo de clientes, margem e lucro bruto."
+      : "Monitoramento de performance comercial e análise ano contra ano.";
 
     updateStoreBaseUi(phase);
     renderKpis(phase);
@@ -578,6 +749,20 @@
   }
 
   function bind() {
+    if (els.weekGroup) {
+      els.weekGroup.addEventListener("click", (e) => {
+        const btn = e.target.closest("[data-week]");
+        if (!btn) return;
+        const ordem = Number(btn.dataset.week);
+        if (!ordem || ordem === state.weekOrdem) return;
+        applyWeek(ordem);
+        state.search = "";
+        if (els.searchInput) els.searchInput.value = "";
+        render();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+    }
+
     els.phaseNav.addEventListener("click", (e) => {
       const btn = e.target.closest(".nav-link");
       if (!btn) return;
@@ -601,23 +786,29 @@
       const chip = e.target.closest("[data-metric]");
       if (!chip) return;
       state.metric = chip.dataset.metric;
-      renderChart(currentPhase());
-      renderLists(currentPhase());
+      const phase = currentPhase();
+      if (!phase) return;
+      renderChart(phase);
+      renderLists(phase);
     });
 
-    document.querySelectorAll(".chip-group:not(.store-base-group):not(.metric-group)").forEach((group) => {
-      group.addEventListener("click", (e) => {
-        const chip = e.target.closest(".chip");
-        if (!chip || !chip.dataset.filter) return;
-        state.filter = chip.dataset.filter;
-        group.querySelectorAll(".chip").forEach((c) => c.classList.toggle("active", c === chip));
-        renderTable(currentPhase());
+    document
+      .querySelectorAll(".chip-group:not(.store-base-group):not(.metric-group):not(.week-group)")
+      .forEach((group) => {
+        group.addEventListener("click", (e) => {
+          const chip = e.target.closest(".chip");
+          if (!chip || !chip.dataset.filter) return;
+          state.filter = chip.dataset.filter;
+          group.querySelectorAll(".chip").forEach((c) => c.classList.toggle("active", c === chip));
+          const phase = currentPhase();
+          if (phase) renderTable(phase);
+        });
       });
-    });
 
     els.searchInput.addEventListener("input", (e) => {
       state.search = e.target.value.trim();
-      renderTable(currentPhase());
+      const phase = currentPhase();
+      if (phase) renderTable(phase);
     });
 
     els.tableHead.addEventListener("click", (e) => {
@@ -629,7 +820,8 @@
         state.sortKey = key;
         state.sortDir = key === "nome" ? "asc" : "desc";
       }
-      renderTable(currentPhase());
+      const phase = currentPhase();
+      if (phase) renderTable(phase);
     });
   }
 
@@ -642,11 +834,17 @@
 
   async function init() {
     try {
-      state.data = await loadData();
+      const raw = await loadData();
+      state.bundle = normalizeBundle(raw);
+      if (!state.bundle) throw new Error("Estrutura de dados inválida (esperado weeks[] ou phases[]).");
+      applyWeek(state.bundle.selectedWeek || 1);
       bind();
       render();
     } catch (err) {
-      els.execSummary.innerHTML = `<div class="panel"><p>Não foi possível carregar os dados da análise.</p><p class="muted">${err.message}</p></div>`;
+      if (els.emptyWeekPanel) els.emptyWeekPanel.classList.remove("hidden");
+      if (els.analysisContent) els.analysisContent.classList.add("hidden");
+      if (els.emptyWeekTitle) els.emptyWeekTitle.textContent = "Erro ao carregar";
+      if (els.emptyWeekMessage) els.emptyWeekMessage.textContent = err.message || "Sem dados";
       console.error(err);
     }
   }

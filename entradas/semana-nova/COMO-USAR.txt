@@ -1,0 +1,38 @@
+COMO INCLUIR UMA NOVA SEMANA
+============================
+
+1) Cole nesta pasta (entradas\semana-nova) os Excel da semana comercial (Sex->Qui):
+
+   Mesma base:
+   - 2025DepartamentoMesmasLojas.xlsx
+   - 2026DepartamentoMesmasLojas.xlsx
+   - 2025SecaoMesmasLojas.xlsx  (ou Seção no nome)
+   - 2026SecaoMesmasLojas.xlsx
+   - 2025GrupoMesmasLojas.xlsx
+   - 2026GrupoMesmasLojas.xlsx
+
+   Todas as lojas:
+   - 2025DepartamentosTodas as Lojas.xlsx
+   - 2026DepartamentosTodas as Lojas.xlsx
+   - 2025SecaoTodas as Lojas.xlsx
+   - 2026SecaoTodas as Lojas.xlsx
+   - 2025GruposTodas as Lojas.xlsx
+   - 2026GruposTodas as Lojas.xlsx
+   - 2025Todas as Lojas.xlsx
+   - 2026 Todas as Lojas.xlsx
+
+2) No PowerShell, na pasta do projeto, rode:
+
+   .\build-data.ps1 -Periodo2025 "25/07/2025 a 31/07/2025" -Periodo2026 "24/07/2026 a 30/07/2026"
+
+3) Abra index.html e use o filtro 1a / 2a / 3a / 4a Semana.
+   Slots vazios mostram "sem dados".
+
+REGRAS
+- A 1a Semana ja contem os dados iniciais do projeto.
+- Novas semanas preenchem o proximo slot vazio (2a, depois 3a, depois 4a).
+- Se as 4 ja estiverem preenchidas, a mais antiga sai do filtro
+  (copia fica em historico\) e a nova vira a 4a Semana.
+- Para sobrescrever uma semana especifica:
+
+   .\build-data.ps1 -ReplaceWeek 2 -Periodo2025 "..." -Periodo2026 "..."

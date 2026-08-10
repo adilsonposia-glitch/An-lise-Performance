@@ -36,6 +36,19 @@
     </header>
 
     <main class="page">
+      <section class="week-bar" aria-label="Semanas da análise">
+        <div class="week-bar-copy">
+          <span class="week-bar-label">Semana comercial</span>
+          <small id="weekBarHint">Últimas 4 semanas · Sex→Qui</small>
+        </div>
+        <div class="chip-group week-group" id="weekGroup" role="group" aria-label="Filtro de semana">
+          <button type="button" class="chip week-chip active" data-week="1">1ª Semana</button>
+          <button type="button" class="chip week-chip empty-week" data-week="2">2ª Semana</button>
+          <button type="button" class="chip week-chip empty-week" data-week="3">3ª Semana</button>
+          <button type="button" class="chip week-chip empty-week" data-week="4">4ª Semana</button>
+        </div>
+      </section>
+
       <section class="page-head">
         <div>
           <h1>Growth Intelligence</h1>
@@ -49,8 +62,8 @@
               <path d="M8 3v4M16 3v4M3 10h18"/>
             </svg>
             <div>
-              <strong>2026 × 2025</strong>
-              <small>17–23 jul vs 18–24 jul</small>
+              <strong id="periodTitle">2026 × 2025</strong>
+              <small id="periodDetail">17–23 jul vs 18–24 jul</small>
             </div>
           </div>
           <div class="chip-group store-base-group" id="storeBaseGroup" role="group" aria-label="Base de lojas">
@@ -62,6 +75,15 @@
 
       <p class="base-note" id="storeBaseNote"></p>
 
+      <section class="empty-week-panel hidden" id="emptyWeekPanel" aria-live="polite">
+        <div class="empty-week-card">
+          <strong id="emptyWeekTitle">2ª Semana</strong>
+          <p id="emptyWeekMessage">Sem dados</p>
+          <small>Inclua os Excel da semana em <code>entradas/semana-nova</code> e execute <code>build-data.ps1</code>.</small>
+        </div>
+      </section>
+
+      <div id="analysisContent">
       <section class="kpi-row" id="execSummary" aria-label="Indicadores principais"></section>
 
       <section class="gauge-row">
@@ -184,10 +206,11 @@
       <footer class="footer">
         <div class="footer-copy">
           <p>Análise Performance Comercial · Sexta a Quinta · Ano contra Ano</p>
-          <p class="muted">Dados 2025 × 2026 · Inteligência de negócio</p>
+          <p class="muted" id="footerMeta">Dados 2025 × 2026 · Inteligência de negócio</p>
         </div>
         <img src="LogoABB.jpeg" alt="Adilson Baptista — Inteligência de negócio" class="footer-logo" />
       </footer>
+      </div>
     </main>
   </div>
 
