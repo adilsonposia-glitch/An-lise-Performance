@@ -115,7 +115,11 @@ body {
   cursor: pointer;
   position: relative;
   transition: 0.2s ease;
+  text-decoration: none;
 }
+
+td.up, span.up { color: var(--success); font-weight: 700; }
+td.down, span.down { color: var(--danger); font-weight: 700; }
 
 .nav-link:hover { color: var(--teal-800); }
 
@@ -145,6 +149,27 @@ body {
   border: 1px solid var(--teal-100);
   padding: 7px 12px;
   border-radius: 999px;
+}
+
+.canvas-rede-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #fff;
+  background: var(--teal-800);
+  border: 1px solid var(--teal-800);
+  padding: 8px 14px;
+  border-radius: 999px;
+  text-decoration: none;
+  transition: 0.2s ease;
+  white-space: nowrap;
+}
+
+.canvas-rede-btn:hover {
+  background: var(--teal-900, #163944);
+  color: #fff;
 }
 
 /* Week filter */
