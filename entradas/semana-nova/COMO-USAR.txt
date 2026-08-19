@@ -21,6 +21,11 @@ COMO INCLUIR UMA NOVA SEMANA
    - 2025Todas as Lojas.xlsx
    - 2026 Todas as Lojas.xlsx
 
+   Alternativa 2026 (sem export Todas): MesmaBase + Loja17
+   - ...MesmaBase Departamento/Secao/Grupo/Lojas.xlsx
+   - ...Loja17 Departamento/Secao/Grupo.xlsx
+   O build soma MesmaBase + Loja 17 para gerar "Todas as lojas" 2026.
+
 2) No PowerShell, na pasta do projeto, rode:
 
    .\build-data.ps1 -Periodo2025 "25/07/2025 a 31/07/2025" -Periodo2026 "24/07/2026 a 30/07/2026"
@@ -36,3 +41,8 @@ REGRAS
 - Para sobrescrever uma semana especifica:
 
    .\build-data.ps1 -ReplaceWeek 2 -Periodo2025 "..." -Periodo2026 "..."
+
+- Antes de rodar: deixe so os Excel da semana nova no root desta pasta
+  (arquivos antigos podem ir para arquivo-semana-N\).
+- SubGrupo e cortes auxiliares: fora do root (ex. arquivo-subgrupo\).
+

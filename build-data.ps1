@@ -272,7 +272,7 @@ function Build-Base($cmp, $hasClients) {
 }
 
 function Build-PhaseFromFiles($key, $label, $file25, $file26, $hasClients) {
-  $cmp = @(Compare-Years (Parse-Sheet $file25) (Parse-Sheet $file26))
+  $cmp = @(Compare-Years (Resolve-SheetRows $file25) (Resolve-SheetRows $file26))
   $base = Build-Base $cmp $hasClients
   return [ordered]@{
     key = $key; label = $label; hasClients = $hasClients
@@ -304,13 +304,20 @@ function First-ExistingDir([string[]]$patterns) {
   return $null
 }
 
+function Test-IsLoja17([string]$name) {
+  $n = Normalize-Name $name
+  return [bool]($n -match 'LOJA\s*17\b' -or $n -match '\bL17\b')
+}
+
 function Get-ExtractYear([string]$name) {
   $n = Normalize-Name $name
-  # Prefixo de periodo: 24A30JULHO26 / 25A31JULHO25
-  if ($n -match '(?:^|\b)(?:\d{1,2}A\d{1,2}[A-Z]+)?2026(?:\b|$)' -or $n -match 'JULHO\s*26\b' -or $n -match '(?:^|\b)\d{1,2}A\d{1,2}[A-Z]+26\b') { return 2026 }
-  if ($n -match '(?:^|\b)(?:\d{1,2}A\d{1,2}[A-Z]+)?2025(?:\b|$)' -or $n -match 'JULHO\s*25\b' -or $n -match '(?:^|\b)\d{1,2}A\d{1,2}[A-Z]+25\b') { return 2025 }
-  if ($n -match '(?:^|\b)2026\b') { return 2026 }
-  if ($n -match '(?:^|\b)2025\b') { return 2025 }
+  # Compacta espacos em periodos: "07A 13AGO2026" -> "07A13AGO2026"
+  $compact = ($n -replace '\s+', '')
+  # Prefixo de periodo: 24A30JULHO26 / 25A31JULHO25 / 07A13AGOSTO26 / AGO2026
+  if ($n -match '(?:^|\b)(?:\d{1,2}A\d{1,2}[A-Z]+)?2026(?:\b|$)' -or $n -match '(?:JULHO|AGOSTO|AGO)\s*26\b' -or $n -match '(?:^|\b)\d{1,2}A\d{1,2}[A-Z]+26\b' -or $compact -match '(?:JULHO|AGOSTO|AGO)2026' -or $compact -match '\d{1,2}A\d{1,2}[A-Z]+26') { return 2026 }
+  if ($n -match '(?:^|\b)(?:\d{1,2}A\d{1,2}[A-Z]+)?2025(?:\b|$)' -or $n -match '(?:JULHO|AGOSTO|AGO)\s*25\b' -or $n -match '(?:^|\b)\d{1,2}A\d{1,2}[A-Z]+25\b' -or $compact -match '(?:JULHO|AGOSTO|AGO)2025' -or $compact -match '\d{1,2}A\d{1,2}[A-Z]+25') { return 2025 }
+  if ($n -match '(?:^|\b)2026\b' -or $compact -match '2026') { return 2026 }
+  if ($n -match '(?:^|\b)2025\b' -or $compact -match '2025') { return 2025 }
   return $null
 }
 
@@ -332,9 +339,20 @@ function Get-ExtractBase([string]$name) {
   return $null
 }
 
+function Find-Loja17ByKind([string]$kind) {
+  foreach ($d in @(Get-ChildItem $TmpRoot -Directory)) {
+    if (-not (Test-IsLoja17 $d.Name)) { continue }
+    if ((Get-ExtractYear $d.Name) -ne 2026) { continue }
+    if ((Get-ExtractKind $d.Name) -eq $kind) { return $d.Name }
+  }
+  return $null
+}
+
 function Find-ByRole([int]$year, [string]$kind, [string]$base) {
   $dirs = @(Get-ChildItem $TmpRoot -Directory)
   foreach ($d in $dirs) {
+    # Loja 17 fica separada — nunca vira "todas"/"mesma" da rede
+    if (Test-IsLoja17 $d.Name) { continue }
     $y = Get-ExtractYear $d.Name
     $k = Get-ExtractKind $d.Name
     $b = Get-ExtractBase $d.Name
@@ -349,6 +367,83 @@ function Find-ByRole([int]$year, [string]$kind, [string]$base) {
     }
   }
   return $null
+}
+
+function Merge-MetricRows($rowsA, $rowsB) {
+  $map = @{}
+  foreach ($r in (@($rowsA) + @($rowsB))) {
+    if (-not $r) { continue }
+    $key = [string]$r.nome
+    if ($map.ContainsKey($key)) {
+      $prev = $map[$key]
+      $venda = [double]$prev.venda + [double]$r.venda
+      $qtd = [double]$prev.quantidade + [double]$r.quantidade
+      $lucro = [double]$prev.lucro + [double]$r.lucro
+      $cPrev = $prev.clientes; $cNew = $r.clientes
+      $clientes = $null
+      if ($null -ne $cPrev -or $null -ne $cNew) {
+        $cSum = 0.0
+        if ($null -ne $cPrev) { $cSum += [double]$cPrev }
+        if ($null -ne $cNew) { $cSum += [double]$cNew }
+        $clientes = [math]::Round($cSum, 0)
+      }
+      $ticket = $null
+      if ($null -ne $clientes -and $clientes -ne 0) { $ticket = [math]::Round($venda / $clientes, 2) }
+      $margem = if ($venda -ne 0) { $lucro / $venda } else { 0 }
+      $map[$key] = [pscustomobject]@{
+        nome = $key
+        venda = [math]::Round($venda, 2)
+        quantidade = [math]::Round($qtd, 2)
+        lucro = [math]::Round($lucro, 2)
+        margem = [math]::Round($margem, 6)
+        clientes = $clientes
+        ticket = $ticket
+      }
+    } else {
+      $map[$key] = $r
+    }
+  }
+  return @($map.Values | Sort-Object nome)
+}
+
+function New-MergeToken([string]$mesmaFolder, [string]$loja17Folder) {
+  return ("__MERGE__|{0}|{1}" -f $mesmaFolder, $loja17Folder)
+}
+
+function Test-IsMergeToken([string]$name) {
+  return [bool]($name -like "__MERGE__|*")
+}
+
+function Resolve-SheetRows([string]$folderOrMerge) {
+  if (Test-IsMergeToken $folderOrMerge) {
+    $parts = $folderOrMerge.Split("|")
+    $mesma = Parse-Sheet $parts[1]
+    $loja17 = Parse-Sheet $parts[2]
+    Write-Host ("  merge Todas 2026: {0} + {1}" -f $parts[1], $parts[2])
+    return (Merge-MetricRows $mesma $loja17)
+  }
+  return (Parse-Sheet $folderOrMerge)
+}
+
+function New-Loja17StoreRow([string]$departamentoFolder) {
+  $rows = @(Parse-Sheet $departamentoFolder)
+  $venda = ($rows | Measure-Object venda -Sum).Sum
+  $qtd = ($rows | Measure-Object quantidade -Sum).Sum
+  $lucro = ($rows | Measure-Object lucro -Sum).Sum
+  $cliParts = @($rows | Where-Object { $null -ne $_.clientes })
+  $clientes = $null
+  if ($cliParts.Count -gt 0) { $clientes = [math]::Round(($cliParts | Measure-Object clientes -Sum).Sum, 0) }
+  $ticket = if ($null -ne $clientes -and $clientes -ne 0) { [math]::Round($venda / $clientes, 2) } else { $null }
+  $margem = if ($venda -ne 0) { $lucro / $venda } else { 0 }
+  return [pscustomobject]@{
+    nome = "17 - P.LUCAS"
+    venda = [math]::Round($venda, 2)
+    quantidade = [math]::Round($qtd, 2)
+    lucro = [math]::Round($lucro, 2)
+    margem = [math]::Round($margem, 6)
+    clientes = $clientes
+    ticket = $ticket
+  }
 }
 
 function Resolve-PhaseDirs([string]$kind, [string]$label) {
@@ -385,11 +480,21 @@ function Resolve-PhaseDirs([string]$kind, [string]$label) {
     }
   }
 
-  if (-not $todas25 -or -not $todas26) {
-    throw ("Excel {0} (todas) incompleto. Achados: 2025={1} 2026={2}" -f $label, $todas25, $todas26)
-  }
   if (-not $mesma26) {
     throw ("Excel {0} Mesmas Lojas 2026 nao encontrado." -f $label)
+  }
+
+  # Sem export Todas 2026: sintetiza MesmaBase + Loja 17
+  if (-not $todas26) {
+    $loja17 = Find-Loja17ByKind $kind
+    if ($loja17) {
+      $todas26 = New-MergeToken $mesma26 $loja17
+      Write-Host ("  {0}: Todas 2026 sintetizado = MesmaBase + Loja17" -f $label)
+    }
+  }
+
+  if (-not $todas25 -or -not $todas26) {
+    throw ("Excel {0} (todas) incompleto. Achados: 2025={1} 2026={2}" -f $label, $todas25, $todas26)
   }
   if (-not $mesma25) {
     Write-Host ("  aviso: {0} Mesmas 2025 ausente — usando arquivo Todas/unico 2025." -f $label)
@@ -463,6 +568,24 @@ function Build-LojasBases {
   Write-Host ("  Lojas: 2026={0}" -f $dirs.y26)
   $rows25 = @(Parse-Sheet $dirs.y25)
   $rows26 = @(Parse-Sheet $dirs.y26)
+
+  # Se 2026 e so MesmaBase, acrescenta Loja 17 (totais do Excel Loja17 Departamento)
+  $y26Base = Get-ExtractBase $dirs.y26
+  $l17dep = Find-Loja17ByKind "departamento"
+  $src26Label = $dirs.y26
+  if ($l17dep -and ($y26Base -eq "mesma" -or $null -eq (Find-ByRole 2026 "lojas" "todas"))) {
+    $jaTem17 = @($rows26 | Where-Object {
+      $nn = Normalize-Name $_.nome
+      $nn -match '(?:^|\b)17\b' -or $nn -match 'P\.?\s*LUCAS'
+    }).Count -gt 0
+    if (-not $jaTem17) {
+      $synth = New-Loja17StoreRow $l17dep
+      $rows26 += $synth
+      $src26Label = ("{0} + Loja17({1})" -f $dirs.y26, $synth.nome)
+      Write-Host ("  Lojas: Todas 2026 = MesmaBase + {0} (venda={1})" -f $synth.nome, $synth.venda)
+    }
+  }
+
   $withCli25 = @($rows25 | Where-Object { $null -ne $_.clientes }).Count
   $withCli26 = @($rows26 | Where-Object { $null -ne $_.clientes }).Count
   if ($withCli25 -eq 0 -or $withCli26 -eq 0) {
@@ -474,6 +597,10 @@ function Build-LojasBases {
   $novas = @($all | Where-Object { $_.venda2025 -le 0 -and $_.venda2026 -gt 0 })
   return [ordered]@{
     key = "lojas"; label = "Lojas"; hasClients = $true
+    sources = [ordered]@{
+      todas = [ordered]@{ y2025 = $dirs.y25; y2026 = $src26Label }
+      mesma = [ordered]@{ y2025 = $dirs.y25; y2026 = $dirs.y26 }
+    }
     storeMeta = [ordered]@{
       allCount = $all.Count
       comparableCount = $mesma.Count
