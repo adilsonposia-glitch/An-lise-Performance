@@ -31,6 +31,8 @@
     tableBody: document.getElementById("tableBody"),
     tableTitle: document.getElementById("tableTitle"),
     searchInput: document.getElementById("searchInput"),
+    detailPanel: document.getElementById("detailPanel"),
+    tableExpandBtn: document.getElementById("tableExpandBtn"),
     storeBaseGroup: document.getElementById("storeBaseGroup"),
     storeBaseNote: document.getElementById("storeBaseNote"),
     metricGroup: document.getElementById("metricGroup"),
@@ -823,6 +825,66 @@
       const phase = currentPhase();
       if (phase) renderTable(phase);
     });
+
+    // Tela cheia do detalhamento: Fullscreen API + fallback modo foco
+    const syncExpandUi = () => {
+      const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+      const expanded = Boolean(fsEl === els.detailPanel || els.detailPanel?.classList.contains("is-expanded"));
+      if (els.tableExpandBtn) {
+        els.tableExpandBtn.setAttribute("aria-pressed", expanded ? "true" : "false");
+        els.tableExpandBtn.title = expanded ? "Voltar ao dashboard" : "Abrir detalhamento em tela cheia";
+      }
+      document.body.classList.toggle("table-focus-open", expanded);
+    };
+
+    const enterTableExpand = async () => {
+      if (!els.detailPanel) return;
+      const req =
+        els.detailPanel.requestFullscreen ||
+        els.detailPanel.webkitRequestFullscreen ||
+        els.detailPanel.msRequestFullscreen;
+      if (typeof req === "function") {
+        try {
+          await req.call(els.detailPanel);
+          syncExpandUi();
+          return;
+        } catch (_) {
+          /* fallback abaixo */
+        }
+      }
+      els.detailPanel.classList.add("is-expanded");
+      syncExpandUi();
+    };
+
+    const exitTableExpand = async () => {
+      const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+      if (fsEl) {
+        const exit = document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen;
+        if (typeof exit === "function") {
+          try {
+            await exit.call(document);
+          } catch (_) {}
+        }
+      }
+      els.detailPanel?.classList.remove("is-expanded");
+      syncExpandUi();
+    };
+
+    if (els.tableExpandBtn && els.detailPanel) {
+      els.tableExpandBtn.addEventListener("click", () => {
+        const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+        const expanded = Boolean(fsEl === els.detailPanel || els.detailPanel.classList.contains("is-expanded"));
+        if (expanded) exitTableExpand();
+        else enterTableExpand();
+      });
+      document.addEventListener("fullscreenchange", syncExpandUi);
+      document.addEventListener("webkitfullscreenchange", syncExpandUi);
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && els.detailPanel.classList.contains("is-expanded")) {
+          exitTableExpand();
+        }
+      });
+    }
   }
 
   async function loadData() {

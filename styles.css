@@ -870,6 +870,111 @@ td.down, span.down { color: var(--danger); font-weight: 700; }
   max-height: min(56vh, 620px);
 }
 
+.expand-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--ink);
+  border-radius: 999px;
+  padding: 8px 14px;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.15s ease;
+  white-space: nowrap;
+}
+
+.expand-btn:hover {
+  border-color: var(--teal-500);
+  color: var(--teal-800);
+}
+
+.expand-btn svg {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+}
+
+.expand-btn .collapse-icon,
+.expand-btn .collapse-label {
+  display: none;
+}
+
+/* Focus mode (fallback) + native :fullscreen */
+.table-panel.is-expanded,
+.table-panel:fullscreen,
+.table-panel:-webkit-full-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  max-height: none;
+  margin: 0;
+  border-radius: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 18px 20px 20px;
+  background: var(--sand-50, #f4f7f8);
+  box-sizing: border-box;
+}
+
+.table-panel.is-expanded .table-wrap,
+.table-panel:fullscreen .table-wrap,
+.table-panel:-webkit-full-screen .table-wrap {
+  flex: 1 1 auto;
+  max-height: none;
+  min-height: 0;
+  border-radius: 16px;
+  background: #fff;
+}
+
+.table-panel.is-expanded .expand-btn .expand-icon,
+.table-panel.is-expanded .expand-btn .expand-label,
+.table-panel:fullscreen .expand-btn .expand-icon,
+.table-panel:fullscreen .expand-btn .expand-label,
+.table-panel:-webkit-full-screen .expand-btn .expand-icon,
+.table-panel:-webkit-full-screen .expand-btn .expand-label {
+  display: none;
+}
+
+.table-panel.is-expanded .expand-btn .collapse-icon,
+.table-panel.is-expanded .expand-btn .collapse-label,
+.table-panel:fullscreen .expand-btn .collapse-icon,
+.table-panel:fullscreen .expand-btn .collapse-label,
+.table-panel:-webkit-full-screen .expand-btn .collapse-icon,
+.table-panel:-webkit-full-screen .expand-btn .collapse-label {
+  display: inline-flex;
+  align-items: center;
+}
+
+.table-panel.is-expanded .expand-btn,
+.table-panel:fullscreen .expand-btn,
+.table-panel:-webkit-full-screen .expand-btn {
+  background: var(--teal-800);
+  border-color: var(--teal-800);
+  color: #fff;
+}
+
+body.table-focus-open {
+  overflow: hidden;
+}
+
+@media (max-width: 720px) {
+  .expand-btn .expand-label,
+  .expand-btn .collapse-label {
+    display: none;
+  }
+  .table-panel.is-expanded .expand-btn .collapse-label,
+  .table-panel:fullscreen .expand-btn .collapse-label {
+    display: none;
+  }
+}
+
 table {
   width: 100%;
   border-collapse: collapse;

@@ -53,10 +53,105 @@
     }
     .est-grid-2 {
       display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
+      grid-template-columns: 1.25fr 0.75fr;
       gap: 16px;
       margin-bottom: 18px;
     }
+    .est-excesso-panel .table-wrap {
+      max-height: 360px;
+    }
+    .est-excesso-table {
+      width: 100%;
+      table-layout: fixed;
+      min-width: 0;
+      font-size: 0.82rem;
+    }
+    .est-excesso-table th,
+    .est-excesso-table td {
+      padding: 8px 10px;
+      vertical-align: middle;
+    }
+    .est-excesso-table th:nth-child(1),
+    .est-excesso-table td:nth-child(1) {
+      width: 52%;
+      text-align: left;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .est-excesso-table th:nth-child(2),
+    .est-excesso-table td:nth-child(2) {
+      width: 18%;
+      text-align: right;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+    .est-excesso-table th:nth-child(3),
+    .est-excesso-table td:nth-child(3) {
+      width: 30%;
+      text-align: right;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+      font-weight: 700;
+    }
+    .est-excesso-table th.sortable {
+      cursor: pointer;
+      user-select: none;
+    }
+    .est-excesso-table th.sortable:hover {
+      color: var(--teal-800, #1f4a57);
+    }
+    .est-excesso-table th.sortable .sort-ind {
+      display: inline-block;
+      margin-left: 4px;
+      opacity: 0.45;
+      font-size: 0.7rem;
+    }
+    .est-excesso-table th.sortable.is-active .sort-ind {
+      opacity: 1;
+    }
+    /* Prioridades: evita Motivo/Estoque estourarem a proporção */
+    .est-prio-table {
+      table-layout: fixed;
+      min-width: 720px;
+    }
+    .est-prio-table th:nth-child(1),
+    .est-prio-table td:nth-child(1) { width: 22%; }
+    .est-prio-table th:nth-child(2),
+    .est-prio-table td:nth-child(2) { width: 12%; }
+    .est-prio-table th:nth-child(3),
+    .est-prio-table td:nth-child(3) {
+      width: 12%;
+      text-align: right;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+    .est-prio-table th:nth-child(4),
+    .est-prio-table td:nth-child(4) { width: 14%; }
+    .est-prio-table th:nth-child(5),
+    .est-prio-table td:nth-child(5) {
+      width: 12%;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+    .est-prio-table th:nth-child(6),
+    .est-prio-table td:nth-child(6) {
+      width: 28%;
+      white-space: normal;
+      line-height: 1.35;
+      color: var(--ink-soft);
+      font-size: 0.78rem;
+    }
+    .est-prio-table th.sortable {
+      cursor: pointer;
+      user-select: none;
+    }
+    .est-prio-table th.sortable .sort-ind {
+      margin-left: 4px;
+      opacity: 0.45;
+      font-size: 0.7rem;
+    }
+    .est-prio-table th.sortable.is-active .sort-ind { opacity: 1; }
     .cov-bar {
       height: 8px;
       border-radius: 999px;
@@ -130,12 +225,14 @@
             <p id="estTableSub">Ordenado por impacto</p>
           </div>
           <div class="table-wrap">
-            <table>
+            <table class="est-prio-table" id="estPrioTable">
               <thead>
                 <tr>
                   <th>Grupo</th>
                   <th>Status</th>
-                  <th>Estoque R$</th>
+                  <th class="sortable" data-sort="valorEstoque" id="estPrioSortValor" title="Ordenar por valor de estoque">
+                    Estoque R$ <span class="sort-ind" aria-hidden="true">↕</span>
+                  </th>
                   <th>Cobertura</th>
                   <th>Qtd média/sem</th>
                   <th>Motivo</th>
@@ -146,7 +243,7 @@
           </div>
         </section>
 
-        <section class="panel chart-panel">
+        <section class="panel chart-panel est-excesso-panel">
           <div class="panel-head">
             <h2>Distribuição por status</h2>
             <p>Quantidade de grupos sinalizados</p>
@@ -154,11 +251,19 @@
           <div class="rede-chart" id="estBars"></div>
           <div class="panel-head" style="margin-top:18px">
             <h2>Maior capital em excesso</h2>
-            <p>Top grupos com cobertura acima de 60 dias</p>
+            <p>Clique em Estoque para ordenar · cobertura &gt; 60 dias</p>
           </div>
           <div class="table-wrap">
-            <table>
-              <thead><tr><th>Grupo</th><th>Dias</th><th>Estoque</th></tr></thead>
+            <table class="est-excesso-table" id="estExcessoTable">
+              <thead>
+                <tr>
+                  <th>Grupo</th>
+                  <th>Dias</th>
+                  <th class="sortable is-active" data-sort="valorEstoque" id="estExcessoSortValor" title="Ordenar por valor de estoque">
+                    Estoque <span class="sort-ind" aria-hidden="true">↓</span>
+                  </th>
+                </tr>
+              </thead>
               <tbody id="estExcessoMini"></tbody>
             </table>
           </div>
@@ -254,16 +359,54 @@
       ];
 
       let active = tabs.find((x) => x[2] > 0)?.[0] || "excesso";
+      let prioSortKey = "valor"; // 'valor' | 'cobertura'
+      let prioSortDir = "desc";
+      let excessoSortDir = "desc";
+
+      const sortByValor = (rows, dir) =>
+        [...rows].sort((a, b) => {
+          const av = Number(a.valorEstoque || 0);
+          const bv = Number(b.valorEstoque || 0);
+          return dir === "asc" ? av - bv : bv - av;
+        });
+
+      const applyTabDefaultSort = () => {
+        if (active === "excesso" || active === "ruptura") {
+          prioSortKey = "valor";
+          prioSortDir = "desc";
+        } else {
+          prioSortKey = "cobertura";
+          prioSortDir = "asc";
+        }
+      };
 
       const renderTable = () => {
-        const rows = lists[active] || [];
+        const base = lists[active] || [];
+        let rows;
+        if (prioSortKey === "valor") {
+          rows = sortByValor(base, prioSortDir);
+        } else {
+          rows = [...base].sort((a, b) => {
+            const av = a.diasCobertura ?? 9999;
+            const bv = b.diasCobertura ?? 9999;
+            return prioSortDir === "asc" ? av - bv : bv - av;
+          });
+        }
+
+        const sortEl = document.getElementById("estPrioSortValor");
+        if (sortEl) {
+          const activeValor = prioSortKey === "valor";
+          sortEl.classList.toggle("is-active", activeValor);
+          sortEl.querySelector(".sort-ind").textContent = activeValor
+            ? prioSortDir === "asc"
+              ? "↑"
+              : "↓"
+            : "↕";
+        }
+
         document.getElementById("estTableTitle").textContent = labelStatus[active] || active;
         document.getElementById("estTableSub").textContent =
-          active === "excesso"
-            ? "Maior capital parado primeiro"
-            : active === "ruptura"
-              ? "Priorize reposição pelo giro médio"
-              : "Menor cobertura primeiro";
+          "Clique em Estoque R$ para ordenar maior ↔ menor";
         document.getElementById("estTable").innerHTML = rows
           .map((r) => {
             const tone = r.tom === "danger" ? "danger" : r.tom === "warn" ? "warn" : "ok";
@@ -285,6 +428,25 @@
           .join("");
       };
 
+      const renderExcessoMini = () => {
+        const rows = sortByValor(data.topExcesso || data.excesso || [], excessoSortDir).slice(0, 12);
+        const sortEl = document.getElementById("estExcessoSortValor");
+        if (sortEl) {
+          sortEl.classList.add("is-active");
+          sortEl.querySelector(".sort-ind").textContent = excessoSortDir === "asc" ? "↑" : "↓";
+        }
+        document.getElementById("estExcessoMini").innerHTML = rows
+          .map(
+            (r) =>
+              `<tr title="${r.nome}">
+                <td>${r.nome}</td>
+                <td>${diasTxt(r.diasCobertura)}</td>
+                <td>${brl(r.valorEstoque)}</td>
+              </tr>`
+          )
+          .join("");
+      };
+
       const tabsEl = document.getElementById("estTabs");
       const paintTabs = () => {
         tabsEl.innerHTML = tabs
@@ -296,11 +458,26 @@
         tabsEl.querySelectorAll(".est-tab").forEach((btn) => {
           btn.addEventListener("click", () => {
             active = btn.getAttribute("data-tab");
+            applyTabDefaultSort();
             paintTabs();
             renderTable();
           });
         });
       };
+
+      document.getElementById("estPrioSortValor")?.addEventListener("click", () => {
+        if (prioSortKey === "valor") {
+          prioSortDir = prioSortDir === "desc" ? "asc" : "desc";
+        } else {
+          prioSortKey = "valor";
+          prioSortDir = "desc";
+        }
+        renderTable();
+      });
+      document.getElementById("estExcessoSortValor")?.addEventListener("click", () => {
+        excessoSortDir = excessoSortDir === "desc" ? "asc" : "desc";
+        renderExcessoMini();
+      });
 
       const maxCount = Math.max(...(data.porStatus || []).map((s) => s.count), 1);
       document.getElementById("estBars").innerHTML = (data.porStatus || [])
@@ -316,16 +493,10 @@
         })
         .join("");
 
-      document.getElementById("estExcessoMini").innerHTML = (data.topExcesso || [])
-        .slice(0, 8)
-        .map(
-          (r) =>
-            `<tr><td>${r.nome}</td><td>${diasTxt(r.diasCobertura)}</td><td>${brl(r.valorEstoque)}</td></tr>`
-        )
-        .join("");
-
+      applyTabDefaultSort();
       paintTabs();
       renderTable();
+      renderExcessoMini();
     })();
   </script>
 </body>
