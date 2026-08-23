@@ -140,13 +140,21 @@ foreach ($w in @($bundle.weeks | Sort-Object ordem)) {
   foreach ($r in @($rows)) {
     $key = Get-NameKey ([string]$r.nome)
     if (-not $series.ContainsKey($key)) {
-      $series[$key] = [ordered]@{ nome = [string]$r.nome; key = $key; byOrdem = @{} }
+      $series[$key] = [ordered]@{
+        nome = [string]$r.nome
+        key = $key
+        qtd = @{}
+        venda = @{}
+        lucro = @{}
+      }
     }
-    $series[$key].byOrdem[$ord] = [double]$r.qtd2026
+    $series[$key].qtd[$ord] = [double]$r.qtd2026
+    $series[$key].venda[$ord] = [double]$r.venda2026
+    $series[$key].lucro[$ord] = [double]$r.lucro2026
   }
 }
 
-function Get-QtdsAligned($byOrdem) {
+function Get-Aligned($byOrdem) {
   $list = [System.Collections.Generic.List[object]]::new()
   foreach ($p in $periodos) {
     $ord = [int]$p.ordem
@@ -165,30 +173,75 @@ function Get-EmptyQtds {
   return , $list.ToArray()
 }
 
+function Get-AvgPresent($arr) {
+  $present = @($arr | Where-Object { $null -ne $_ })
+  if ($present.Count) { return ($present | Measure-Object -Average).Average }
+  return 0
+}
+
 $vendaMap = @{}
 foreach ($key in $series.Keys) {
-  $aligned = Get-QtdsAligned $series[$key].byOrdem
-  $present = @($aligned | Where-Object { $null -ne $_ })
-  $avg = if ($present.Count) { ($present | Measure-Object -Average).Average } else { 0 }
-  $sum = if ($present.Count) { ($present | Measure-Object -Sum).Sum } else { 0 }
+  $qtds = Get-Aligned $series[$key].qtd
+  $vendas = Get-Aligned $series[$key].venda
+  $cmvByOrdem = @{}
+  foreach ($ord in @($series[$key].venda.Keys)) {
+    $vendaW = [double]$series[$key].venda[$ord]
+    $lucroW = 0
+    if ($series[$key].lucro.ContainsKey($ord)) { $lucroW = [double]$series[$key].lucro[$ord] }
+    $cmvByOrdem[$ord] = $vendaW - $lucroW
+  }
+  $cmvs = Get-Aligned $cmvByOrdem
+  $qPresent = @($qtds | Where-Object { $null -ne $_ })
   $vendaMap[$key] = [ordered]@{
     nome = $series[$key].nome
-    semanas = $present.Count
-    qtdMediaSemanal = [math]::Round($avg, 2)
-    qtdTotal4s = [math]::Round($sum, 2)
-    qtdsPorSemana = $aligned
+    semanas = $qPresent.Count
+    qtdMediaSemanal = [math]::Round((Get-AvgPresent $qtds), 2)
+    qtdTotal4s = if ($qPresent.Count) { [math]::Round(($qPresent | Measure-Object -Sum).Sum, 2) } else { 0 }
+    qtdsPorSemana = $qtds
+    vendaMediaSemanal = [math]::Round((Get-AvgPresent $vendas), 2)
+    cmvMediaSemanal = [math]::Round((Get-AvgPresent $cmvs), 2)
   }
 }
 Write-Host ("Grupos com venda 4s: {0}" -f $vendaMap.Count)
 
-# --- Classificacao ---
-function Classify-Row($e, $v) {
-  $qAvg = if ($v) { [double]$v.qtdMediaSemanal } else { 0 }
-  $teveVenda = $qAvg -gt 0 -or ($null -ne $e.mediaCustoDia -and $e.mediaCustoDia -gt 0)
-  $dias = $e.diasCobertura
-  $semanasCob = if ($null -ne $dias) { [math]::Round($dias / 7.0, 2) } else { $null }
+function Get-Cobertura($valor, $v, $excelDias) {
+  if ($valor -le 0) {
+    return @{ dias = 0; semanas = 0; demanda = $null; base = "zerado" }
+  }
+  $demanda = $null
+  $base = $null
+  if ($v -and [double]$v.cmvMediaSemanal -gt 0) {
+    $demanda = [double]$v.cmvMediaSemanal
+    $base = "cmv4s"
+  } elseif ($v -and [double]$v.vendaMediaSemanal -gt 0) {
+    $demanda = [double]$v.vendaMediaSemanal
+    $base = "venda4s"
+  } elseif ($null -ne $excelDias) {
+    return @{
+      dias = [double]$excelDias
+      semanas = [math]::Round([double]$excelDias / 7.0, 2)
+      demanda = $null
+      base = "excel"
+    }
+  }
+  if ($null -ne $demanda -and $demanda -gt 0) {
+    $sem = $valor / $demanda
+    return @{
+      dias = [math]::Round($sem * 7.0, 1)
+      semanas = [math]::Round($sem, 2)
+      demanda = [math]::Round($demanda, 0)
+      base = $base
+    }
+  }
+  return @{ dias = $null; semanas = $null; demanda = $null; base = $null }
+}
 
-  # cobertura em semanas de venda (estoque vs demanda semanal a custo)
+# --- Classificacao ---
+function Classify-Row($e, $v, $cob) {
+  $qAvg = if ($v) { [double]$v.qtdMediaSemanal } else { 0 }
+  $teveVenda = $qAvg -gt 0 -or ($null -ne $e.mediaCustoDia -and $e.mediaCustoDia -gt 0) -or ($v -and [double]$v.vendaMediaSemanal -gt 0)
+  $dias = $cob.dias
+
   if ($e.excluido) {
     return @{ status = "fora_escopo"; motivo = "Categoria operacional/excluida"; tom = "neutral" }
   }
@@ -200,16 +253,16 @@ function Classify-Row($e, $v) {
   }
   if ($null -ne $dias) {
     if ($dias -gt 0 -and $dias -lt $DiasCriticoBaixo -and $teveVenda) {
-      return @{ status = "critico_baixo"; motivo = ("Cobertura {0:N1} dias (abaixo de {1}d = 1 semana de venda)" -f $dias, $DiasCriticoBaixo); tom = "danger" }
+      return @{ status = "critico_baixo"; motivo = ("Cobertura {0:N1} dias / {1:N1} sem (abaixo de {2}d)" -f $dias, $cob.semanas, $DiasCriticoBaixo); tom = "danger" }
     }
     if ($dias -ge $DiasCriticoBaixo -and $dias -lt $DiasAtencaoBaixo -and $teveVenda) {
-      return @{ status = "atencao_baixo"; motivo = ("Cobertura {0:N1} dias (abaixo de {1}d)" -f $dias, $DiasAtencaoBaixo); tom = "warn" }
+      return @{ status = "atencao_baixo"; motivo = ("Cobertura {0:N1} dias / {1:N1} sem (abaixo de {2}d)" -f $dias, $cob.semanas, $DiasAtencaoBaixo); tom = "warn" }
     }
     if ($dias -ge $DiasExcesso -and $e.valor -ge $ValorMinExcesso) {
-      return @{ status = "excesso"; motivo = ("Cobertura {0:N1} dias (acima de {1}d) com estoque material" -f $dias, $DiasExcesso); tom = "warn" }
+      return @{ status = "excesso"; motivo = ("Cobertura {0:N1} dias / {1:N1} sem (acima de {2}d) com estoque material" -f $dias, $cob.semanas, $DiasExcesso); tom = "warn" }
     }
-  } elseif ($teveVenda -and $e.valor -gt 0 -and $null -eq $e.mediaCustoDia) {
-    return @{ status = "sem_cobertura"; motivo = "Sem media de venda a custo para calcular cobertura"; tom = "neutral" }
+  } elseif ($teveVenda -and $e.valor -gt 0) {
+    return @{ status = "sem_cobertura"; motivo = "Sem demanda das 4 semanas para calcular cobertura"; tom = "neutral" }
   }
   return @{ status = "saudavel"; motivo = "Dentro da faixa operacional"; tom = "ok" }
 }
@@ -218,18 +271,20 @@ $rowsOut = @()
 foreach ($e in $estoques) {
   $v = $null
   if ($vendaMap.ContainsKey($e.key)) { $v = $vendaMap[$e.key] }
-  $cls = Classify-Row $e $v
-  $dias = $e.diasCobertura
+  $cob = Get-Cobertura $e.valor $v $e.diasCobertura
+  $cls = Classify-Row $e $v $cob
   $rowsOut += [pscustomobject]@{
     nome = $e.nome
     key = $e.key
     skus = $e.skus
     valorEstoque = $e.valor
     mediaVendaCustoDia = $e.mediaCustoDia
-    diasCobertura = $dias
-    semanasCobertura = if ($null -ne $dias) { [math]::Round($dias / 7.0, 2) } else { $null }
+    diasCobertura = $cob.dias
+    semanasCobertura = $cob.semanas
     estoquePendente = $e.estoquePendente
     qtdMediaSemanal4s = if ($v) { $v.qtdMediaSemanal } else { $null }
+    vendaMediaSemanal4s = if ($v) { $v.vendaMediaSemanal } else { $null }
+    cmvMediaSemanal4s = if ($v) { $v.cmvMediaSemanal } else { $null }
     qtdTotal4s = if ($v) { $v.qtdTotal4s } else { $null }
     qtdsPorSemana = if ($v) { @($v.qtdsPorSemana) } else { @(Get-EmptyQtds) }
     semanasComVenda = if ($v) { $v.semanas } else { 0 }
@@ -264,13 +319,13 @@ $payload = [ordered]@{
     posicaoEm = $PosicaoData
     nivel = "Grupo (Categoria 3)"
     fonteEstoque = [IO.Path]::GetFileName($EstoqueXlsx)
-    baseVenda = "Qtd media semanal 2026 - Mesma base - 4 semanas do data.json"
+    baseVenda = "Cobertura = estoque R$ / CMV medio semanal 2026 (mesma base, 4 semanas)"
     periodosVenda = $periodos
     regras = [ordered]@{
       ruptura = ('Estoque valor = 0 em {0} E houve venda (4 semanas ou media custo > 0)' -f $PosicaoData)
-      critico_baixo = ('Dias de cobertura abaixo de {0} (menos de 1 semana de venda)' -f $DiasCriticoBaixo)
-      atencao_baixo = ('Dias de cobertura entre {0} e {1}' -f $DiasCriticoBaixo, $DiasAtencaoBaixo)
-      excesso = ('Dias de cobertura acima de {0} e valor estoque >= {1}' -f $DiasExcesso, $ValorMinExcesso)
+      critico_baixo = ('Cobertura (estoque / CMV semanal x 7) abaixo de {0} dias' -f $DiasCriticoBaixo)
+      atencao_baixo = ('Cobertura entre {0} e {1} dias' -f $DiasCriticoBaixo, $DiasAtencaoBaixo)
+      excesso = ('Cobertura acima de {0} dias e valor estoque >= {1}' -f $DiasExcesso, $ValorMinExcesso)
     }
     geradoEm = (Get-Date -Format "yyyy-MM-dd HH:mm")
   }

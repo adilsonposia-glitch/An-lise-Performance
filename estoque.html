@@ -207,7 +207,7 @@
       <section class="page-head est-hero">
         <div>
           <h1>Radar de Estoque Crítico</h1>
-          <p class="lede">Grupo · cobertura vs demanda média das últimas 4 semanas · ruptura e excesso</p>
+          <p class="lede">Grupo · cobertura = estoque R$ ÷ CMV médio semanal das 4 semanas · ruptura e excesso</p>
         </div>
       </section>
 
@@ -318,7 +318,7 @@
         `Em ${m.posicaoEm}, ${num(t.grupos)} grupos somam ${brl(t.valorEstoque)} em estoque. ` +
         `Há ${t.ruptura} ruptura(s) com giro recente, ${t.criticoBaixo} grupos com menos de 1 semana de cobertura ` +
         `e ${t.excesso} em excesso (capital parado ≈ ${brl(t.valorEmExcesso)}). ` +
-        `A demanda de referência é a quantidade média semanal 2026 das últimas 4 semanas (mesma base).`;
+        `A cobertura usa o CMV médio semanal 2026 das últimas 4 semanas (mesmo unidade do estoque), não a quantidade.`;
 
       document.getElementById("estRules").innerHTML = [
         ["Ruptura", m.regras.ruptura, "danger"],
@@ -445,9 +445,10 @@
           <th class="sortable ${prioSortKey === "nome" ? "is-active" : ""}" data-sort="nome">Grupo ${sortMark("nome")}</th>
           <th class="sortable ${prioSortKey === "status" ? "is-active" : ""}" data-sort="status">Status ${sortMark("status")}</th>
           <th class="sortable num ${prioSortKey === "valorEstoque" ? "is-active" : ""}" data-sort="valorEstoque" title="Ordenar por valor de estoque">Estoque R$ ${sortMark("valorEstoque")}</th>
-          <th class="sortable ${prioSortKey === "diasCobertura" ? "is-active" : ""}" data-sort="diasCobertura">Cobertura ${sortMark("diasCobertura")}</th>
+          <th class="sortable num ${prioSortKey === "vendaMediaSemanal4s" ? "is-active" : ""}" data-sort="vendaMediaSemanal4s" title="Venda média R$ 2026 das 4 semanas">Venda R$/sem ${sortMark("vendaMediaSemanal4s")}</th>
+          <th class="sortable ${prioSortKey === "diasCobertura" ? "is-active" : ""}" data-sort="diasCobertura" title="Estoque R$ ÷ CMV médio semanal × 7">Cobertura ${sortMark("diasCobertura")}</th>
           ${weekThs}
-          <th class="sortable num ${prioSortKey === "qtdMediaSemanal4s" ? "is-active" : ""}" data-sort="qtdMediaSemanal4s" title="Média semanal 2026 das 4 semanas">Média/sem ${sortMark("qtdMediaSemanal4s")}</th>
+          <th class="sortable num ${prioSortKey === "qtdMediaSemanal4s" ? "is-active" : ""}" data-sort="qtdMediaSemanal4s" title="Quantidade média 2026 das 4 semanas (não é R$)">Qtd média ${sortMark("qtdMediaSemanal4s")}</th>
           <th class="sortable ${prioSortKey === "motivo" ? "is-active" : ""}" data-sort="motivo">Motivo ${sortMark("motivo")}</th>
         </tr>`;
       };
@@ -457,7 +458,7 @@
         renderHead();
         document.getElementById("estTableTitle").textContent = labelStatus[active] || active;
         document.getElementById("estTableSub").textContent =
-          "Clique no cabeçalho para ordenar · qtd vendida 2026 nas 4 semanas";
+          "Cobertura = estoque R$ ÷ CMV médio 4 semanas · 1ª–4ª sem = quantidade";
         document.getElementById("estTable").innerHTML = rows
           .map((r) => {
             const tone = r.tom === "danger" ? "danger" : r.tom === "warn" ? "warn" : "ok";
@@ -468,12 +469,16 @@
                 return `<td class="num week" title="${p.label} · ${p.periodo2026}">${num(q, 0)}</td>`;
               })
               .join("");
+            const semTxt =
+              r.semanasCobertura == null ? "" : `${num(r.semanasCobertura, 1)} sem`;
             return `<tr>
               <td><strong>${r.nome}</strong></td>
               <td><span class="pill-status ${tone}">${labelStatus[r.status] || r.status}</span></td>
               <td class="num">${brl(r.valorEstoque)}</td>
+              <td class="num">${r.vendaMediaSemanal4s == null ? "—" : brl(r.vendaMediaSemanal4s)}</td>
               <td>
                 <div>${diasTxt(r.diasCobertura)}</div>
+                <div class="th-sub">${semTxt}</div>
                 <div class="cov-bar" title="Cobertura vs 90 dias">
                   <div class="cov-fill ${tone}" style="width:${covPct}%"></div>
                 </div>
