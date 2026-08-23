@@ -110,42 +110,43 @@
     .est-excesso-table th.sortable.is-active .sort-ind {
       opacity: 1;
     }
-    /* Prioridades: evita Motivo/Estoque estourarem a proporção */
+    .est-prio-panel .table-tools { flex: 0 0 auto; }
+    .est-prio-panel { margin-bottom: 18px; }
     .est-prio-table {
-      table-layout: fixed;
-      min-width: 720px;
+      table-layout: auto;
+      min-width: 1100px;
     }
-    .est-prio-table th:nth-child(1),
-    .est-prio-table td:nth-child(1) { width: 22%; }
-    .est-prio-table th:nth-child(2),
-    .est-prio-table td:nth-child(2) { width: 12%; }
-    .est-prio-table th:nth-child(3),
-    .est-prio-table td:nth-child(3) {
-      width: 12%;
+    .est-prio-table th,
+    .est-prio-table td { vertical-align: middle; }
+    .est-prio-table th.num,
+    .est-prio-table td.num {
       text-align: right;
       white-space: nowrap;
       font-variant-numeric: tabular-nums;
     }
-    .est-prio-table th:nth-child(4),
-    .est-prio-table td:nth-child(4) { width: 14%; }
-    .est-prio-table th:nth-child(5),
-    .est-prio-table td:nth-child(5) {
-      width: 12%;
-      text-align: right;
-      font-variant-numeric: tabular-nums;
+    .est-prio-table th.week,
+    .est-prio-table td.week { min-width: 4.6rem; }
+    .est-prio-table th .th-sub {
+      display: block;
+      font-size: 0.64rem;
+      font-weight: 600;
+      letter-spacing: 0;
+      text-transform: none;
+      opacity: 0.72;
+      margin-top: 2px;
     }
-    .est-prio-table th:nth-child(6),
-    .est-prio-table td:nth-child(6) {
-      width: 28%;
+    .est-prio-table td.motivo {
       white-space: normal;
       line-height: 1.35;
       color: var(--ink-soft);
       font-size: 0.78rem;
+      min-width: 12rem;
     }
     .est-prio-table th.sortable {
       cursor: pointer;
       user-select: none;
     }
+    .est-prio-table th.sortable:hover { color: var(--teal-800, #1f4a57); }
     .est-prio-table th.sortable .sort-ind {
       margin-left: 4px;
       opacity: 0.45;
@@ -218,38 +219,43 @@
 
       <div class="est-tabs" id="estTabs" role="tablist" aria-label="Filtro de status"></div>
 
-      <div class="est-grid-2">
-        <section class="panel table-panel">
-          <div class="panel-head">
+      <section class="panel table-panel est-prio-panel" id="estPrioPanel">
+        <div class="panel-head row">
+          <div>
             <h2 id="estTableTitle">Prioridades</h2>
-            <p id="estTableSub">Ordenado por impacto</p>
+            <p id="estTableSub">Clique no cabeçalho para ordenar · qtd 2026 nas 4 semanas</p>
           </div>
-          <div class="table-wrap">
-            <table class="est-prio-table" id="estPrioTable">
-              <thead>
-                <tr>
-                  <th>Grupo</th>
-                  <th>Status</th>
-                  <th class="sortable" data-sort="valorEstoque" id="estPrioSortValor" title="Ordenar por valor de estoque">
-                    Estoque R$ <span class="sort-ind" aria-hidden="true">↕</span>
-                  </th>
-                  <th>Cobertura</th>
-                  <th>Qtd média/sem</th>
-                  <th>Motivo</th>
-                </tr>
-              </thead>
-              <tbody id="estTable"></tbody>
-            </table>
+          <div class="table-tools">
+            <button type="button" class="expand-btn" id="estTableExpandBtn" aria-pressed="false" title="Abrir prioridades em tela cheia">
+              <svg class="expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/>
+              </svg>
+              <svg class="collapse-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <path d="M9 3v5H4M15 3v5h5M9 21v-5H4M15 21v-5h5"/>
+              </svg>
+              <span class="expand-label">Tela cheia</span>
+              <span class="collapse-label">Voltar ao radar</span>
+            </button>
           </div>
-        </section>
+        </div>
+        <div class="table-wrap">
+          <table class="est-prio-table" id="estPrioTable">
+            <thead id="estPrioHead"></thead>
+            <tbody id="estTable"></tbody>
+          </table>
+        </div>
+      </section>
 
-        <section class="panel chart-panel est-excesso-panel">
+      <div class="est-grid-2">
+        <section class="panel chart-panel">
           <div class="panel-head">
             <h2>Distribuição por status</h2>
             <p>Quantidade de grupos sinalizados</p>
           </div>
           <div class="rede-chart" id="estBars"></div>
-          <div class="panel-head" style="margin-top:18px">
+        </section>
+        <section class="panel chart-panel est-excesso-panel">
+          <div class="panel-head">
             <h2>Maior capital em excesso</h2>
             <p>Clique em Estoque para ordenar · cobertura &gt; 60 dias</p>
           </div>
@@ -358,71 +364,123 @@
         ["excesso", "Excesso", t.excesso],
       ];
 
+      const periodos = m.periodosVenda || [];
+      const textSortKeys = new Set(["nome", "status", "motivo"]);
+
       let active = tabs.find((x) => x[2] > 0)?.[0] || "excesso";
-      let prioSortKey = "valor"; // 'valor' | 'cobertura'
+      let prioSortKey = "valorEstoque";
       let prioSortDir = "desc";
       let excessoSortDir = "desc";
 
-      const sortByValor = (rows, dir) =>
+      const shortPeriodo = (p) => {
+        const match = String(p.periodo2026 || "").match(
+          /(\d{2})\/(\d{2})\/\d{4}\s*a\s*(\d{2})\/(\d{2})/
+        );
+        if (!match) return p.label || "";
+        return match[2] === match[4]
+          ? `${match[1]}–${match[3]}/${match[2]}`
+          : `${match[1]}/${match[2]}–${match[3]}/${match[4]}`;
+      };
+
+      const weekQty = (row, i) => {
+        const arr = row.qtdsPorSemana;
+        if (!Array.isArray(arr) || i >= arr.length) return null;
+        return arr[i];
+      };
+
+      const sortValue = (row, key) => {
+        if (key.startsWith("qtdS")) return weekQty(row, Number(key.slice(4)));
+        if (key === "status") return labelStatus[row.status] || row.status || "";
+        return row[key];
+      };
+
+      const sortRows = (rows, key, dir) =>
         [...rows].sort((a, b) => {
-          const av = Number(a.valorEstoque || 0);
-          const bv = Number(b.valorEstoque || 0);
-          return dir === "asc" ? av - bv : bv - av;
+          let av = sortValue(a, key);
+          let bv = sortValue(b, key);
+          if (textSortKeys.has(key)) {
+            const cmp = String(av || "").localeCompare(String(bv || ""), "pt-BR", {
+              sensitivity: "base",
+            });
+            return dir === "asc" ? cmp : -cmp;
+          }
+          const aEmpty = av == null || av === "";
+          const bEmpty = bv == null || bv === "";
+          if (aEmpty && bEmpty) return 0;
+          if (aEmpty) return 1;
+          if (bEmpty) return -1;
+          return dir === "asc" ? Number(av) - Number(bv) : Number(bv) - Number(av);
         });
+
+      const sortByValor = (rows, dir) => sortRows(rows, "valorEstoque", dir);
 
       const applyTabDefaultSort = () => {
         if (active === "excesso" || active === "ruptura") {
-          prioSortKey = "valor";
+          prioSortKey = "valorEstoque";
           prioSortDir = "desc";
         } else {
-          prioSortKey = "cobertura";
+          prioSortKey = "diasCobertura";
           prioSortDir = "asc";
         }
       };
 
+      const sortMark = (key) => {
+        const on = prioSortKey === key;
+        const ind = on ? (prioSortDir === "asc" ? "↑" : "↓") : "↕";
+        return `<span class="sort-ind" aria-hidden="true">${ind}</span>`;
+      };
+
+      const renderHead = () => {
+        const weekThs = periodos
+          .map((p, i) => {
+            const key = `qtdS${i}`;
+            const title = `${p.label} · ${p.periodo2026} · quantidade 2026`;
+            return `<th class="sortable num week ${prioSortKey === key ? "is-active" : ""}" data-sort="${key}" title="${title}">
+              ${p.ordem}ª sem ${sortMark(key)}
+              <span class="th-sub">${shortPeriodo(p)}</span>
+            </th>`;
+          })
+          .join("");
+        document.getElementById("estPrioHead").innerHTML = `<tr>
+          <th class="sortable ${prioSortKey === "nome" ? "is-active" : ""}" data-sort="nome">Grupo ${sortMark("nome")}</th>
+          <th class="sortable ${prioSortKey === "status" ? "is-active" : ""}" data-sort="status">Status ${sortMark("status")}</th>
+          <th class="sortable num ${prioSortKey === "valorEstoque" ? "is-active" : ""}" data-sort="valorEstoque" title="Ordenar por valor de estoque">Estoque R$ ${sortMark("valorEstoque")}</th>
+          <th class="sortable ${prioSortKey === "diasCobertura" ? "is-active" : ""}" data-sort="diasCobertura">Cobertura ${sortMark("diasCobertura")}</th>
+          ${weekThs}
+          <th class="sortable num ${prioSortKey === "qtdMediaSemanal4s" ? "is-active" : ""}" data-sort="qtdMediaSemanal4s" title="Média semanal 2026 das 4 semanas">Média/sem ${sortMark("qtdMediaSemanal4s")}</th>
+          <th class="sortable ${prioSortKey === "motivo" ? "is-active" : ""}" data-sort="motivo">Motivo ${sortMark("motivo")}</th>
+        </tr>`;
+      };
+
       const renderTable = () => {
-        const base = lists[active] || [];
-        let rows;
-        if (prioSortKey === "valor") {
-          rows = sortByValor(base, prioSortDir);
-        } else {
-          rows = [...base].sort((a, b) => {
-            const av = a.diasCobertura ?? 9999;
-            const bv = b.diasCobertura ?? 9999;
-            return prioSortDir === "asc" ? av - bv : bv - av;
-          });
-        }
-
-        const sortEl = document.getElementById("estPrioSortValor");
-        if (sortEl) {
-          const activeValor = prioSortKey === "valor";
-          sortEl.classList.toggle("is-active", activeValor);
-          sortEl.querySelector(".sort-ind").textContent = activeValor
-            ? prioSortDir === "asc"
-              ? "↑"
-              : "↓"
-            : "↕";
-        }
-
+        const rows = sortRows(lists[active] || [], prioSortKey, prioSortDir);
+        renderHead();
         document.getElementById("estTableTitle").textContent = labelStatus[active] || active;
         document.getElementById("estTableSub").textContent =
-          "Clique em Estoque R$ para ordenar maior ↔ menor";
+          "Clique no cabeçalho para ordenar · qtd vendida 2026 nas 4 semanas";
         document.getElementById("estTable").innerHTML = rows
           .map((r) => {
             const tone = r.tom === "danger" ? "danger" : r.tom === "warn" ? "warn" : "ok";
             const covPct = Math.min(100, ((r.diasCobertura || 0) / 90) * 100);
+            const weekTds = periodos
+              .map((p, i) => {
+                const q = weekQty(r, i);
+                return `<td class="num week" title="${p.label} · ${p.periodo2026}">${num(q, 0)}</td>`;
+              })
+              .join("");
             return `<tr>
               <td><strong>${r.nome}</strong></td>
               <td><span class="pill-status ${tone}">${labelStatus[r.status] || r.status}</span></td>
-              <td>${brl(r.valorEstoque)}</td>
+              <td class="num">${brl(r.valorEstoque)}</td>
               <td>
                 <div>${diasTxt(r.diasCobertura)}</div>
                 <div class="cov-bar" title="Cobertura vs 90 dias">
                   <div class="cov-fill ${tone}" style="width:${covPct}%"></div>
                 </div>
               </td>
-              <td>${num(r.qtdMediaSemanal4s, 1)}</td>
-              <td>${r.motivo || "—"}</td>
+              ${weekTds}
+              <td class="num">${num(r.qtdMediaSemanal4s, 0)}</td>
+              <td class="motivo">${r.motivo || "—"}</td>
             </tr>`;
           })
           .join("");
@@ -465,12 +523,15 @@
         });
       };
 
-      document.getElementById("estPrioSortValor")?.addEventListener("click", () => {
-        if (prioSortKey === "valor") {
+      document.getElementById("estPrioHead")?.addEventListener("click", (e) => {
+        const th = e.target.closest("th[data-sort]");
+        if (!th) return;
+        const key = th.dataset.sort;
+        if (prioSortKey === key) {
           prioSortDir = prioSortDir === "desc" ? "asc" : "desc";
         } else {
-          prioSortKey = "valor";
-          prioSortDir = "desc";
+          prioSortKey = key;
+          prioSortDir = textSortKeys.has(key) || key === "diasCobertura" ? "asc" : "desc";
         }
         renderTable();
       });
@@ -492,6 +553,64 @@
           </div>`;
         })
         .join("");
+
+      const detailPanel = document.getElementById("estPrioPanel");
+      const expandBtn = document.getElementById("estTableExpandBtn");
+      const syncExpandUi = () => {
+        const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+        const expanded = Boolean(fsEl === detailPanel || detailPanel?.classList.contains("is-expanded"));
+        if (expandBtn) {
+          expandBtn.setAttribute("aria-pressed", expanded ? "true" : "false");
+          expandBtn.title = expanded ? "Voltar ao radar" : "Abrir prioridades em tela cheia";
+        }
+        document.body.classList.toggle("table-focus-open", expanded);
+      };
+      const enterTableExpand = async () => {
+        if (!detailPanel) return;
+        const req =
+          detailPanel.requestFullscreen ||
+          detailPanel.webkitRequestFullscreen ||
+          detailPanel.msRequestFullscreen;
+        if (typeof req === "function") {
+          try {
+            await req.call(detailPanel);
+            syncExpandUi();
+            return;
+          } catch (_) {
+            /* fallback abaixo */
+          }
+        }
+        detailPanel.classList.add("is-expanded");
+        syncExpandUi();
+      };
+      const exitTableExpand = async () => {
+        const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+        if (fsEl) {
+          const exit = document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen;
+          if (typeof exit === "function") {
+            try {
+              await exit.call(document);
+            } catch (_) {}
+          }
+        }
+        detailPanel?.classList.remove("is-expanded");
+        syncExpandUi();
+      };
+      if (expandBtn && detailPanel) {
+        expandBtn.addEventListener("click", () => {
+          const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+          const expanded = Boolean(fsEl === detailPanel || detailPanel.classList.contains("is-expanded"));
+          if (expanded) exitTableExpand();
+          else enterTableExpand();
+        });
+        document.addEventListener("fullscreenchange", syncExpandUi);
+        document.addEventListener("webkitfullscreenchange", syncExpandUi);
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape" && detailPanel.classList.contains("is-expanded")) {
+            exitTableExpand();
+          }
+        });
+      }
 
       applyTabDefaultSort();
       paintTabs();

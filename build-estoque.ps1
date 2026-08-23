@@ -132,6 +132,7 @@ foreach ($w in @($bundle.weeks | Sort-Object ordem)) {
     label = [string]$w.label
     periodo2026 = [string]$w.meta.periodo2026
   }
+  $ord = [int]$w.ordem
   $gru = @($w.phases | Where-Object { $_.key -eq "grupos" } | Select-Object -First 1)
   if (-not $gru) { continue }
   $rows = $gru.bases.mesma.rows
@@ -139,22 +140,43 @@ foreach ($w in @($bundle.weeks | Sort-Object ordem)) {
   foreach ($r in @($rows)) {
     $key = Get-NameKey ([string]$r.nome)
     if (-not $series.ContainsKey($key)) {
-      $series[$key] = [ordered]@{ nome = [string]$r.nome; key = $key; qtds = [System.Collections.Generic.List[double]]::new() }
+      $series[$key] = [ordered]@{ nome = [string]$r.nome; key = $key; byOrdem = @{} }
     }
-    $series[$key].qtds.Add([double]$r.qtd2026)
+    $series[$key].byOrdem[$ord] = [double]$r.qtd2026
   }
+}
+
+function Get-QtdsAligned($byOrdem) {
+  $list = [System.Collections.Generic.List[object]]::new()
+  foreach ($p in $periodos) {
+    $ord = [int]$p.ordem
+    if ($byOrdem -and $byOrdem.ContainsKey($ord)) {
+      $list.Add([math]::Round([double]$byOrdem[$ord], 2))
+    } else {
+      $list.Add($null)
+    }
+  }
+  return , $list.ToArray()
+}
+
+function Get-EmptyQtds {
+  $list = [System.Collections.Generic.List[object]]::new()
+  foreach ($p in $periodos) { $list.Add($null) }
+  return , $list.ToArray()
 }
 
 $vendaMap = @{}
 foreach ($key in $series.Keys) {
-  $qs = @($series[$key].qtds)
-  $avg = if ($qs.Count) { ($qs | Measure-Object -Average).Average } else { 0 }
+  $aligned = Get-QtdsAligned $series[$key].byOrdem
+  $present = @($aligned | Where-Object { $null -ne $_ })
+  $avg = if ($present.Count) { ($present | Measure-Object -Average).Average } else { 0 }
+  $sum = if ($present.Count) { ($present | Measure-Object -Sum).Sum } else { 0 }
   $vendaMap[$key] = [ordered]@{
     nome = $series[$key].nome
-    semanas = $qs.Count
+    semanas = $present.Count
     qtdMediaSemanal = [math]::Round($avg, 2)
-    qtdTotal4s = [math]::Round(($qs | Measure-Object -Sum).Sum, 2)
-    qtds = @($qs | ForEach-Object { [math]::Round($_, 2) })
+    qtdTotal4s = [math]::Round($sum, 2)
+    qtdsPorSemana = $aligned
   }
 }
 Write-Host ("Grupos com venda 4s: {0}" -f $vendaMap.Count)
@@ -209,6 +231,7 @@ foreach ($e in $estoques) {
     estoquePendente = $e.estoquePendente
     qtdMediaSemanal4s = if ($v) { $v.qtdMediaSemanal } else { $null }
     qtdTotal4s = if ($v) { $v.qtdTotal4s } else { $null }
+    qtdsPorSemana = if ($v) { @($v.qtdsPorSemana) } else { @(Get-EmptyQtds) }
     semanasComVenda = if ($v) { $v.semanas } else { 0 }
     status = $cls.status
     motivo = $cls.motivo

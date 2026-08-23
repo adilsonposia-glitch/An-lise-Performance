@@ -33,7 +33,7 @@
                                 "atencao_baixo":  "Dias de cobertura entre 7 e 14",
                                 "excesso":  "Dias de cobertura acima de 60 e valor estoque \u003e= 50000"
                             },
-                 "geradoEm":  "2026-08-23 18:09"
+                 "geradoEm":  "2026-08-23 19:35"
              },
     "totais":  {
                    "grupos":  227,
@@ -58,6 +58,12 @@
                         "estoquePendente":  0,
                         "qtdMediaSemanal4s":  0,
                         "qtdTotal4s":  0,
+                        "qtdsPorSemana":  [
+                                              0,
+                                              0,
+                                              0,
+                                              0
+                                          ],
                         "semanasComVenda":  4,
                         "status":  "ruptura",
                         "motivo":  "Estoque zerado em 21/08/2026 com historico de venda",
@@ -74,6 +80,12 @@
                         "estoquePendente":  0,
                         "qtdMediaSemanal4s":  null,
                         "qtdTotal4s":  null,
+                        "qtdsPorSemana":  [
+                                              null,
+                                              null,
+                                              null,
+                                              null
+                                          ],
                         "semanasComVenda":  0,
                         "status":  "ruptura",
                         "motivo":  "Estoque zerado em 21/08/2026 com historico de venda",
@@ -92,6 +104,12 @@
                              "estoquePendente":  0,
                              "qtdMediaSemanal4s":  83689.22,
                              "qtdTotal4s":  334756.86,
+                             "qtdsPorSemana":  [
+                                                   79804.84,
+                                                   77953.53,
+                                                   87202.22,
+                                                   89796.27
+                                               ],
                              "semanasComVenda":  4,
                              "status":  "critico_baixo",
                              "motivo":  "Cobertura 4,2 dias (abaixo de 7d = 1 semana de venda)",
@@ -108,6 +126,12 @@
                              "estoquePendente":  0,
                              "qtdMediaSemanal4s":  65862.81,
                              "qtdTotal4s":  263451.25,
+                             "qtdsPorSemana":  [
+                                                   61746.72,
+                                                   64159.34,
+                                                   68294.73,
+                                                   69250.46
+                                               ],
                              "semanasComVenda":  4,
                              "status":  "critico_baixo",
                              "motivo":  "Cobertura 3,8 dias (abaixo de 7d = 1 semana de venda)",
@@ -124,6 +148,12 @@
                              "estoquePendente":  0,
                              "qtdMediaSemanal4s":  37285.36,
                              "qtdTotal4s":  149141.45,
+                             "qtdsPorSemana":  [
+                                                   33862.86,
+                                                   36025.53,
+                                                   42614.97,
+                                                   36638.09
+                                               ],
                              "semanasComVenda":  4,
                              "status":  "critico_baixo",
                              "motivo":  "Cobertura 2,4 dias (abaixo de 7d = 1 semana de venda)",
@@ -140,6 +170,12 @@
                              "estoquePendente":  0,
                              "qtdMediaSemanal4s":  29833.33,
                              "qtdTotal4s":  119333.31,
+                             "qtdsPorSemana":  [
+                                                   29212.12,
+                                                   24929.77,
+                                                   32015.27,
+                                                   33176.15
+                                               ],
                              "semanasComVenda":  4,
                              "status":  "critico_baixo",
                              "motivo":  "Cobertura 1,8 dias (abaixo de 7d = 1 semana de venda)",
@@ -156,6 +192,12 @@
                              "estoquePendente":  0,
                              "qtdMediaSemanal4s":  2294.1,
                              "qtdTotal4s":  9176.41,
+                             "qtdsPorSemana":  [
+                                                   2168.41,
+                                                   2183.56,
+                                                   2409.35,
+                                                   2415.09
+                                               ],
                              "semanasComVenda":  4,
                              "status":  "critico_baixo",
                              "motivo":  "Cobertura 1,2 dias (abaixo de 7d = 1 semana de venda)",
@@ -174,6 +216,12 @@
                              "estoquePendente":  535963.34,
                              "qtdMediaSemanal4s":  49580.95,
                              "qtdTotal4s":  198323.78,
+                             "qtdsPorSemana":  [
+                                                   42742.01,
+                                                   44096.96,
+                                                   55599.01,
+                                                   55885.8
+                                               ],
                              "semanasComVenda":  4,
                              "status":  "atencao_baixo",
                              "motivo":  "Cobertura 12,8 dias (abaixo de 14d)",
@@ -190,6 +238,12 @@
                              "estoquePendente":  7081.05,
                              "qtdMediaSemanal4s":  39051.78,
                              "qtdTotal4s":  156207.13,
+                             "qtdsPorSemana":  [
+                                                   36152.01,
+                                                   32753.35,
+                                                   40571.86,
+                                                   46729.91
+                                               ],
                              "semanasComVenda":  4,
                              "status":  "atencao_baixo",
                              "motivo":  "Cobertura 12,1 dias (abaixo de 14d)",
@@ -206,6 +260,12 @@
                              "estoquePendente":  32611.89,
                              "qtdMediaSemanal4s":  25059.5,
                              "qtdTotal4s":  100238,
+                             "qtdsPorSemana":  [
+                                                   20872,
+                                                   20932,
+                                                   20954,
+                                                   37480
+                                               ],
                              "semanasComVenda":  4,
                              "status":  "atencao_baixo",
                              "motivo":  "Cobertura 7,2 dias (abaixo de 14d)",
@@ -222,6 +282,12 @@
                              "estoquePendente":  768,
                              "qtdMediaSemanal4s":  6244.21,
                              "qtdTotal4s":  24976.83,
+                             "qtdsPorSemana":  [
+                                                   4951.54,
+                                                   5758.57,
+                                                   6173.25,
+                                                   8093.47
+                                               ],
                              "semanasComVenda":  4,
                              "status":  "atencao_baixo",
                              "motivo":  "Cobertura 7,6 dias (abaixo de 14d)",
@@ -238,6 +304,12 @@
                              "estoquePendente":  0,
                              "qtdMediaSemanal4s":  257,
                              "qtdTotal4s":  1028,
+                             "qtdsPorSemana":  [
+                                                   279,
+                                                   242,
+                                                   222,
+                                                   285
+                                               ],
                              "semanasComVenda":  4,
                              "status":  "atencao_baixo",
                              "motivo":  "Cobertura 8,6 dias (abaixo de 14d)",
@@ -254,6 +326,12 @@
                              "estoquePendente":  0,
                              "qtdMediaSemanal4s":  165.25,
                              "qtdTotal4s":  661,
+                             "qtdsPorSemana":  [
+                                                   164,
+                                                   216,
+                                                   154,
+                                                   127
+                                               ],
                              "semanasComVenda":  4,
                              "status":  "atencao_baixo",
                              "motivo":  "Cobertura 11,4 dias (abaixo de 14d)",
@@ -270,6 +348,12 @@
                              "estoquePendente":  0,
                              "qtdMediaSemanal4s":  32.96,
                              "qtdTotal4s":  131.83,
+                             "qtdsPorSemana":  [
+                                                   35.18,
+                                                   40.51,
+                                                   32.14,
+                                                   24
+                                               ],
                              "semanasComVenda":  4,
                              "status":  "atencao_baixo",
                              "motivo":  "Cobertura 10,4 dias (abaixo de 14d)",
@@ -288,6 +372,12 @@
                         "estoquePendente":  27891.49,
                         "qtdMediaSemanal4s":  4324.75,
                         "qtdTotal4s":  17299,
+                        "qtdsPorSemana":  [
+                                              4359,
+                                              3239,
+                                              4787,
+                                              4914
+                                          ],
                         "semanasComVenda":  4,
                         "status":  "excesso",
                         "motivo":  "Cobertura 81,9 dias (acima de 60d) com estoque material",
@@ -304,6 +394,12 @@
                         "estoquePendente":  757.37,
                         "qtdMediaSemanal4s":  16593.25,
                         "qtdTotal4s":  66373,
+                        "qtdsPorSemana":  [
+                                              13189,
+                                              14926,
+                                              17793,
+                                              20465
+                                          ],
                         "semanasComVenda":  4,
                         "status":  "excesso",
                         "motivo":  "Cobertura 64,6 dias (acima de 60d) com estoque material",
@@ -320,6 +416,12 @@
                         "estoquePendente":  16694.71,
                         "qtdMediaSemanal4s":  12171.75,
                         "qtdTotal4s":  48687,
+                        "qtdsPorSemana":  [
+                                              10063,
+                                              11912,
+                                              13328,
+                                              13384
+                                          ],
                         "semanasComVenda":  4,
                         "status":  "excesso",
                         "motivo":  "Cobertura 70,6 dias (acima de 60d) com estoque material",
@@ -336,6 +438,12 @@
                         "estoquePendente":  1034.31,
                         "qtdMediaSemanal4s":  2188.88,
                         "qtdTotal4s":  8755.52,
+                        "qtdsPorSemana":  [
+                                              2185.8,
+                                              1980.38,
+                                              2176.34,
+                                              2413
+                                          ],
                         "semanasComVenda":  4,
                         "status":  "excesso",
                         "motivo":  "Cobertura 75,0 dias (acima de 60d) com estoque material",
@@ -352,6 +460,12 @@
                         "estoquePendente":  1307.22,
                         "qtdMediaSemanal4s":  1584.5,
                         "qtdTotal4s":  6338,
+                        "qtdsPorSemana":  [
+                                              1495,
+                                              1266,
+                                              1841,
+                                              1736
+                                          ],
                         "semanasComVenda":  4,
                         "status":  "excesso",
                         "motivo":  "Cobertura 95,8 dias (acima de 60d) com estoque material",
@@ -368,6 +482,12 @@
                         "estoquePendente":  12071.88,
                         "qtdMediaSemanal4s":  1723.75,
                         "qtdTotal4s":  6895,
+                        "qtdsPorSemana":  [
+                                              1579,
+                                              1771,
+                                              1849,
+                                              1696
+                                          ],
                         "semanasComVenda":  4,
                         "status":  "excesso",
                         "motivo":  "Cobertura 98,6 dias (acima de 60d) com estoque material",
@@ -384,6 +504,12 @@
                         "estoquePendente":  702.26,
                         "qtdMediaSemanal4s":  2466.75,
                         "qtdTotal4s":  9867,
+                        "qtdsPorSemana":  [
+                                              2393,
+                                              2087,
+                                              2802,
+                                              2585
+                                          ],
                         "semanasComVenda":  4,
                         "status":  "excesso",
                         "motivo":  "Cobertura 82,0 dias (acima de 60d) com estoque material",
@@ -400,6 +526,12 @@
                         "estoquePendente":  0,
                         "qtdMediaSemanal4s":  2041.25,
                         "qtdTotal4s":  8165,
+                        "qtdsPorSemana":  [
+                                              1504,
+                                              1846,
+                                              2417,
+                                              2398
+                                          ],
                         "semanasComVenda":  4,
                         "status":  "excesso",
                         "motivo":  "Cobertura 66,5 dias (acima de 60d) com estoque material",
@@ -416,6 +548,12 @@
                         "estoquePendente":  911.58,
                         "qtdMediaSemanal4s":  2398.5,
                         "qtdTotal4s":  9594,
+                        "qtdsPorSemana":  [
+                                              3097,
+                                              1803,
+                                              2733,
+                                              1961
+                                          ],
                         "semanasComVenda":  4,
                         "status":  "excesso",
                         "motivo":  "Cobertura 67,4 dias (acima de 60d) com estoque material",
@@ -432,6 +570,12 @@
                         "estoquePendente":  0,
                         "qtdMediaSemanal4s":  320.5,
                         "qtdTotal4s":  1282,
+                        "qtdsPorSemana":  [
+                                              254,
+                                              256,
+                                              308,
+                                              464
+                                          ],
                         "semanasComVenda":  4,
                         "status":  "excesso",
                         "motivo":  "Cobertura 87,8 dias (acima de 60d) com estoque material",
@@ -448,6 +592,12 @@
                         "estoquePendente":  0,
                         "qtdMediaSemanal4s":  3521,
                         "qtdTotal4s":  14084,
+                        "qtdsPorSemana":  [
+                                              2849,
+                                              3548,
+                                              3970,
+                                              3717
+                                          ],
                         "semanasComVenda":  4,
                         "status":  "excesso",
                         "motivo":  "Cobertura 65,3 dias (acima de 60d) com estoque material",
@@ -464,6 +614,12 @@
                         "estoquePendente":  0,
                         "qtdMediaSemanal4s":  43.48,
                         "qtdTotal4s":  173.93,
+                        "qtdsPorSemana":  [
+                                              16.42,
+                                              40.71,
+                                              44.38,
+                                              72.42
+                                          ],
                         "semanasComVenda":  4,
                         "status":  "excesso",
                         "motivo":  "Cobertura 329,7 dias (acima de 60d) com estoque material",
@@ -480,6 +636,12 @@
                         "estoquePendente":  271.32,
                         "qtdMediaSemanal4s":  625.75,
                         "qtdTotal4s":  2503,
+                        "qtdsPorSemana":  [
+                                              567,
+                                              639,
+                                              703,
+                                              594
+                                          ],
                         "semanasComVenda":  4,
                         "status":  "excesso",
                         "motivo":  "Cobertura 140,7 dias (acima de 60d) com estoque material",
@@ -496,6 +658,12 @@
                         "estoquePendente":  0,
                         "qtdMediaSemanal4s":  725,
                         "qtdTotal4s":  2900,
+                        "qtdsPorSemana":  [
+                                              719,
+                                              651,
+                                              740,
+                                              790
+                                          ],
                         "semanasComVenda":  4,
                         "status":  "excesso",
                         "motivo":  "Cobertura 79,1 dias (acima de 60d) com estoque material",
@@ -512,6 +680,12 @@
                         "estoquePendente":  0,
                         "qtdMediaSemanal4s":  273.75,
                         "qtdTotal4s":  1095,
+                        "qtdsPorSemana":  [
+                                              220,
+                                              237,
+                                              334,
+                                              304
+                                          ],
                         "semanasComVenda":  4,
                         "status":  "excesso",
                         "motivo":  "Cobertura 81,3 dias (acima de 60d) com estoque material",
@@ -528,6 +702,12 @@
                         "estoquePendente":  0,
                         "qtdMediaSemanal4s":  352.75,
                         "qtdTotal4s":  1411,
+                        "qtdsPorSemana":  [
+                                              310,
+                                              362,
+                                              382,
+                                              357
+                                          ],
                         "semanasComVenda":  4,
                         "status":  "excesso",
                         "motivo":  "Cobertura 80,9 dias (acima de 60d) com estoque material",
@@ -544,6 +724,12 @@
                         "estoquePendente":  0,
                         "qtdMediaSemanal4s":  501.6,
                         "qtdTotal4s":  2006.41,
+                        "qtdsPorSemana":  [
+                                              456.81,
+                                              449.23,
+                                              525.35,
+                                              575.02
+                                          ],
                         "semanasComVenda":  4,
                         "status":  "excesso",
                         "motivo":  "Cobertura 62,0 dias (acima de 60d) com estoque material",
@@ -562,6 +748,12 @@
                            "estoquePendente":  27891.49,
                            "qtdMediaSemanal4s":  4324.75,
                            "qtdTotal4s":  17299,
+                           "qtdsPorSemana":  [
+                                                 4359,
+                                                 3239,
+                                                 4787,
+                                                 4914
+                                             ],
                            "semanasComVenda":  4,
                            "status":  "excesso",
                            "motivo":  "Cobertura 81,9 dias (acima de 60d) com estoque material",
@@ -578,6 +770,12 @@
                            "estoquePendente":  757.37,
                            "qtdMediaSemanal4s":  16593.25,
                            "qtdTotal4s":  66373,
+                           "qtdsPorSemana":  [
+                                                 13189,
+                                                 14926,
+                                                 17793,
+                                                 20465
+                                             ],
                            "semanasComVenda":  4,
                            "status":  "excesso",
                            "motivo":  "Cobertura 64,6 dias (acima de 60d) com estoque material",
@@ -594,6 +792,12 @@
                            "estoquePendente":  16694.71,
                            "qtdMediaSemanal4s":  12171.75,
                            "qtdTotal4s":  48687,
+                           "qtdsPorSemana":  [
+                                                 10063,
+                                                 11912,
+                                                 13328,
+                                                 13384
+                                             ],
                            "semanasComVenda":  4,
                            "status":  "excesso",
                            "motivo":  "Cobertura 70,6 dias (acima de 60d) com estoque material",
@@ -610,6 +814,12 @@
                            "estoquePendente":  1034.31,
                            "qtdMediaSemanal4s":  2188.88,
                            "qtdTotal4s":  8755.52,
+                           "qtdsPorSemana":  [
+                                                 2185.8,
+                                                 1980.38,
+                                                 2176.34,
+                                                 2413
+                                             ],
                            "semanasComVenda":  4,
                            "status":  "excesso",
                            "motivo":  "Cobertura 75,0 dias (acima de 60d) com estoque material",
@@ -626,6 +836,12 @@
                            "estoquePendente":  1307.22,
                            "qtdMediaSemanal4s":  1584.5,
                            "qtdTotal4s":  6338,
+                           "qtdsPorSemana":  [
+                                                 1495,
+                                                 1266,
+                                                 1841,
+                                                 1736
+                                             ],
                            "semanasComVenda":  4,
                            "status":  "excesso",
                            "motivo":  "Cobertura 95,8 dias (acima de 60d) com estoque material",
@@ -642,6 +858,12 @@
                            "estoquePendente":  12071.88,
                            "qtdMediaSemanal4s":  1723.75,
                            "qtdTotal4s":  6895,
+                           "qtdsPorSemana":  [
+                                                 1579,
+                                                 1771,
+                                                 1849,
+                                                 1696
+                                             ],
                            "semanasComVenda":  4,
                            "status":  "excesso",
                            "motivo":  "Cobertura 98,6 dias (acima de 60d) com estoque material",
@@ -658,6 +880,12 @@
                            "estoquePendente":  702.26,
                            "qtdMediaSemanal4s":  2466.75,
                            "qtdTotal4s":  9867,
+                           "qtdsPorSemana":  [
+                                                 2393,
+                                                 2087,
+                                                 2802,
+                                                 2585
+                                             ],
                            "semanasComVenda":  4,
                            "status":  "excesso",
                            "motivo":  "Cobertura 82,0 dias (acima de 60d) com estoque material",
@@ -674,6 +902,12 @@
                            "estoquePendente":  0,
                            "qtdMediaSemanal4s":  2041.25,
                            "qtdTotal4s":  8165,
+                           "qtdsPorSemana":  [
+                                                 1504,
+                                                 1846,
+                                                 2417,
+                                                 2398
+                                             ],
                            "semanasComVenda":  4,
                            "status":  "excesso",
                            "motivo":  "Cobertura 66,5 dias (acima de 60d) com estoque material",
@@ -690,6 +924,12 @@
                            "estoquePendente":  911.58,
                            "qtdMediaSemanal4s":  2398.5,
                            "qtdTotal4s":  9594,
+                           "qtdsPorSemana":  [
+                                                 3097,
+                                                 1803,
+                                                 2733,
+                                                 1961
+                                             ],
                            "semanasComVenda":  4,
                            "status":  "excesso",
                            "motivo":  "Cobertura 67,4 dias (acima de 60d) com estoque material",
@@ -706,6 +946,12 @@
                            "estoquePendente":  0,
                            "qtdMediaSemanal4s":  320.5,
                            "qtdTotal4s":  1282,
+                           "qtdsPorSemana":  [
+                                                 254,
+                                                 256,
+                                                 308,
+                                                 464
+                                             ],
                            "semanasComVenda":  4,
                            "status":  "excesso",
                            "motivo":  "Cobertura 87,8 dias (acima de 60d) com estoque material",
@@ -722,6 +968,12 @@
                            "estoquePendente":  0,
                            "qtdMediaSemanal4s":  3521,
                            "qtdTotal4s":  14084,
+                           "qtdsPorSemana":  [
+                                                 2849,
+                                                 3548,
+                                                 3970,
+                                                 3717
+                                             ],
                            "semanasComVenda":  4,
                            "status":  "excesso",
                            "motivo":  "Cobertura 65,3 dias (acima de 60d) com estoque material",
@@ -738,6 +990,12 @@
                            "estoquePendente":  0,
                            "qtdMediaSemanal4s":  43.48,
                            "qtdTotal4s":  173.93,
+                           "qtdsPorSemana":  [
+                                                 16.42,
+                                                 40.71,
+                                                 44.38,
+                                                 72.42
+                                             ],
                            "semanasComVenda":  4,
                            "status":  "excesso",
                            "motivo":  "Cobertura 329,7 dias (acima de 60d) com estoque material",
@@ -756,6 +1014,12 @@
                            "estoquePendente":  0,
                            "qtdMediaSemanal4s":  null,
                            "qtdTotal4s":  null,
+                           "qtdsPorSemana":  [
+                                                 null,
+                                                 null,
+                                                 null,
+                                                 null
+                                             ],
                            "semanasComVenda":  0,
                            "status":  "ruptura",
                            "motivo":  "Estoque zerado em 21/08/2026 com historico de venda",
@@ -772,6 +1036,12 @@
                            "estoquePendente":  0,
                            "qtdMediaSemanal4s":  0,
                            "qtdTotal4s":  0,
+                           "qtdsPorSemana":  [
+                                                 0,
+                                                 0,
+                                                 0,
+                                                 0
+                                             ],
                            "semanasComVenda":  4,
                            "status":  "ruptura",
                            "motivo":  "Estoque zerado em 21/08/2026 com historico de venda",
@@ -790,6 +1060,12 @@
                            "estoquePendente":  0,
                            "qtdMediaSemanal4s":  2294.1,
                            "qtdTotal4s":  9176.41,
+                           "qtdsPorSemana":  [
+                                                 2168.41,
+                                                 2183.56,
+                                                 2409.35,
+                                                 2415.09
+                                             ],
                            "semanasComVenda":  4,
                            "status":  "critico_baixo",
                            "motivo":  "Cobertura 1,2 dias (abaixo de 7d = 1 semana de venda)",
@@ -806,6 +1082,12 @@
                            "estoquePendente":  0,
                            "qtdMediaSemanal4s":  29833.33,
                            "qtdTotal4s":  119333.31,
+                           "qtdsPorSemana":  [
+                                                 29212.12,
+                                                 24929.77,
+                                                 32015.27,
+                                                 33176.15
+                                             ],
                            "semanasComVenda":  4,
                            "status":  "critico_baixo",
                            "motivo":  "Cobertura 1,8 dias (abaixo de 7d = 1 semana de venda)",
@@ -822,6 +1104,12 @@
                            "estoquePendente":  0,
                            "qtdMediaSemanal4s":  37285.36,
                            "qtdTotal4s":  149141.45,
+                           "qtdsPorSemana":  [
+                                                 33862.86,
+                                                 36025.53,
+                                                 42614.97,
+                                                 36638.09
+                                             ],
                            "semanasComVenda":  4,
                            "status":  "critico_baixo",
                            "motivo":  "Cobertura 2,4 dias (abaixo de 7d = 1 semana de venda)",
@@ -838,6 +1126,12 @@
                            "estoquePendente":  0,
                            "qtdMediaSemanal4s":  65862.81,
                            "qtdTotal4s":  263451.25,
+                           "qtdsPorSemana":  [
+                                                 61746.72,
+                                                 64159.34,
+                                                 68294.73,
+                                                 69250.46
+                                             ],
                            "semanasComVenda":  4,
                            "status":  "critico_baixo",
                            "motivo":  "Cobertura 3,8 dias (abaixo de 7d = 1 semana de venda)",
@@ -854,6 +1148,12 @@
                            "estoquePendente":  0,
                            "qtdMediaSemanal4s":  83689.22,
                            "qtdTotal4s":  334756.86,
+                           "qtdsPorSemana":  [
+                                                 79804.84,
+                                                 77953.53,
+                                                 87202.22,
+                                                 89796.27
+                                             ],
                            "semanasComVenda":  4,
                            "status":  "critico_baixo",
                            "motivo":  "Cobertura 4,2 dias (abaixo de 7d = 1 semana de venda)",
