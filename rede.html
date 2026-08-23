@@ -96,7 +96,7 @@
         <div>
           <h1>Canvas Rede</h1>
           <p class="lede">Performance dos associados · Mesma base · semana comercial Sex→Qui</p>
-          <p class="phase-tag" id="redePeriod">3ª Semana</p>
+          <p class="phase-tag" id="redePeriod">—</p>
         </div>
         <div class="page-controls">
           <div class="period-card">
@@ -113,10 +113,7 @@
       </section>
 
       <p class="rede-note" id="redeMethod"></p>
-      <p class="rede-note warn">
-        <strong>Outlier:</strong> JD ESPERANÇA – ATACADO (ALVORADA) concentra +R$ 6,4 mi (+313%).
-        Sem esse ponto, a Rede cresce ~+2,3% e a ALVORADA fica negativa (~−3,7%).
-      </p>
+      <p class="rede-note warn" id="redeOutlier" hidden></p>
 
       <section class="kpi-row" id="redeKpis" aria-label="Indicadores Rede"></section>
 
@@ -185,7 +182,7 @@
       <footer class="footer">
         <div class="footer-copy">
           <p>Canvas Rede · Sexta a Quinta · Ano contra Ano</p>
-          <p class="muted">Dados estruturados em entradas/rede/rede-semana-3.json</p>
+          <p class="muted" id="redeFooterSource">Dados estruturados em entradas/rede/</p>
         </div>
         <img src="LogoABB.jpeg" alt="Adilson Baptista — Inteligência de negócio" class="footer-logo" />
       </footer>
@@ -207,10 +204,21 @@
       const t = data.totais;
       const m = data.meta;
 
+      document.getElementById("redePeriod").textContent = m.semanaLabel || "Semana";
       document.getElementById("redePeriodDetail").textContent =
         `${m.periodo2026} vs ${m.periodo2025}`;
       document.getElementById("redeMethod").innerHTML =
         `<strong>Método:</strong> 2026 = ${m.metodo2026}. 2025 = ${m.metodo2025}. Base: ${m.base}.`;
+      document.getElementById("redeFooterSource").textContent =
+        `Dados estruturados em entradas/rede/${(m.arquivos && m.arquivos[0]) || "rede-semana-4.json"}`;
+
+      const outlierEl = document.getElementById("redeOutlier");
+      if (m.outlierNote) {
+        outlierEl.hidden = false;
+        outlierEl.innerHTML = `<strong>Outlier:</strong> ${m.outlierNote}`;
+      } else {
+        outlierEl.hidden = true;
+      }
 
       document.getElementById("redeKpis").innerHTML = [
         ["Venda Rede 2026", brl(t.venda2026), `YoY ${pct(t.varPct)}`, t.varPct, brl(t.venda2025)],
@@ -231,12 +239,18 @@
         )
         .join("");
 
-      document.getElementById("redeExec").textContent =
-        `A Rede fechou a semana com ${brl(t.venda2026)}, alta de ${pct(t.varPct)} YoY (+${brl(t.delta)}). ` +
-        `O crescimento veio mais de ticket do que de fluxo (cupons ${pct(t.varCupom)}). ` +
-        `Todos os ${t.associados} associados ficaram positivos, com ALVORADA liderando o delta absoluto — ` +
-        `porém concentrado no atacado. Sem o outlier, a Rede sobe ~${pct(t.varSemAtacado)}.`;
-
+      const positivos = t.positivos != null ? t.positivos : data.associados.filter((a) => a.delta > 0).length;
+      const lider = t.lider || (data.associados[0] && data.associados[0].associado) || "—";
+      const tomRede = t.varPct >= 0 ? `alta de ${pct(t.varPct)}` : `queda de ${pct(Math.abs(t.varPct))}`;
+      const deltaTxt = t.delta >= 0 ? `+${brl(t.delta)}` : brl(t.delta);
+      let exec =
+        `A Rede fechou a semana com ${brl(t.venda2026)}, ${tomRede} YoY (${deltaTxt}). ` +
+        `O movimento veio mais de ticket do que de fluxo (cupons ${pct(t.varCupom)}). ` +
+        `${positivos} de ${t.associados} associados positivos; ${lider} lidera o delta absoluto.`;
+      if (t.varSemAtacado != null && Math.abs(t.varSemAtacado - t.varPct) > 0.3) {
+        exec += ` Sem o outlier de atacado, a Rede fica em ~${pct(t.varSemAtacado)}.`;
+      }
+      document.getElementById("redeExec").textContent = exec;
       const maxAbs = Math.max(...data.associados.map((a) => Math.abs(a.delta)), 1);
       document.getElementById("redeBars").innerHTML = data.associados
         .map((a) => {

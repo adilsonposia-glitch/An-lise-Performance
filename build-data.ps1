@@ -309,6 +309,17 @@ function Test-IsLoja17([string]$name) {
   return [bool]($n -match 'LOJA\s*17\b' -or $n -match '\bL17\b')
 }
 
+function Test-IsStoreLoja17([string]$storeName) {
+  # Nome da loja nas planilhas (ex: "17 - P.LUCAS"), nao o nome do arquivo
+  $n = Normalize-Name $storeName
+  return [bool](
+    $n -match '(?:^|\b)17\s*[-.]' -or
+    $n -match '(?:^|\b)17\s*-\s*P' -or
+    $n -match 'P\.?\s*LUCAS' -or
+    $n -match '(?:^|\b)LOJA\s*17\b'
+  )
+}
+
 function Get-ExtractYear([string]$name) {
   $n = Normalize-Name $name
   # Compacta espacos em periodos: "07A 13AGO2026" -> "07A13AGO2026"
@@ -620,8 +631,17 @@ function Build-LojasBases {
     Write-Host "         Reexporte sem filtro de Categoria 1 / Eixo Y Dinamico — so Agrupamento Lojas, como na 1a semana."
   }
   $all = @(Compare-Years $rows25 $rows26)
-  $mesma = @($all | Where-Object { $_.venda2025 -gt 0 -and $_.venda2026 -gt 0 })
-  $novas = @($all | Where-Object { $_.venda2025 -le 0 -and $_.venda2026 -gt 0 })
+  # Loja 17 nunca entra na mesma base (mesmo com residual minimo em 2025)
+  $mesma = @($all | Where-Object {
+    $_.venda2025 -gt 0 -and $_.venda2026 -gt 0 -and -not (Test-IsStoreLoja17 $_.nome)
+  })
+  $novas = @($all | Where-Object {
+    (Test-IsStoreLoja17 $_.nome -and $_.venda2026 -gt 0) -or
+    (-not (Test-IsStoreLoja17 $_.nome) -and $_.venda2025 -le 0 -and $_.venda2026 -gt 0)
+  })
+  if ($novas.Count -gt 0) {
+    Write-Host ("  Lojas novas (fora da mesma base): {0}" -f (($novas | ForEach-Object { $_.nome }) -join ", "))
+  }
   return [ordered]@{
     key = "lojas"; label = "Lojas"; hasClients = $true
     sources = [ordered]@{

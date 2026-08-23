@@ -39109,14 +39109,14 @@ window.PERFORMANCE_DATA = {
                                                      "RECICLAVEIS",
                                                      "FRETE"
                                                  ],
-                                   "geradoEm":  "2026-08-23 16:51"
+                                   "geradoEm":  "2026-08-23 17:27"
                                },
                       "storeMeta":  {
                                         "allCount":  13,
-                                        "comparableCount":  13,
-                                        "novasCount":  0,
+                                        "comparableCount":  12,
+                                        "novasCount":  1,
                                         "novasNames":  [
-
+                                                           "17 - P.LUCAS"
                                                        ]
                                     },
                       "phases":  [
@@ -39505,10 +39505,10 @@ window.PERFORMANCE_DATA = {
                                                      },
                                          "storeMeta":  {
                                                            "allCount":  13,
-                                                           "comparableCount":  13,
-                                                           "novasCount":  0,
+                                                           "comparableCount":  12,
+                                                           "novasCount":  1,
                                                            "novasNames":  [
-
+                                                                              "17 - P.LUCAS"
                                                                           ]
                                                        },
                                          "bases":  {
@@ -40064,21 +40064,21 @@ window.PERFORMANCE_DATA = {
                                                                  },
                                                        "mesma":  {
                                                                      "totals":  {
-                                                                                    "venda2025":  18390508.24,
-                                                                                    "venda2026":  19222228.48,
-                                                                                    "varVendaPct":  0.045226,
-                                                                                    "qtd2025":  2127892.08,
-                                                                                    "qtd2026":  2113717.27,
-                                                                                    "varQtdPct":  -0.006661,
-                                                                                    "lucro2025":  4525685.37,
-                                                                                    "lucro2026":  5095959.19,
-                                                                                    "varLucroPct":  0.126008,
+                                                                                    "venda2025":  18390481.41,
+                                                                                    "venda2026":  18299075.22,
+                                                                                    "varVendaPct":  -0.00497,
+                                                                                    "qtd2025":  2127890.08,
+                                                                                    "qtd2026":  2002652.11,
+                                                                                    "varQtdPct":  -0.058855,
+                                                                                    "lucro2025":  4525675.47,
+                                                                                    "lucro2026":  4877860.13,
+                                                                                    "varLucroPct":  0.077819,
                                                                                     "margem2025":  24.61,
-                                                                                    "margem2026":  26.51,
-                                                                                    "varMargemPp":  1.9,
-                                                                                    "clientes2025":  226646,
-                                                                                    "clientes2026":  233361,
-                                                                                    "varClientesPct":  0.029628
+                                                                                    "margem2026":  26.66,
+                                                                                    "varMargemPp":  2.05,
+                                                                                    "clientes2025":  226645,
+                                                                                    "clientes2026":  220144,
+                                                                                    "varClientesPct":  -0.028684
                                                                                 },
                                                                      "agressores":  [
                                                                                         {
@@ -40209,31 +40209,6 @@ window.PERFORMANCE_DATA = {
                                                                                     ],
                                                                      "melhores":  [
                                                                                       {
-                                                                                          "nome":  "17 - P.LUCAS",
-                                                                                          "venda2025":  26.83,
-                                                                                          "venda2026":  923153.26,
-                                                                                          "deltaVenda":  923126.43,
-                                                                                          "varVendaPct":  34406.501305,
-                                                                                          "qtd2025":  2,
-                                                                                          "qtd2026":  111065.16,
-                                                                                          "deltaQtd":  111063.16,
-                                                                                          "varQtdPct":  55531.58,
-                                                                                          "lucro2025":  9.9,
-                                                                                          "lucro2026":  218099.06,
-                                                                                          "deltaLucro":  218089.16,
-                                                                                          "varLucroPct":  22029.208081,
-                                                                                          "margem2025":  36.91,
-                                                                                          "margem2026":  23.63,
-                                                                                          "varMargemPp":  -13.28,
-                                                                                          "clientes2025":  1,
-                                                                                          "clientes2026":  13217,
-                                                                                          "varClientesPct":  13216,
-                                                                                          "ticket2025":  26.83,
-                                                                                          "ticket2026":  69.85,
-                                                                                          "progresso":  "progressao",
-                                                                                          "nova":  false
-                                                                                      },
-                                                                                      {
                                                                                           "nome":  "13 - TANQUE",
                                                                                           "venda2025":  1872723.74,
                                                                                           "venda2026":  1741152.42,
@@ -40280,6 +40255,31 @@ window.PERFORMANCE_DATA = {
                                                                                           "varClientesPct":  -0.000756,
                                                                                           "ticket2025":  75.56,
                                                                                           "ticket2026":  83.44,
+                                                                                          "progresso":  "progressao",
+                                                                                          "nova":  false
+                                                                                      },
+                                                                                      {
+                                                                                          "nome":  "15 - PEDRA",
+                                                                                          "venda2025":  2034656.59,
+                                                                                          "venda2026":  2066429.5,
+                                                                                          "deltaVenda":  31772.91,
+                                                                                          "varVendaPct":  0.015616,
+                                                                                          "qtd2025":  255116.61,
+                                                                                          "qtd2026":  251088.98,
+                                                                                          "deltaQtd":  -4027.63,
+                                                                                          "varQtdPct":  -0.015787,
+                                                                                          "lucro2025":  454713.32,
+                                                                                          "lucro2026":  500283.71,
+                                                                                          "deltaLucro":  45570.39,
+                                                                                          "varLucroPct":  0.100218,
+                                                                                          "margem2025":  22.35,
+                                                                                          "margem2026":  24.21,
+                                                                                          "varMargemPp":  1.86,
+                                                                                          "clientes2025":  20481,
+                                                                                          "clientes2026":  20139,
+                                                                                          "varClientesPct":  -0.016698,
+                                                                                          "ticket2025":  99.34,
+                                                                                          "ticket2026":  102.61,
                                                                                           "progresso":  "progressao",
                                                                                           "nova":  false
                                                                                       }
@@ -40582,31 +40582,6 @@ window.PERFORMANCE_DATA = {
                                                                                       "varClientesPct":  -0.05095,
                                                                                       "ticket2025":  73.06,
                                                                                       "ticket2026":  71.57,
-                                                                                      "progresso":  "progressao",
-                                                                                      "nova":  false
-                                                                                  },
-                                                                                  {
-                                                                                      "nome":  "17 - P.LUCAS",
-                                                                                      "venda2025":  26.83,
-                                                                                      "venda2026":  923153.26,
-                                                                                      "deltaVenda":  923126.43,
-                                                                                      "varVendaPct":  34406.501305,
-                                                                                      "qtd2025":  2,
-                                                                                      "qtd2026":  111065.16,
-                                                                                      "deltaQtd":  111063.16,
-                                                                                      "varQtdPct":  55531.58,
-                                                                                      "lucro2025":  9.9,
-                                                                                      "lucro2026":  218099.06,
-                                                                                      "deltaLucro":  218089.16,
-                                                                                      "varLucroPct":  22029.208081,
-                                                                                      "margem2025":  36.91,
-                                                                                      "margem2026":  23.63,
-                                                                                      "varMargemPp":  -13.28,
-                                                                                      "clientes2025":  1,
-                                                                                      "clientes2026":  13217,
-                                                                                      "varClientesPct":  13216,
-                                                                                      "ticket2025":  26.83,
-                                                                                      "ticket2026":  69.85,
                                                                                       "progresso":  "progressao",
                                                                                       "nova":  false
                                                                                   }

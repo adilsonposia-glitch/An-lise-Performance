@@ -1,0 +1,223 @@
+{
+    "meta":  {
+                 "periodo2025":  "15/08/2025 a 21/08/2025",
+                 "periodo2026":  "14/08/2026 a 20/08/2026",
+                 "semanaLabel":  "4ª Semana",
+                 "base":  "Mesma Base de Lojas",
+                 "metodo2026":  "Venda Atual do arquivo VisÃ£o Lojas (semana Sexâ†’Qui)",
+                 "metodo2025":  "Venda Anterior do mesmo arquivo VisÃ£o Lojas (YoY na mesma base)",
+                 "arquivos":  [
+                                  "Rede 14a 20Agosto2026 Visão Lojas  .csv"
+                              ],
+                 "outlierNote":  "JD ESPERANCA - ATACADO (ALVORADA) concentra -2.059.966 (-49,0%). Sem esse ponto, a Rede varia ~-9,7%. ALVORADA sem outlier: ~-12,5%."
+             },
+    "totais":  {
+                   "venda2025":  202580844,
+                   "venda2026":  181274767,
+                   "delta":  -21306077,
+                   "varPct":  -10.52,
+                   "lojas":  135,
+                   "associados":  9,
+                   "positivos":  1,
+                   "lider":  "FENIX",
+                   "varQtd":  -13.13,
+                   "varCupom":  -7.2,
+                   "mrkd2025":  3.79,
+                   "mrkd2026":  4.21,
+                   "tkt2025":  91.74,
+                   "tkt2026":  88.47,
+                   "varSemAtacado":  -9.7
+               },
+    "associados":  [
+                       {
+                           "associado":  "FENIX",
+                           "lojas":  3,
+                           "venda2025":  2699956,
+                           "venda2026":  2749702,
+                           "delta":  49746,
+                           "varPct":  1.84,
+                           "varQtd":  1.03,
+                           "varCupom":  -0.92,
+                           "mrkd2025":  19.24,
+                           "mrkd2026":  22.89,
+                           "tkt2025":  52.94,
+                           "tkt2026":  54.42
+                       },
+                       {
+                           "associado":  "NDP",
+                           "lojas":  6,
+                           "venda2025":  5009153,
+                           "venda2026":  4638251,
+                           "delta":  -370902,
+                           "varPct":  -7.4,
+                           "varQtd":  -10.53,
+                           "varCupom":  -8,
+                           "mrkd2025":  -6.25,
+                           "mrkd2026":  13.51,
+                           "tkt2025":  77.59,
+                           "tkt2026":  78.09
+                       },
+                       {
+                           "associado":  "FLORESTA",
+                           "lojas":  11,
+                           "venda2025":  8469952,
+                           "venda2026":  7925276,
+                           "delta":  -544676,
+                           "varPct":  -6.43,
+                           "varQtd":  -10.07,
+                           "varCupom":  -5.91,
+                           "mrkd2025":  15.76,
+                           "mrkd2026":  17.41,
+                           "tkt2025":  80.15,
+                           "tkt2026":  79.71
+                       },
+                       {
+                           "associado":  "BARRA OESTE",
+                           "lojas":  12,
+                           "venda2025":  19022836,
+                           "venda2026":  18339367,
+                           "delta":  -683469,
+                           "varPct":  -3.59,
+                           "varQtd":  -8.51,
+                           "varCupom":  -3.57,
+                           "mrkd2025":  23.96,
+                           "mrkd2026":  26.68,
+                           "tkt2025":  83.56,
+                           "tkt2026":  83.54
+                       },
+                       {
+                           "associado":  "RAMIGOS",
+                           "lojas":  8,
+                           "venda2025":  11637676,
+                           "venda2026":  10442633,
+                           "delta":  -1195043,
+                           "varPct":  -10.27,
+                           "varQtd":  -14.52,
+                           "varCupom":  -8.23,
+                           "mrkd2025":  20.2,
+                           "mrkd2026":  23.46,
+                           "tkt2025":  92.12,
+                           "tkt2026":  90.07
+                       },
+                       {
+                           "associado":  "TORRE",
+                           "lojas":  23,
+                           "venda2025":  46226928,
+                           "venda2026":  42967318,
+                           "delta":  -3259610,
+                           "varPct":  -7.05,
+                           "varQtd":  -10.94,
+                           "varCupom":  -5.65,
+                           "mrkd2025":  21.06,
+                           "mrkd2026":  19.12,
+                           "tkt2025":  96.55,
+                           "tkt2026":  95.12
+                       },
+                       {
+                           "associado":  "GMAP",
+                           "lojas":  20,
+                           "venda2025":  35619721,
+                           "venda2026":  31874812,
+                           "delta":  -3744909,
+                           "varPct":  -10.51,
+                           "varQtd":  -11.59,
+                           "varCupom":  -7.67,
+                           "mrkd2025":  21.45,
+                           "mrkd2026":  24.07,
+                           "tkt2025":  85.56,
+                           "tkt2026":  82.92
+                       },
+                       {
+                           "associado":  "PADRAO",
+                           "lojas":  17,
+                           "venda2025":  27745329,
+                           "venda2026":  23509831,
+                           "delta":  -4235498,
+                           "varPct":  -15.27,
+                           "varQtd":  -12.49,
+                           "varCupom":  -8.55,
+                           "mrkd2025":  -34.33,
+                           "mrkd2026":  11.08,
+                           "tkt2025":  94.95,
+                           "tkt2026":  87.98
+                       },
+                       {
+                           "associado":  "ALVORADA",
+                           "lojas":  35,
+                           "venda2025":  46149293,
+                           "venda2026":  38827577,
+                           "delta":  -7321716,
+                           "varPct":  -15.87,
+                           "varQtd":  -20.16,
+                           "varCupom":  -10.02,
+                           "mrkd2025":  -18.68,
+                           "mrkd2026":  -53.66,
+                           "tkt2025":  103.58,
+                           "tkt2026":  96.85
+                       }
+                   ],
+    "topLojas":  [
+                     {
+                         "associado":  "FENIX",
+                         "loja":  "FENIX - MERCADO MULTI PENHA",
+                         "delta":  202460,
+                         "varPct":  27.3
+                     },
+                     {
+                         "associado":  "TORRE",
+                         "loja":  "BARRA DA TIJUCA",
+                         "delta":  159188,
+                         "varPct":  6.7
+                     },
+                     {
+                         "associado":  "PADRAO",
+                         "loja":  "FONSECA",
+                         "delta":  136715,
+                         "varPct":  10.6
+                     },
+                     {
+                         "associado":  "NDP",
+                         "loja":  "NDP MATRIZ",
+                         "delta":  131392,
+                         "varPct":  19.6
+                     },
+                     {
+                         "associado":  "GMAP",
+                         "loja":  "SANTO CRISTO",
+                         "delta":  57560,
+                         "varPct":  3.3
+                     }
+                 ],
+    "bottomLojas":  [
+                        {
+                            "associado":  "ALVORADA",
+                            "loja":  "JD ESPERANCA - ATACADO",
+                            "delta":  -2059966,
+                            "varPct":  -49
+                        },
+                        {
+                            "associado":  "PADRAO",
+                            "loja":  "CD PAVUNA",
+                            "delta":  -1573410,
+                            "varPct":  -90
+                        },
+                        {
+                            "associado":  "PADRAO",
+                            "loja":  "MESQUITA",
+                            "delta":  -536432,
+                            "varPct":  -23.5
+                        },
+                        {
+                            "associado":  "TORRE",
+                            "loja":  "MERCK",
+                            "delta":  -507545,
+                            "varPct":  -26.3
+                        },
+                        {
+                            "associado":  "GMAP",
+                            "loja":  "PETROPOLIS",
+                            "delta":  -506822,
+                            "varPct":  -19.3
+                        }
+                    ]
+}
