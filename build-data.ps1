@@ -323,12 +323,20 @@ function Get-ExtractYear([string]$name) {
 
 function Get-ExtractKind([string]$name) {
   $n = Normalize-Name $name
+  # Corte da Loja 17: nao classificar como rede "lojas" (LOJA casa com LOJAS?)
+  if (Test-IsLoja17 $name) {
+    if ($n -match 'DEPARTAMENTO') { return "departamento" }
+    if ($n -match 'SECAO') { return "secao" }
+    if ($n -match 'GRUPO') { return "grupo" }
+    if ($n -match 'TOTAL') { return "loja17total" }
+    return $null
+  }
   # Categorias mercadologicas primeiro (nomes tambem podem terminar com "Lojas")
   if ($n -match 'DEPARTAMENTO') { return "departamento" }
   if ($n -match 'SECAO') { return "secao" }
   if ($n -match 'GRUPO') { return "grupo" }
-  # Fase Lojas: "Lojas.xlsx", "Lojas Todas as Lojas", "Lojas Mesmas Lojas", legado 2025Lojas
-  if ($n -match '(?:^|\d\s|\b)LOJAS?\b' -or $n -match 'LLOJAS' -or $n -match 'LOJKAS') { return "lojas" }
+  # Fase Lojas da rede: exige LOJAS (plural) / typos legados — evita "Loja 17"
+  if ($n -match '(?:^|\d\s|\b)LOJAS\b' -or $n -match 'LLOJAS' -or $n -match 'LOJKAS' -or $n -match 'VISAO\s+LOJAS') { return "lojas" }
   return $null
 }
 
@@ -521,12 +529,14 @@ function Resolve-LojasDirs {
     $l26 = First-ExistingDir @("2026 Todas as Lojas", "2026Todas as Lojas", "2026LLojas", "2026Lojas")
   }
 
-  # Ultimo recurso: qualquer extrato classificado como lojas do ano
+  # Ultimo recurso: qualquer extrato classificado como lojas do ano (nunca Loja 17)
   if (-not $l25 -or -not $l26) {
     $cands25 = @(Get-ChildItem $TmpRoot -Directory | Where-Object {
+      -not (Test-IsLoja17 $_.Name) -and
       (Get-ExtractYear $_.Name) -eq 2025 -and (Get-ExtractKind $_.Name) -eq "lojas"
     } | Sort-Object { if ((Get-ExtractBase $_.Name) -eq "todas") { 0 } elseif ($null -eq (Get-ExtractBase $_.Name)) { 1 } else { 2 } })
     $cands26 = @(Get-ChildItem $TmpRoot -Directory | Where-Object {
+      -not (Test-IsLoja17 $_.Name) -and
       (Get-ExtractYear $_.Name) -eq 2026 -and (Get-ExtractKind $_.Name) -eq "lojas"
     } | Sort-Object { if ((Get-ExtractBase $_.Name) -eq "todas") { 0 } elseif ($null -eq (Get-ExtractBase $_.Name)) { 1 } else { 2 } })
     if (-not $l25 -and $cands25) { $l25 = $cands25[0].Name }
@@ -569,17 +579,34 @@ function Build-LojasBases {
   $rows25 = @(Parse-Sheet $dirs.y25)
   $rows26 = @(Parse-Sheet $dirs.y26)
 
-  # Se 2026 e so MesmaBase, acrescenta Loja 17 (totais do Excel Loja17 Departamento)
+  # Se 2026 e so MesmaBase, acrescenta Loja 17 (Total se existir; senao soma Departamento)
   $y26Base = Get-ExtractBase $dirs.y26
+  $l17total = Find-Loja17ByKind "loja17total"
   $l17dep = Find-Loja17ByKind "departamento"
   $src26Label = $dirs.y26
-  if ($l17dep -and ($y26Base -eq "mesma" -or $null -eq (Find-ByRole 2026 "lojas" "todas"))) {
+  if (($l17total -or $l17dep) -and ($y26Base -eq "mesma" -or $null -eq (Find-ByRole 2026 "lojas" "todas"))) {
     $jaTem17 = @($rows26 | Where-Object {
       $nn = Normalize-Name $_.nome
       $nn -match '(?:^|\b)17\b' -or $nn -match 'P\.?\s*LUCAS'
     }).Count -gt 0
     if (-not $jaTem17) {
-      $synth = New-Loja17StoreRow $l17dep
+      if ($l17total) {
+        $totRows = @(Parse-Sheet $l17total)
+        if ($totRows.Count -eq 1) {
+          $synth = $totRows[0]
+          if ((Normalize-Name $synth.nome) -notmatch '(?:^|\b)17\b' -and (Normalize-Name $synth.nome) -notmatch 'P\.?\s*LUCAS') {
+            $synth = [pscustomobject]@{
+              nome = "17 - P.LUCAS"
+              venda = $synth.venda; quantidade = $synth.quantidade; lucro = $synth.lucro
+              margem = $synth.margem; clientes = $synth.clientes; ticket = $synth.ticket
+            }
+          }
+        } else {
+          $synth = New-Loja17StoreRow $(if ($l17dep) { $l17dep } else { $l17total })
+        }
+      } else {
+        $synth = New-Loja17StoreRow $l17dep
+      }
       $rows26 += $synth
       $src26Label = ("{0} + Loja17({1})" -f $dirs.y26, $synth.nome)
       Write-Host ("  Lojas: Todas 2026 = MesmaBase + {0} (venda={1})" -f $synth.nome, $synth.venda)
