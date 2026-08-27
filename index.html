@@ -8,6 +8,248 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
+  <script>
+    (function () {
+      try {
+        if (localStorage.getItem("perf-theme") === "dark") {
+          document.documentElement.classList.add("theme-dark");
+        }
+      } catch (e) {}
+    })();
+  </script>
+  <style>
+    .theme-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 7px 12px;
+      font: inherit;
+      font-size: 0.78rem;
+      font-weight: 800;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: 0.2s ease;
+    }
+    .theme-toggle svg { width: 16px; height: 16px; flex: 0 0 auto; }
+    .theme-toggle .icon-sun { display: none; }
+    .theme-toggle:hover { border-color: var(--teal-500); color: var(--teal-800); }
+    html.theme-dark .theme-toggle {
+      background: rgba(61, 214, 224, 0.12);
+      border-color: rgba(61, 214, 224, 0.45);
+      color: #7ee8ef;
+    }
+    html.theme-dark .theme-toggle .icon-moon { display: none; }
+    html.theme-dark .theme-toggle .icon-sun { display: block; }
+    @media (max-width: 980px) {
+      .theme-toggle-label { display: none; }
+      .theme-toggle { padding: 8px; }
+    }
+
+    /* Visual de apresentação — só o dashboard (index) */
+    html.theme-dark body {
+      color: #e8eef6;
+      background:
+        radial-gradient(900px 480px at 8% -10%, rgba(61, 214, 224, 0.16), transparent 50%),
+        radial-gradient(700px 400px at 100% 0%, rgba(59, 91, 219, 0.18), transparent 46%),
+        linear-gradient(180deg, #8b96ae 0%, #6f7a94 100%);
+    }
+    html.theme-dark .shell { max-width: 1320px; }
+    html.theme-dark .topnav {
+      background: #152036;
+      border: 0;
+      border-radius: 22px;
+      padding: 12px 16px;
+      margin-top: 14px;
+      margin-bottom: 18px;
+      box-shadow: 0 16px 40px rgba(15, 23, 42, 0.28);
+    }
+    html.theme-dark .brand-pill {
+      background: rgba(61, 214, 224, 0.14);
+      color: #7ee8ef;
+    }
+    html.theme-dark .topnav-brand { color: #f4f8fb; }
+    html.theme-dark .topnav-links {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(255, 255, 255, 0.08);
+    }
+    html.theme-dark .nav-link { color: #9aabc0; }
+    html.theme-dark .nav-link:hover { color: #7ee8ef; }
+    html.theme-dark .nav-link.active {
+      color: #7ee8ef;
+      background: transparent;
+      box-shadow: none;
+      outline: 1.5px solid #3dd6e0;
+      outline-offset: -1px;
+    }
+    html.theme-dark .nav-link.active::after { background: #3dd6e0; }
+    html.theme-dark .period-mini {
+      background: rgba(61, 214, 224, 0.12);
+      border-color: rgba(61, 214, 224, 0.28);
+      color: #7ee8ef;
+    }
+    html.theme-dark .canvas-rede-btn {
+      background: transparent;
+      border-color: rgba(255, 255, 255, 0.16);
+      color: #d5e2ee;
+    }
+    html.theme-dark .canvas-rede-btn:hover {
+      background: rgba(61, 214, 224, 0.16);
+      border-color: #3dd6e0;
+      color: #7ee8ef;
+    }
+
+    html.theme-dark .week-bar,
+    html.theme-dark .period-card,
+    html.theme-dark .chip-group,
+    html.theme-dark .store-base-group {
+      background: #152036;
+      border-color: rgba(255, 255, 255, 0.08);
+      color: #e8eef6;
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.18);
+    }
+    html.theme-dark .week-bar-label,
+    html.theme-dark .period-card strong { color: #f4f8fb; }
+    html.theme-dark .week-bar-copy small,
+    html.theme-dark .period-card small { color: #8ea0b3; }
+    html.theme-dark .period-card svg { color: #3dd6e0; }
+    html.theme-dark .chip { color: #9aabc0; }
+    html.theme-dark .chip.active {
+      background: #3dd6e0;
+      color: #102033;
+    }
+    html.theme-dark .week-chip.empty-week.active { background: #4b5c72; color: #d5e2ee; }
+
+    html.theme-dark .page-head h1 { color: #152036; }
+    html.theme-dark .lede { color: #243044; }
+    html.theme-dark .phase-tag {
+      background: #152036;
+      color: #7ee8ef;
+    }
+    html.theme-dark .base-note {
+      background: rgba(21, 32, 54, 0.88);
+      border-color: rgba(61, 214, 224, 0.22);
+      color: #c5d3e0;
+    }
+    html.theme-dark .base-note strong { color: #7ee8ef; }
+
+    html.theme-dark .kpi,
+    html.theme-dark .panel {
+      border: 0;
+      border-radius: 22px;
+      box-shadow: 0 16px 36px rgba(15, 23, 42, 0.22);
+    }
+    html.theme-dark .kpi,
+    html.theme-dark .gauge-card,
+    html.theme-dark .chart-panel {
+      background:
+        radial-gradient(140% 90% at 100% -20%, rgba(61, 214, 224, 0.22), transparent 46%),
+        linear-gradient(180deg, #1c2b48 0%, #121a2e 100%);
+      color: #eef4fa;
+    }
+    html.theme-dark .kpi:first-child {
+      background:
+        radial-gradient(120% 80% at -10% 0%, rgba(91, 124, 255, 0.28), transparent 42%),
+        linear-gradient(165deg, #1a2d55 0%, #10182c 100%);
+    }
+    html.theme-dark .kpi-label,
+    html.theme-dark .kpi-compare { color: #8ea0b3; }
+    html.theme-dark .kpi-value { color: #fff; }
+    html.theme-dark .kpi-icon {
+      background: rgba(61, 214, 224, 0.14);
+      color: #7ee8ef;
+    }
+    html.theme-dark .kpi-icon.offer { background: rgba(255, 196, 80, 0.16); color: #ffd27a; }
+    html.theme-dark .kpi-icon.money { background: rgba(61, 214, 224, 0.16); color: #7ee8ef; }
+    html.theme-dark .kpi-icon.clients { background: rgba(91, 124, 255, 0.18); color: #9db0ff; }
+    html.theme-dark .delta.up { background: rgba(61, 214, 224, 0.16); color: #7ee8ef; }
+    html.theme-dark .delta.down { background: rgba(255, 107, 107, 0.16); color: #ff9b9b; }
+    html.theme-dark .delta.flat { background: rgba(255, 255, 255, 0.08); color: #8ea0b3; }
+
+    html.theme-dark .panel-head h2,
+    html.theme-dark .panel-kicker span,
+    html.theme-dark .gauge-copy strong { color: #fff; }
+    html.theme-dark .panel-head p,
+    html.theme-dark .panel-kicker small,
+    html.theme-dark .gauge-copy span,
+    html.theme-dark .gauge-foot,
+    html.theme-dark .gauge-scale { color: #8ea0b3; }
+    html.theme-dark .gauge-foot.warn { color: #ff9b9b; }
+    html.theme-dark .gauge-track { stroke: rgba(255, 255, 255, 0.1); }
+    html.theme-dark .gauge-fill { stroke: #3dd6e0; }
+    html.theme-dark .gauge-needle { stroke: #7ee8ef; }
+    html.theme-dark .gauge-hub { fill: #7ee8ef; }
+    html.theme-dark .money-card .money-rain span { color: rgba(61, 214, 224, 0.28); }
+    html.theme-dark .chart-legend { color: #9aabc0; }
+    html.theme-dark .chart-legend .dot.current { background: #3dd6e0; }
+    html.theme-dark .chart-legend .dot.previous { background: #3b5bdb; }
+    html.theme-dark .chart-legend .dot.regressao { background: #ff8a80; }
+    html.theme-dark .bar.previous { background: #3b5bdb; }
+    html.theme-dark .bar.current { background: #3dd6e0; }
+    html.theme-dark .bar.current.regressao { background: #ff8a80; }
+    html.theme-dark .bar-label { color: #c5d3e0; }
+    html.theme-dark .bar-group.regressao .bar-label { color: #ff9b9b; }
+    html.theme-dark .chart-scroll::-webkit-scrollbar-thumb { background: rgba(61, 214, 224, 0.35); }
+
+    html.theme-dark .panel-best,
+    html.theme-dark .panel-risk,
+    html.theme-dark .table-panel {
+      background: #f7f8fb;
+      color: #1c2a31;
+    }
+    html.theme-dark .panel-best {
+      background:
+        linear-gradient(180deg, rgba(61, 214, 224, 0.12), transparent 42%),
+        #f7f8fb;
+    }
+    html.theme-dark .panel-risk {
+      background:
+        linear-gradient(180deg, rgba(255, 138, 128, 0.12), transparent 42%),
+        #f7f8fb;
+    }
+    html.theme-dark .panel-best .panel-head h2,
+    html.theme-dark .panel-risk .panel-head h2,
+    html.theme-dark .table-panel .panel-head h2 { color: #152036; }
+    html.theme-dark .panel-best .panel-head p,
+    html.theme-dark .panel-risk .panel-head p,
+    html.theme-dark .table-panel .panel-head p { color: #5b6b73; }
+    html.theme-dark .rank-list li { background: #fff; }
+    html.theme-dark .rank-badge { background: #152036; }
+    html.theme-dark .search input,
+    html.theme-dark .expand-btn {
+      background: #fff;
+      color: #1c2a31;
+      border-color: #e4eaed;
+    }
+    html.theme-dark .table-wrap { border-color: #e4eaed; background: #fff; }
+    html.theme-dark thead th { background: #eef2f6; color: #5b6b73; }
+    html.theme-dark thead th.sorted,
+    html.theme-dark thead th:hover { color: #152036; }
+    html.theme-dark tbody td { border-bottom-color: #eef2f3; }
+    html.theme-dark .table-panel.is-expanded,
+    html.theme-dark .table-panel:fullscreen,
+    html.theme-dark .table-panel:-webkit-full-screen {
+      background: #6f7a94;
+    }
+    html.theme-dark .table-panel.is-expanded .table-wrap,
+    html.theme-dark .table-panel:fullscreen .table-wrap { background: #fff; }
+
+    html.theme-dark .empty-week-card {
+      background: linear-gradient(180deg, #1c2b48 0%, #121a2e 100%);
+      border-color: rgba(61, 214, 224, 0.28);
+    }
+    html.theme-dark .empty-week-card strong { color: #fff; }
+    html.theme-dark .empty-week-card p { color: #7ee8ef; }
+    html.theme-dark .empty-week-card small { color: #8ea0b3; }
+    html.theme-dark .empty-week-card code { background: rgba(61, 214, 224, 0.12); color: #7ee8ef; }
+
+    html.theme-dark .footer { color: #243044; }
+    html.theme-dark .footer .muted { color: #3a4658; }
+    html.theme-dark .footer-logo { filter: drop-shadow(0 8px 16px rgba(15, 23, 42, 0.25)); }
+  </style>
 </head>
 <body>
   <div class="shell">
@@ -34,6 +276,16 @@
         <a class="canvas-rede-btn" href="rede.html" title="Abrir análise Canvas Rede">Canvas Rede</a>
         <a class="canvas-rede-btn" href="estoque.html" title="Abrir Radar de Estoque">Radar Estoque</a>
         <span class="period-mini">YoY · Sex→Qui</span>
+        <button type="button" class="theme-toggle" id="themeToggle" aria-pressed="false" title="Visual Dark para apresentação">
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <path d="M21 14.5A8.5 8.5 0 0 1 9.5 3 7 7 0 1 0 21 14.5z"/>
+          </svg>
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"/>
+            <path d="M12 3v1.5M12 19.5V21M4.2 4.2l1.1 1.1M18.7 18.7l1.1 1.1M3 12h1.5M19.5 12H21M4.2 19.8l1.1-1.1M18.7 5.3l1.1-1.1"/>
+          </svg>
+          <span class="theme-toggle-label">Dark</span>
+        </button>
       </div>
     </header>
 
@@ -228,5 +480,25 @@
 
   <script src="data.js"></script>
   <script src="app.js"></script>
+  <script>
+    (function () {
+      const root = document.documentElement;
+      const btn = document.getElementById("themeToggle");
+      if (!btn) return;
+      const sync = () => {
+        const dark = root.classList.contains("theme-dark");
+        btn.setAttribute("aria-pressed", dark ? "true" : "false");
+        btn.title = dark ? "Voltar ao visual padrão" : "Visual Dark para apresentação";
+        const label = btn.querySelector(".theme-toggle-label");
+        if (label) label.textContent = dark ? "Claro" : "Dark";
+      };
+      btn.addEventListener("click", () => {
+        const dark = root.classList.toggle("theme-dark");
+        try { localStorage.setItem("perf-theme", dark ? "dark" : "light"); } catch (e) {}
+        sync();
+      });
+      sync();
+    })();
+  </script>
 </body>
 </html>
