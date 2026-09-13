@@ -14,6 +14,7 @@
     sortDir: "asc",
     storeBase: "mesma",
     metric: "venda", // 'venda' | 'lucro' | 'clientes'
+    selectedNome: null,
   };
 
   const els = {
@@ -39,17 +40,9 @@
     salesChart: document.getElementById("salesChart"),
     chartTitle: document.getElementById("chartTitle"),
     chartSubtitle: document.getElementById("chartSubtitle"),
-    marginValue: document.getElementById("marginValue"),
-    marginTarget: document.getElementById("marginTarget"),
-    marginFoot: document.getElementById("marginFoot"),
-    marginArc: document.getElementById("marginArc"),
-    marginNeedle: document.getElementById("marginNeedle"),
-    profitValue: document.getElementById("profitValue"),
-    profitTarget: document.getElementById("profitTarget"),
-    profitFoot: document.getElementById("profitFoot"),
-    profitArc: document.getElementById("profitArc"),
-    profitNeedle: document.getElementById("profitNeedle"),
-    moneyRain: document.getElementById("moneyRain"),
+    trendGrid: document.getElementById("trendGrid"),
+    trendScope: document.getElementById("trendScope"),
+    trendClear: document.getElementById("trendClear"),
     weekGroup: document.getElementById("weekGroup"),
     weekBarHint: document.getElementById("weekBarHint"),
     emptyWeekPanel: document.getElementById("emptyWeekPanel"),
@@ -100,6 +93,13 @@
 
   function cleanName(name) {
     return String(name || "").replace(/\s*\(\d+\)\s*$/, "").trim();
+  }
+
+  function escAttr(value) {
+    return String(value || "")
+      .replace(/&/g, "&amp;")
+      .replace(/"/g, "&quot;")
+      .replace(/</g, "&lt;");
   }
 
   const phaseLabels = {
@@ -318,7 +318,73 @@
     }
   }
 
+  function sameItem(a, b) {
+    if (!a || !b) return false;
+    return a === b || cleanName(a) === cleanName(b);
+  }
+
+  function shortWeekTick(periodo) {
+    const m = String(periodo || "").match(/(\d{2})\/(\d{2})\/(\d{4})/);
+    return m ? `${m[1]}/${m[2]}` : "—";
+  }
+
+  function weekBase(week) {
+    if (!week?.hasData || !week.phases) return null;
+    const phase = week.phases.find((p) => p.key === state.phaseKey);
+    if (!phase) return null;
+    const baseKey = state.storeBase === "mesma" ? "mesma" : "todas";
+    return phase.bases?.[baseKey] || null;
+  }
+
+  function collectTrend() {
+    const weeks = state.bundle?.weeks || [];
+    return weeks.map((w) => {
+      const base = weekBase(w);
+      const tick = shortWeekTick(w.meta?.periodo2026);
+      const empty = {
+        ordem: w.ordem,
+        tick,
+        missing: true,
+        venda: null,
+        venda25: null,
+        clientes: null,
+        clientes25: null,
+        margem: null,
+        margem25: null,
+        lucro: null,
+        lucro25: null,
+        hasClients: false,
+      };
+      if (!base) return empty;
+      let src = base.totals;
+      if (state.selectedNome) {
+        const row = (base.rows || []).find((r) => sameItem(r.nome, state.selectedNome));
+        if (!row) return empty;
+        src = row;
+      }
+      return {
+        ordem: w.ordem,
+        tick,
+        missing: false,
+        venda: src.venda2026,
+        venda25: src.venda2025,
+        clientes: src.clientes2026,
+        clientes25: src.clientes2025,
+        margem: src.margem2026,
+        margem25: src.margem2025,
+        lucro: src.lucro2026,
+        lucro25: src.lucro2025,
+        varVendaPct: src.varVendaPct,
+        varClientesPct: src.varClientesPct,
+        varMargemPp: src.varMargemPp,
+        varLucroPct: src.varLucroPct,
+        hasClients: src.clientes2026 != null || src.clientes2025 != null,
+      };
+    });
+  }
+
   function setGauge(arcEl, needleEl, ratio) {
+    if (!arcEl || !needleEl) return;
     const r = Math.max(0, Math.min(1, ratio));
     arcEl.style.strokeDasharray = String(GAUGE_LEN);
     arcEl.style.strokeDashoffset = String(GAUGE_LEN * (1 - r));
@@ -326,36 +392,163 @@
     needleEl.style.transform = `rotate(${angle}deg)`;
   }
 
-  function renderGauges(phase) {
-    const t = phase.totals;
-    els.marginValue.textContent = `${numDec.format(t.margem2026)}%`;
-    els.marginTarget.textContent = `Ano anterior: ${numDec.format(t.margem2025)}%`;
-    setGauge(els.marginArc, els.marginNeedle, t.margem2026 / 50); // scale 0-50%
+  function sparkSvg(series26, series25, activeIdx) {
+    const w = 220;
+    const h = 52;
+    const pad = 7;
+    const nums = [...series26, ...(series25 || [])].filter((v) => v != null && !Number.isNaN(Number(v)));
+    if (!nums.length) return `<div class="trend-empty">Sem série nas 4 semanas</div>`;
+    const min = Math.min(...nums);
+    const max = Math.max(...nums);
+    const span = max - min || Math.abs(max) * 0.08 || 1;
+    const lo = min - span * 0.14;
+    const hi = max + span * 0.14;
+    const n = series26.length;
+    const xAt = (i) => pad + (i * (w - pad * 2)) / Math.max(n - 1, 1);
+    const yAt = (v) => h - pad - ((Number(v) - lo) / (hi - lo)) * (h - pad * 2);
+    const toPts = (arr) =>
+      arr
+        .map((v, i) => (v == null || Number.isNaN(Number(v)) ? null : `${xAt(i).toFixed(1)},${yAt(v).toFixed(1)}`))
+        .filter(Boolean)
+        .join(" ");
+    const prev = series25 && series25.some((v) => v != null) ? `<polyline class="spark-line prev" points="${toPts(series25)}"></polyline>` : "";
+    const dots = series26
+      .map((v, i) => {
+        if (v == null || Number.isNaN(Number(v))) return "";
+        const active = i === activeIdx ? " active" : "";
+        const r = i === activeIdx ? 4.2 : 2.6;
+        return `<circle class="spark-dot${active}" cx="${xAt(i).toFixed(1)}" cy="${yAt(v).toFixed(1)}" r="${r}"></circle>`;
+      })
+      .join("");
+    return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true">${prev}<polyline class="spark-line" points="${toPts(series26)}"></polyline>${dots}</svg>`;
+  }
 
-    const marginUp = t.varMargemPp >= 0;
-    els.marginFoot.className = `gauge-foot${marginUp ? "" : " warn"}`;
-    els.marginFoot.textContent = marginUp
-      ? `✓ Margem em evolução · ${fmtPp(t.varMargemPp)}`
-      : `! Margem sob pressão · ${fmtPp(t.varMargemPp)}`;
+  function miniGaugeMarkup(id, scale) {
+    return `
+      <div class="mini-gauge" aria-hidden="true">
+        <svg viewBox="0 0 200 110">
+          <path class="gauge-track" d="M20 100 A80 80 0 0 1 180 100"/>
+          <path id="${id}Arc" class="gauge-fill" d="M20 100 A80 80 0 0 1 180 100"/>
+          <line id="${id}Needle" class="gauge-needle" x1="100" y1="100" x2="100" y2="32"/>
+          <circle cx="100" cy="100" r="4" class="gauge-hub"/>
+        </svg>
+        <div class="gauge-scale">${scale}</div>
+      </div>`;
+  }
 
-    els.profitValue.textContent = fmtMoney(t.lucro2026);
-    els.profitTarget.textContent = `Ano anterior: ${fmtMoney(t.lucro2025)}`;
-    const profitRatio = t.lucro2025 > 0 ? Math.min(t.lucro2026 / (t.lucro2025 * 1.35), 1) : 0.5;
-    setGauge(els.profitArc, els.profitNeedle, profitRatio);
+  function renderTrend(phase) {
+    if (!els.trendGrid) return;
+    const series = collectTrend();
+    const current = series.find((s) => s.ordem === state.weekOrdem) || series[series.length - 1] || {};
+    const activeIdx = Math.max(0, series.findIndex((s) => s.ordem === state.weekOrdem));
+    const baseTxt = state.storeBase === "mesma" ? "Mesma base" : "Todas as lojas";
+    const visao = phaseLabels[state.phaseKey] || "Visão";
 
-    const profitUp = t.varLucroPct >= 0;
-    els.profitFoot.className = `gauge-foot${profitUp ? "" : " warn"}`;
-    els.profitFoot.textContent = profitUp
-      ? `↑ Lucro acima do ano anterior · ${fmtPct(t.varLucroPct)}`
-      : `↓ Lucro abaixo do ano anterior · ${fmtPct(t.varLucroPct)}`;
-
-    // money rain
-    const bits = [];
-    for (let i = 0; i < 8; i++) {
-      const left = 8 + i * 11 + (i % 2) * 3;
-      bits.push(`<span style="left:${left}%;animation-delay:${(i * 0.35).toFixed(2)}s;animation-duration:${(2.8 + (i % 3) * 0.4).toFixed(1)}s">$</span>`);
+    if (els.trendScope) {
+      els.trendScope.textContent = state.selectedNome
+        ? `${cleanName(state.selectedNome)} · ${visao} · ${baseTxt}`
+        : `Total da visão · ${visao} · ${baseTxt}`;
     }
-    els.moneyRain.innerHTML = bits.join("");
+    if (els.trendClear) els.trendClear.classList.toggle("hidden", !state.selectedNome);
+
+    const useClientes = !!phase.hasClients;
+    const cards = [
+      {
+        id: "trendVenda",
+        label: "Venda",
+        value: current.missing ? "—" : fmtMoney(current.venda),
+        compare: current.missing ? "Sem dado nesta semana" : `2025: ${fmtMoney(current.venda25)}`,
+        delta: current.varVendaPct,
+        deltaPp: null,
+        series26: series.map((s) => s.venda),
+        series25: series.map((s) => s.venda25),
+        ratio: current.venda25 > 0 ? Math.min(current.venda / (current.venda25 * 1.35), 1) : 0.5,
+        scale: "<span>0</span><span>vs 25</span><span>+</span>",
+      },
+      {
+        id: "trendMid",
+        label: useClientes ? "Clientes" : "Lucro bruto",
+        value: current.missing
+          ? "—"
+          : useClientes
+            ? num.format(current.clientes || 0)
+            : fmtMoney(current.lucro),
+        compare: current.missing
+          ? "Sem dado nesta semana"
+          : useClientes
+            ? `2025: ${num.format(current.clientes25 || 0)}`
+            : `2025: ${fmtMoney(current.lucro25)}`,
+        delta: useClientes ? current.varClientesPct : current.varLucroPct,
+        deltaPp: null,
+        series26: series.map((s) => (useClientes ? s.clientes : s.lucro)),
+        series25: series.map((s) => (useClientes ? s.clientes25 : s.lucro25)),
+        ratio: useClientes
+          ? current.clientes25 > 0
+            ? Math.min((current.clientes || 0) / (current.clientes25 * 1.35), 1)
+            : 0.5
+          : current.lucro25 > 0
+            ? Math.min(current.lucro / (current.lucro25 * 1.35), 1)
+            : 0.5,
+        scale: "<span>0</span><span>vs 25</span><span>+</span>",
+        note: useClientes ? "" : "Clientes só na visão Lojas",
+      },
+      {
+        id: "trendMargem",
+        label: "Margem",
+        value: current.missing ? "—" : `${numDec.format(current.margem)}%`,
+        compare: current.missing ? "Sem dado nesta semana" : `2025: ${numDec.format(current.margem25)}%`,
+        delta: null,
+        deltaPp: current.varMargemPp,
+        series26: series.map((s) => s.margem),
+        series25: series.map((s) => s.margem25),
+        ratio: (Number(current.margem) || 0) / 50,
+        scale: "<span>0%</span><span>25%</span><span>50%</span>",
+      },
+    ];
+
+    els.trendGrid.innerHTML = cards
+      .map((c) => {
+        const d =
+          c.deltaPp != null
+            ? `<span class="delta ${deltaClass(c.deltaPp)}">${fmtPp(c.deltaPp)}</span>`
+            : `<span class="delta ${deltaClass(c.delta)}">${fmtPct(c.delta)}</span>`;
+        const ticks = series
+          .map(
+            (s, i) =>
+              `<span class="trend-tick${i === activeIdx ? " is-active" : ""}">${s.tick}</span>`
+          )
+          .join("");
+        return `
+        <article class="trend-card">
+          <div class="trend-card-top">
+            <div>
+              <small>${c.label}</small>
+              <strong>${c.value}</strong>
+              <p class="trend-compare">${c.compare}${c.note ? ` · ${c.note}` : ""}</p>
+              <div style="margin-top:6px">${d}</div>
+            </div>
+            ${miniGaugeMarkup(c.id, c.scale)}
+          </div>
+          <div class="trend-spark">${sparkSvg(c.series26, c.series25, activeIdx)}</div>
+          <div class="trend-ticks">${ticks}</div>
+        </article>`;
+      })
+      .join("");
+
+    cards.forEach((c) => {
+      setGauge(document.getElementById(`${c.id}Arc`), document.getElementById(`${c.id}Needle`), current.missing ? 0 : c.ratio);
+    });
+  }
+
+  function selectItem(nome) {
+    const next = nome && sameItem(state.selectedNome, nome) ? null : nome || null;
+    state.selectedNome = next;
+    const phase = currentPhase();
+    if (!phase) return;
+    renderTrend(phase);
+    renderChart(phase);
+    renderLists(phase);
+    renderTable(phase);
   }
 
   function metricKeys() {
@@ -443,7 +636,9 @@
     };
     if (els.chartTitle) els.chartTitle.textContent = titles[state.metric] || titles.venda;
     if (els.chartSubtitle) {
-      els.chartSubtitle.textContent = "Período atual (2026) × período anterior (2025) · todos os itens";
+      els.chartSubtitle.textContent = state.selectedNome
+        ? `Foco: ${cleanName(state.selectedNome)} · 2026 × 2025 · clique de novo para limpar`
+        : "2026 × 2025 · clique na barra para ver as 4 semanas daquele item";
     }
     els.salesChart.setAttribute("aria-label", titles[state.metric] || titles.venda);
 
@@ -457,7 +652,7 @@
       return;
     }
 
-    const colMin = phase.key === "grupos" ? 92 : phase.key === "secao" ? 108 : 120;
+    const colMin = phase.key === "grupos" ? 72 : phase.key === "secao" ? 88 : 96;
     els.salesChart.style.setProperty("--cols", String(items.length));
     els.salesChart.style.setProperty("--col-min", `${colMin}px`);
 
@@ -467,11 +662,12 @@
       .map((r) => {
         const v25 = Number(r[m.key25]) || 0;
         const v26 = Number(r[m.key26]) || 0;
-        const h25 = Math.max(10, Math.round((v25 / maxVal) * 160));
-        const h26 = Math.max(10, Math.round((v26 / maxVal) * 160));
+        const h25 = Math.max(8, Math.round((v25 / maxVal) * 92));
+        const h26 = Math.max(8, Math.round((v26 / maxVal) * 92));
         const regressao = v26 < v25;
+        const selected = state.selectedNome && sameItem(state.selectedNome, r.nome) ? " is-selected" : "";
         return `
-          <div class="bar-group${regressao ? " regressao" : ""}" title="${cleanName(r.nome)} · 2025 ${fmtMetric(v25, m)} · 2026 ${fmtMetric(v26, m)}${regressao ? " · regressão" : ""}">
+          <div class="bar-group${regressao ? " regressao" : ""}${selected}" data-nome="${escAttr(r.nome)}" title="${cleanName(r.nome)} · 2025 ${fmtMetric(v25, m)} · 2026 ${fmtMetric(v26, m)}${regressao ? " · regressão" : ""}">
             <div class="bars">
               <div class="bar previous" style="height:${h25}px"></div>
               <div class="bar current${regressao ? " regressao" : ""}" style="height:${h26}px"></div>
@@ -573,8 +769,9 @@
       .map((r, i) => {
         const delta = r._delta;
         const sign = delta >= 0 ? "+" : "";
+        const selected = state.selectedNome && sameItem(state.selectedNome, r.nome) ? " is-selected" : "";
         return `
-        <li>
+        <li class="${selected.trim()}" data-nome="${escAttr(r.nome)}">
           <div class="rank-badge">${i + 1}</div>
           <div>
             <p class="rank-name">${cleanName(r.nome)}</p>
@@ -606,8 +803,9 @@
           .map((r, i) => {
             const delta = r._delta;
             const sign = delta >= 0 ? "+" : "";
+            const selected = state.selectedNome && sameItem(state.selectedNome, r.nome) ? " is-selected" : "";
             return `
-        <li>
+        <li class="${selected.trim()}" data-nome="${escAttr(r.nome)}">
           <div class="rank-badge">${i + 1}</div>
           <div>
             <p class="rank-name">${cleanName(r.nome)}</p>
@@ -719,7 +917,8 @@
           `<td>${trend}</td>`
         );
 
-        return `<tr class="${r.progresso}">${cells.join("")}</tr>`;
+        const selected = state.selectedNome && sameItem(state.selectedNome, r.nome) ? " is-selected" : "";
+        return `<tr class="${r.progresso}${selected}" data-nome="${escAttr(r.nome)}">${cells.join("")}</tr>`;
       })
       .join("");
   }
@@ -744,7 +943,7 @@
 
     updateStoreBaseUi(phase);
     renderKpis(phase);
-    renderGauges(phase);
+    renderTrend(phase);
     renderChart(phase);
     renderLists(phase);
     renderTable(phase);
@@ -769,12 +968,42 @@
       const btn = e.target.closest(".nav-link");
       if (!btn) return;
       state.phaseKey = btn.dataset.phase;
+      state.selectedNome = null;
       state.search = "";
       els.searchInput.value = "";
       state.sortKey = "deltaLucro";
       state.sortDir = "asc";
       render();
       window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    if (els.trendClear) {
+      els.trendClear.addEventListener("click", () => selectItem(null));
+    }
+
+    if (els.salesChart) {
+      els.salesChart.addEventListener("click", (e) => {
+        const group = e.target.closest("[data-nome]");
+        if (!group) return;
+        selectItem(group.dataset.nome);
+      });
+    }
+
+    if (els.tableBody) {
+      els.tableBody.addEventListener("click", (e) => {
+        const row = e.target.closest("tr[data-nome]");
+        if (!row) return;
+        selectItem(row.dataset.nome);
+      });
+    }
+
+    [els.bestList, els.aggressorList].forEach((list) => {
+      if (!list) return;
+      list.addEventListener("click", (e) => {
+        const item = e.target.closest("[data-nome]");
+        if (!item) return;
+        selectItem(item.dataset.nome);
+      });
     });
 
     els.storeBaseGroup.addEventListener("click", (e) => {

@@ -142,6 +142,40 @@
       border-radius: 22px;
       box-shadow: 0 16px 36px rgba(15, 23, 42, 0.22);
     }
+    html.theme-dark .trend-panel {
+      background: linear-gradient(180deg, #1c2b48 0%, #121a2e 100%);
+      border: 0;
+      color: #eef4fa;
+    }
+    html.theme-dark .trend-panel .panel-head h2 { color: #fff; }
+    html.theme-dark .trend-panel .panel-head p { color: #8ea0b3; }
+    html.theme-dark .trend-card {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(255, 255, 255, 0.08);
+    }
+    html.theme-dark .trend-card small { color: #8ea0b3; }
+    html.theme-dark .trend-card strong { color: #fff; }
+    html.theme-dark .trend-card .trend-compare { color: #8ea0b3; }
+    html.theme-dark .trend-clear {
+      background: rgba(61, 214, 224, 0.12);
+      border-color: rgba(61, 214, 224, 0.35);
+      color: #7ee8ef;
+    }
+    html.theme-dark .trend-tick { color: #8ea0b3; }
+    html.theme-dark .trend-tick.is-active { color: #7ee8ef; }
+    html.theme-dark .spark-line { stroke: #3dd6e0; }
+    html.theme-dark .spark-line.prev { stroke: #3b5bdb; }
+    html.theme-dark .spark-dot { fill: #3dd6e0; }
+    html.theme-dark .spark-dot.active { fill: #fff; stroke: #3dd6e0; }
+    html.theme-dark .mini-gauge .gauge-track { stroke: rgba(255, 255, 255, 0.1); }
+    html.theme-dark .mini-gauge .gauge-fill { stroke: #3dd6e0; }
+    html.theme-dark .mini-gauge .gauge-needle { stroke: #7ee8ef; }
+    html.theme-dark .mini-gauge .gauge-hub { fill: #7ee8ef; }
+    html.theme-dark .mini-gauge .gauge-scale { color: #8ea0b3; }
+    html.theme-dark tbody tr.is-selected { background: rgba(61, 214, 224, 0.12); }
+    html.theme-dark .bar-group.is-selected .bar-label { color: #7ee8ef; }
+    html.theme-dark .rank-list li.is-selected { outline: 1.5px solid #3dd6e0; }
+
     html.theme-dark .kpi,
     html.theme-dark .gauge-card,
     html.theme-dark .chart-panel {
@@ -340,60 +374,22 @@
       <div id="analysisContent">
       <section class="kpi-row" id="execSummary" aria-label="Indicadores principais"></section>
 
-      <section class="gauge-row">
-        <article class="panel gauge-card" id="marginGauge">
-          <div class="panel-kicker">
-            <span>Análise de margem</span>
-            <small>Eficiência operacional</small>
+      <section class="panel trend-panel" id="trendPanel">
+        <div class="panel-head row">
+          <div>
+            <h2>Linha do tempo · 4 semanas</h2>
+            <p id="trendScope">Total da visão · clique em uma barra, ranking ou linha da tabela</p>
           </div>
-          <div class="gauge-body">
-            <div class="gauge-copy">
-              <strong id="marginValue">—</strong>
-              <span id="marginTarget">Ano anterior: —</span>
-            </div>
-            <div class="gauge" aria-hidden="true">
-              <svg viewBox="0 0 200 120">
-                <path class="gauge-track" d="M20 100 A80 80 0 0 1 180 100"/>
-                <path id="marginArc" class="gauge-fill" d="M20 100 A80 80 0 0 1 180 100"/>
-                <line id="marginNeedle" class="gauge-needle" x1="100" y1="100" x2="100" y2="28"/>
-                <circle cx="100" cy="100" r="5" class="gauge-hub"/>
-              </svg>
-              <div class="gauge-scale"><span>0%</span><span>25%</span><span>50%</span></div>
-            </div>
-          </div>
-          <p class="gauge-foot" id="marginFoot">—</p>
-        </article>
-
-        <article class="panel gauge-card money-card" id="profitGauge">
-          <div class="money-rain" id="moneyRain" aria-hidden="true"></div>
-          <div class="panel-kicker">
-            <span>Lucro bruto</span>
-            <small>Saúde do resultado</small>
-          </div>
-          <div class="gauge-body">
-            <div class="gauge-copy">
-              <strong id="profitValue">—</strong>
-              <span id="profitTarget">Meta implícita: —</span>
-            </div>
-            <div class="gauge" aria-hidden="true">
-              <svg viewBox="0 0 200 120">
-                <path class="gauge-track" d="M20 100 A80 80 0 0 1 180 100"/>
-                <path id="profitArc" class="gauge-fill" d="M20 100 A80 80 0 0 1 180 100"/>
-                <line id="profitNeedle" class="gauge-needle" x1="100" y1="100" x2="100" y2="28"/>
-                <circle cx="100" cy="100" r="5" class="gauge-hub"/>
-              </svg>
-              <div class="gauge-scale"><span>0</span><span>meio</span><span>máx</span></div>
-            </div>
-          </div>
-          <p class="gauge-foot" id="profitFoot">—</p>
-        </article>
+          <button type="button" class="trend-clear hidden" id="trendClear">Ver total da visão</button>
+        </div>
+        <div class="trend-grid" id="trendGrid"></div>
       </section>
 
       <section class="panel chart-panel">
         <div class="panel-head row">
           <div>
             <h2 id="chartTitle">Comparativo de vendas</h2>
-            <p id="chartSubtitle">Período atual (2026) × período anterior (2025)</p>
+            <p id="chartSubtitle">Período atual (2026) × período anterior (2025) · clique no item para a linha do tempo</p>
           </div>
           <div class="chart-tools">
             <div class="chip-group metric-group" id="metricGroup" role="group" aria-label="Métrica da análise">
