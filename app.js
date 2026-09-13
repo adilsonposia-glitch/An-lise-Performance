@@ -545,10 +545,20 @@
     state.selectedNome = next;
     const phase = currentPhase();
     if (!phase) return;
+    renderKpis(phase);
     renderTrend(phase);
     renderChart(phase);
     renderLists(phase);
     renderTable(phase);
+  }
+
+  function selectedRow(phase) {
+    if (!state.selectedNome || !phase?.rows) return null;
+    return phase.rows.find((r) => sameItem(r.nome, state.selectedNome)) || null;
+  }
+
+  function kpiSource(phase) {
+    return selectedRow(phase) || phase.totals;
   }
 
   function metricKeys() {
@@ -597,6 +607,22 @@
     return fmtMoney(v);
   }
 
+  function fmtBar(v, m) {
+    if (v == null || Number.isNaN(Number(v))) return "—";
+    if (m.isCount) return num.format(v || 0);
+    const n = Number(v) || 0;
+    const abs = Math.abs(n);
+    if (abs >= 1e6) return `${(n / 1e6).toFixed(1)} mi`;
+    if (abs >= 1e3) return `${(n / 1e3).toFixed(0)} mil`;
+    return fmtMoney(n);
+  }
+
+  function seriesValue(point, m) {
+    if (m.key26 === "lucro2026") return { v26: point.lucro, v25: point.lucro25 };
+    if (m.key26 === "clientes2026") return { v26: point.clientes, v25: point.clientes25 };
+    return { v26: point.venda, v25: point.venda25 };
+  }
+
   function buildMetricHighlights(rows) {
     const m = metricKeys();
     const enriched = rows.map((r) => ({ ...r, _delta: rowDelta(r, m) }));
@@ -629,22 +655,76 @@
     const m = metricKeys();
     updateMetricButtons(phase);
 
-    const titles = {
-      venda: "Comparativo de vendas",
-      lucro: "Comparativo de lucro bruto",
-      clientes: "Comparativo de fluxo de clientes",
-    };
-    if (els.chartTitle) els.chartTitle.textContent = titles[state.metric] || titles.venda;
-    if (els.chartSubtitle) {
-      els.chartSubtitle.textContent = state.selectedNome
-        ? `Foco: ${cleanName(state.selectedNome)} · 2026 × 2025 · clique de novo para limpar`
-        : "2026 × 2025 · clique na barra para ver as 4 semanas daquele item";
+    if (state.selectedNome) {
+      renderSelectedWeekChart(phase, m);
+      return;
     }
-    els.salesChart.setAttribute("aria-label", titles[state.metric] || titles.venda);
+    renderAllItemsChart(phase, m);
+  }
 
-    // Mostrar todos os itens (lojas, seções, grupos, departamentos)
+  function renderSelectedWeekChart(phase, m) {
+    const name = cleanName(state.selectedNome);
+    const series = collectTrend();
+    const row = selectedRow(phase);
+    const totalKey = m.key26;
+    const itemVal = row ? Number(row[totalKey]) || 0 : 0;
+    const totalVal = Number(phase.totals?.[totalKey]) || 0;
+    const share = totalVal > 0 && itemVal > 0 ? itemVal / totalVal : null;
+
+    if (els.chartTitle) {
+      els.chartTitle.textContent = `${name} · ${m.labelShort} nas 4 semanas`;
+    }
+    if (els.chartSubtitle) {
+      const shareTxt = share != null ? ` Participação nesta semana: ${(share * 100).toFixed(1)}% do total da visão.` : "";
+      els.chartSubtitle.textContent = `Métrica: ${m.label} só deste item, semana a semana. Azul = 2026. Cinza = o mesmo período de 2025. Não é o total da rede.${shareTxt}`;
+    }
+    els.salesChart.setAttribute("aria-label", `${name} · ${m.label} nas 4 semanas`);
+    els.salesChart.classList.add("is-weeks");
+    els.salesChart.style.setProperty("--cols", "4");
+    els.salesChart.style.setProperty("--col-min", "150px");
+
+    const pairs = series.map((s) => ({ ...s, ...seriesValue(s, m) }));
+    const maxVal = Math.max(...pairs.flatMap((s) => [Number(s.v25) || 0, Number(s.v26) || 0]), 1);
+
+    els.salesChart.innerHTML = pairs
+      .map((s) => {
+        const v25 = Number(s.v25) || 0;
+        const v26 = Number(s.v26) || 0;
+        const h25 = v25 > 0 ? Math.max(10, Math.round((v25 / maxVal) * 120)) : 4;
+        const h26 = v26 > 0 ? Math.max(10, Math.round((v26 / maxVal) * 120)) : 4;
+        const regressao = v26 < v25;
+        const active = s.ordem === state.weekOrdem ? " is-active-week" : "";
+        return `
+          <div class="bar-group${regressao ? " regressao" : ""}${active}">
+            <div class="bars tall">
+              <div class="bar-col">
+                <span class="bar-value">${s.missing ? "—" : fmtBar(v25, m)}</span>
+                <div class="bar previous" style="height:${h25}px"></div>
+                <span class="bar-year">2025</span>
+              </div>
+              <div class="bar-col">
+                <span class="bar-value">${s.missing ? "—" : fmtBar(v26, m)}</span>
+                <div class="bar current${regressao ? " regressao" : ""}" style="height:${h26}px"></div>
+                <span class="bar-year">2026</span>
+              </div>
+            </div>
+            <div class="bar-label">${s.tick}${s.ordem === state.weekOrdem ? " · semana aberta" : ""}</div>
+          </div>`;
+      })
+      .join("");
+  }
+
+  function renderAllItemsChart(phase, m) {
+    const itemWord =
+      phase.key === "lojas" ? "loja" : phase.key === "secao" ? "seção" : phase.key === "grupos" ? "grupo" : "departamento";
+    if (els.chartTitle) els.chartTitle.textContent = `${m.labelShort} de cada ${itemWord} · 2026 × 2025`;
+    if (els.chartSubtitle) {
+      els.chartSubtitle.textContent = `Métrica: ${m.label} daquele ${itemWord} sozinho. Cinza = 2025 dele. Azul = 2026 dele. O total da visão (${fmtMetric(phase.totals[m.key26], m)}) não entra nas barras.`;
+    }
+    els.salesChart.setAttribute("aria-label", `${m.label} por ${itemWord}, 2026 contra 2025`);
+    els.salesChart.classList.remove("is-weeks");
+
     const items = [...phase.rows].sort((a, b) => (Number(b[m.key26]) || 0) - (Number(a[m.key26]) || 0));
-
     if (!items.length) {
       els.salesChart.style.removeProperty("--cols");
       els.salesChart.style.removeProperty("--col-min");
@@ -652,7 +732,7 @@
       return;
     }
 
-    const colMin = phase.key === "grupos" ? 72 : phase.key === "secao" ? 88 : 96;
+    const colMin = phase.key === "grupos" ? 86 : phase.key === "secao" ? 100 : 108;
     els.salesChart.style.setProperty("--cols", String(items.length));
     els.salesChart.style.setProperty("--col-min", `${colMin}px`);
 
@@ -662,16 +742,22 @@
       .map((r) => {
         const v25 = Number(r[m.key25]) || 0;
         const v26 = Number(r[m.key26]) || 0;
-        const h25 = Math.max(8, Math.round((v25 / maxVal) * 92));
-        const h26 = Math.max(8, Math.round((v26 / maxVal) * 92));
+        const h25 = v25 > 0 ? Math.max(10, Math.round((v25 / maxVal) * 100)) : 4;
+        const h26 = v26 > 0 ? Math.max(10, Math.round((v26 / maxVal) * 100)) : 4;
         const regressao = v26 < v25;
-        const selected = state.selectedNome && sameItem(state.selectedNome, r.nome) ? " is-selected" : "";
         return `
-          <div class="bar-group${regressao ? " regressao" : ""}${selected}" data-nome="${escAttr(r.nome)}" title="${cleanName(r.nome)} · 2025 ${fmtMetric(v25, m)} · 2026 ${fmtMetric(v26, m)}${regressao ? " · regressão" : ""}">
+          <div class="bar-group${regressao ? " regressao" : ""}" data-nome="${escAttr(r.nome)}" title="${cleanName(r.nome)} · 2025 ${fmtMetric(v25, m)} · 2026 ${fmtMetric(v26, m)} · só este item, não o total da rede">
             <div class="bars">
-              <div class="bar previous" style="height:${h25}px"></div>
-              <div class="bar current${regressao ? " regressao" : ""}" style="height:${h26}px"></div>
+              <div class="bar-col">
+                <div class="bar previous" style="height:${h25}px"></div>
+                <span class="bar-year">25</span>
+              </div>
+              <div class="bar-col">
+                <div class="bar current${regressao ? " regressao" : ""}" style="height:${h26}px"></div>
+                <span class="bar-year">26</span>
+              </div>
             </div>
+            <div class="bar-value-line">${fmtBar(v26, m)}</div>
             <div class="bar-label">${cleanName(r.nome)}</div>
           </div>`;
       })
@@ -679,10 +765,11 @@
   }
 
   function renderKpis(phase) {
-    const t = phase.totals;
+    const t = kpiSource(phase);
+    const scope = selectedRow(phase) ? cleanName(selectedRow(phase).nome) : "Total da visão";
     const cards = [
       {
-        label: "Venda valor",
+        label: `Venda valor · ${scope}`,
         value: fmtMoney(t.venda2026),
         delta: t.varVendaPct,
         compare: `2025: ${fmtMoney(t.venda2025)}`,

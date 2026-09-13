@@ -222,6 +222,10 @@
     html.theme-dark .chart-legend .dot.previous { background: #3b5bdb; }
     html.theme-dark .chart-legend .dot.regressao { background: #ff8a80; }
     html.theme-dark .bar.previous { background: #3b5bdb; }
+    html.theme-dark .bar-year,
+    html.theme-dark .bar-value { color: #8ea0b3; }
+    html.theme-dark .bar-value-line { color: #7ee8ef; }
+    html.theme-dark .bar-group.is-active-week { background: rgba(61, 214, 224, 0.1); }
     html.theme-dark .bar.current { background: #3dd6e0; }
     html.theme-dark .bar.current.regressao { background: #ff8a80; }
     html.theme-dark .bar-label { color: #c5d3e0; }
@@ -397,10 +401,10 @@
               <button type="button" class="chip" data-metric="lucro">Lucro bruto</button>
               <button type="button" class="chip hidden" data-metric="clientes" id="metricClientes">Clientes</button>
             </div>
-            <div class="chart-legend">
-              <span><i class="dot current"></i> Atual</span>
-              <span><i class="dot previous"></i> Anterior</span>
-              <span><i class="dot regressao"></i> Regressão</span>
+            <div class="chart-legend" id="chartLegend">
+              <span><i class="dot current"></i> 2026 deste item</span>
+              <span><i class="dot previous"></i> 2025 deste item</span>
+              <span><i class="dot regressao"></i> 2026 abaixo de 2025</span>
             </div>
           </div>
         </div>
