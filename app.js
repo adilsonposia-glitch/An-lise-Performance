@@ -15,10 +15,26 @@
     storeBase: "mesma",
     metric: "venda", // 'venda' | 'lucro' | 'clientes'
     selectedNome: null,
+    itemFilter: {
+      departamentos: null,
+      lojas: null,
+      secao: null,
+      grupos: null,
+    },
+    filterPopPhase: null,
   };
 
   const els = {
     phaseNav: document.getElementById("phaseNav"),
+    phaseFilterPop: document.getElementById("phaseFilterPop"),
+    phaseFilterTitle: document.getElementById("phaseFilterTitle"),
+    phaseFilterMeta: document.getElementById("phaseFilterMeta"),
+    phaseFilterSearch: document.getElementById("phaseFilterSearch"),
+    phaseFilterList: document.getElementById("phaseFilterList"),
+    phaseFilterAll: document.getElementById("phaseFilterAll"),
+    phaseFilterNone: document.getElementById("phaseFilterNone"),
+    phaseFilterClear: document.getElementById("phaseFilterClear"),
+    itemFilterNote: document.getElementById("itemFilterNote"),
     phaseTitle: document.getElementById("phaseTitle"),
     phaseSubtitle: document.getElementById("phaseSubtitle"),
     execSummary: document.getElementById("execSummary"),
@@ -37,6 +53,9 @@
     storeBaseGroup: document.getElementById("storeBaseGroup"),
     storeBaseNote: document.getElementById("storeBaseNote"),
     metricGroup: document.getElementById("metricGroup"),
+    chartPanel: document.getElementById("chartPanel"),
+    chartExpandBtn: document.getElementById("chartExpandBtn"),
+    chartBackBtn: document.getElementById("chartBackBtn"),
     salesChart: document.getElementById("salesChart"),
     salesMix: document.getElementById("salesMix"),
     salesMixLabel: document.getElementById("salesMixLabel"),
@@ -287,15 +306,21 @@
     const base = phase.bases?.[baseKey];
     if (!base) return null;
     const suffix = baseKey === "mesma" ? "Mesma base" : "Todas as lojas";
+    const rows = filterRows(base.rows || [], phase.key);
+    const filtered = phaseFilterSet(phase.key) != null;
+    const totals = filtered ? sumRows(rows, !!phase.hasClients) : base.totals;
     return {
       key: phase.key,
       label: `${phaseLabels[phase.key] || phase.label} · ${suffix}`,
       hasClients: !!phase.hasClients,
-      rows: base.rows || [],
-      totals: base.totals,
+      rows,
+      totals,
       melhores: base.melhores || [],
       agressores: base.agressores || [],
       baseMeta: getStoreMeta(),
+      filtered,
+      filterCount: rows.length,
+      sourceCount: (base.rows || []).length,
     };
   }
 
@@ -326,6 +351,78 @@
     return a === b || cleanName(a) === cleanName(b);
   }
 
+  function phaseFilterSet(phaseKey) {
+    const list = state.itemFilter[phaseKey];
+    return Array.isArray(list) ? list : null;
+  }
+
+  function rawPhaseRows(phaseKey, baseKey) {
+    const phase = state.data?.phases?.find((p) => p.key === phaseKey);
+    const key = baseKey || (state.storeBase === "mesma" ? "mesma" : "todas");
+    return phase?.bases?.[key]?.rows || [];
+  }
+
+  function filterRows(rows, phaseKey) {
+    const sel = phaseFilterSet(phaseKey);
+    if (!sel) return rows || [];
+    return (rows || []).filter((r) => sel.some((n) => sameItem(r.nome, n)));
+  }
+
+  function sumRows(rows, hasClients) {
+    const acc = {
+      venda2025: 0,
+      venda2026: 0,
+      qtd2025: 0,
+      qtd2026: 0,
+      lucro2025: 0,
+      lucro2026: 0,
+      clientes2025: null,
+      clientes2026: null,
+      varClientesPct: null,
+    };
+    let c25 = 0;
+    let c26 = 0;
+    let hasC = false;
+    for (const r of rows || []) {
+      acc.venda2025 += Number(r.venda2025) || 0;
+      acc.venda2026 += Number(r.venda2026) || 0;
+      acc.qtd2025 += Number(r.qtd2025) || 0;
+      acc.qtd2026 += Number(r.qtd2026) || 0;
+      acc.lucro2025 += Number(r.lucro2025) || 0;
+      acc.lucro2026 += Number(r.lucro2026) || 0;
+      if (r.clientes2025 != null || r.clientes2026 != null) {
+        hasC = true;
+        c25 += Number(r.clientes2025) || 0;
+        c26 += Number(r.clientes2026) || 0;
+      }
+    }
+    const ratio = (a, b) => (a ? (b - a) / a : b ? 1 : 0);
+    acc.deltaVenda = acc.venda2026 - acc.venda2025;
+    acc.deltaLucro = acc.lucro2026 - acc.lucro2025;
+    acc.deltaQtd = acc.qtd2026 - acc.qtd2025;
+    acc.varVendaPct = ratio(acc.venda2025, acc.venda2026);
+    acc.varQtdPct = ratio(acc.qtd2025, acc.qtd2026);
+    acc.varLucroPct = ratio(acc.lucro2025, acc.lucro2026);
+    acc.margem2025 = acc.venda2025 ? (acc.lucro2025 / acc.venda2025) * 100 : 0;
+    acc.margem2026 = acc.venda2026 ? (acc.lucro2026 / acc.venda2026) * 100 : 0;
+    acc.varMargemPp = acc.margem2026 - acc.margem2025;
+    if (hasClients && hasC) {
+      acc.clientes2025 = c25;
+      acc.clientes2026 = c26;
+      acc.varClientesPct = ratio(c25, c26);
+    }
+    return acc;
+  }
+
+  function applyPhaseFilter(phaseKey, names) {
+    if (names == null) state.itemFilter[phaseKey] = null;
+    else state.itemFilter[phaseKey] = [...new Set((names || []).filter(Boolean))];
+    const visible = filterRows(rawPhaseRows(phaseKey), phaseKey);
+    if (state.selectedNome && !visible.some((r) => sameItem(r.nome, state.selectedNome))) {
+      state.selectedNome = null;
+    }
+  }
+
   function shortWeekTick(periodo) {
     const m = String(periodo || "").match(/(\d{2})\/(\d{2})\/(\d{4})/);
     return m ? `${m[1]}/${m[2]}` : "—";
@@ -336,7 +433,15 @@
     const phase = week.phases.find((p) => p.key === state.phaseKey);
     if (!phase) return null;
     const baseKey = state.storeBase === "mesma" ? "mesma" : "todas";
-    return phase.bases?.[baseKey] || null;
+    const base = phase.bases?.[baseKey];
+    if (!base) return null;
+    const rows = filterRows(base.rows || [], state.phaseKey);
+    if (phaseFilterSet(state.phaseKey) == null) return base;
+    return {
+      ...base,
+      rows,
+      totals: sumRows(rows, !!phase.hasClients),
+    };
   }
 
   function collectTrend() {
@@ -674,14 +779,54 @@
     return pct > 0 ? "up" : "down";
   }
 
+  function tubeFillPct(pct) {
+    const mag = Math.abs(Number(pct) || 0);
+    if (mag < 5e-4) return 5;
+    return Math.round(6 + Math.tanh(mag / 0.2) * 94);
+  }
+
+  function placeDeltaTip(tube) {
+    if (!tube || !tube.classList.contains("delta-tube")) return;
+    const tip = tube.querySelector(".delta-tip");
+    if (!tip) return;
+    tube.classList.remove("is-tip-below", "is-tip-start", "is-tip-end");
+    const clip = tube.closest(".chart-scroll") || tube.closest(".chart-panel");
+    if (!clip) return;
+    const clipRect = clip.getBoundingClientRect();
+    const tubeRect = tube.getBoundingClientRect();
+    const tipH = Math.max(tip.offsetHeight || 0, 72);
+    const tipW = Math.max(tip.offsetWidth || 0, 168);
+    if (tubeRect.top - clipRect.top < tipH + 8) tube.classList.add("is-tip-below");
+    const center = tubeRect.left + tubeRect.width / 2;
+    if (center - tipW / 2 < clipRect.left + 8) tube.classList.add("is-tip-start");
+    else if (center + tipW / 2 > clipRect.right - 8) tube.classList.add("is-tip-end");
+  }
+
   function cssEscape(value) {
     if (window.CSS && typeof window.CSS.escape === "function") return window.CSS.escape(value);
     return String(value).replace(/"/g, '\\"');
   }
 
+  function rankingBackLabel(phase) {
+    const key = phase?.key;
+    if (key === "lojas") return "Todas as lojas";
+    if (key === "secao") return "Todas as seções";
+    if (key === "grupos") return "Todos os grupos";
+    return "Todos os departamentos";
+  }
+
+  function syncChartBack(phase) {
+    if (!els.chartBackBtn) return;
+    const open = Boolean(state.selectedNome);
+    els.chartBackBtn.classList.toggle("hidden", !open);
+    els.chartBackBtn.textContent = rankingBackLabel(phase);
+    els.chartBackBtn.title = `Voltar ao ranking de ${rankingBackLabel(phase).toLowerCase()} sem sair da tela cheia`;
+  }
+
   function renderChart(phase) {
     const m = metricKeys();
     updateMetricButtons(phase);
+    syncChartBack(phase);
 
     if (state.selectedNome) {
       renderSelectedWeekChart(phase, m);
@@ -704,11 +849,11 @@
     }
     if (els.chartSubtitle) {
       const shareTxt = share != null ? ` Participação nesta semana: ${(share * 100).toFixed(1)}% do total da visão.` : "";
-      els.chartSubtitle.textContent = `Métrica: ${m.label} só deste item, semana a semana. Azul = 2026. Cinza = o mesmo período de 2025. Não é o total da rede.${shareTxt}`;
+      els.chartSubtitle.textContent = `Um clique no tubo abriu este detalhe. Azul = 2026 · cinza = 2025. Não é o total da rede.${shareTxt} Use “${rankingBackLabel(phase)}” ou Esc para voltar ao ranking (a tela cheia permanece).`;
     }
     els.salesChart.setAttribute("aria-label", `${name} · ${m.label} nas 4 semanas`);
     els.salesChart.classList.add("is-weeks");
-    els.salesChart.classList.remove("is-delta", "is-fit");
+    els.salesChart.classList.remove("is-delta", "is-fit", "is-dense");
     els.salesChart.style.setProperty("--cols", "4");
     els.salesChart.style.setProperty("--col-min", "150px");
     setChartLegend("weeks");
@@ -754,14 +899,14 @@
       phase.key === "lojas" ? "loja" : phase.key === "secao" ? "seção" : phase.key === "grupos" ? "grupo" : "departamento";
     if (els.chartTitle) els.chartTitle.textContent = `Variação YoY de cada ${itemWord}`;
     if (els.chartSubtitle) {
-      els.chartSubtitle.textContent = `Só a diferença 2026 vs 2025 em ${m.label}. Altura = intensidade da variação. A faixa de baixo é a participação de 2026. Clique para detalhar.`;
+      els.chartSubtitle.textContent = `Só a diferença YoY em ${m.label}. 1ª linha = melhores resultados. Um clique no tubo abre as 4 semanas desse item. Tela cheia para Grupos.`;
     }
     els.salesChart.setAttribute("aria-label", `Variação percentual YoY de ${m.label} por ${itemWord}`);
-    els.salesChart.classList.remove("is-weeks");
+    els.salesChart.classList.remove("is-weeks", "is-fit");
     els.salesChart.classList.add("is-delta");
     setChartLegend("delta");
 
-    const items = [...phase.rows].sort((a, b) => (Number(b[m.key26]) || 0) - (Number(a[m.key26]) || 0));
+    const items = [...phase.rows].sort((a, b) => (Number(b[m.varPct]) || 0) - (Number(a[m.varPct]) || 0));
     if (!items.length) {
       els.salesChart.style.removeProperty("--cols");
       els.salesChart.style.removeProperty("--col-min");
@@ -774,15 +919,10 @@
       return;
     }
 
-    const fitAll = items.length <= 13;
-    els.salesChart.classList.toggle("is-fit", fitAll);
-    const colMin = fitAll ? 0 : phase.key === "grupos" ? 64 : phase.key === "secao" ? 72 : 78;
-    els.salesChart.style.setProperty("--cols", String(items.length));
-    if (fitAll) els.salesChart.style.removeProperty("--col-min");
-    else els.salesChart.style.setProperty("--col-min", `${colMin}px`);
+    els.salesChart.classList.toggle("is-dense", items.length > 16);
+    els.salesChart.style.removeProperty("--cols");
+    els.salesChart.style.removeProperty("--col-min");
 
-    const pcts = items.map((r) => Math.abs(Number(r[m.varPct]) || 0));
-    const scaleMax = Math.max(0.08, ...pcts);
     const tot26 = items.reduce((s, r) => s + Math.max(0, Number(r[m.key26]) || 0), 0) || 1;
 
     els.salesChart.innerHTML = items
@@ -791,7 +931,7 @@
         const pct = Number(r[m.varPct]);
         const delta = rowDelta(r, m);
         const tone = toneFromPct(pct);
-        const fill = tone === "flat" ? 4 : Math.max(10, Math.round((Math.abs(pct) / scaleMax) * 100));
+        const fill = tubeFillPct(pct);
         const selected = state.selectedNome && sameItem(state.selectedNome, r.nome) ? " is-selected" : "";
         const delay = Math.min(i * 28, 360);
         return `
@@ -812,8 +952,9 @@
       .join("");
 
     if (els.salesMix) {
+      const mixItems = [...phase.rows].sort((a, b) => (Number(b[m.key26]) || 0) - (Number(a[m.key26]) || 0));
       els.salesMix.hidden = false;
-      els.salesMix.innerHTML = items
+      els.salesMix.innerHTML = mixItems
         .map((r) => {
           const v26 = Math.max(0, Number(r[m.key26]) || 0);
           const share = (v26 / tot26) * 100;
@@ -1087,17 +1228,124 @@
     if (!phase) return;
 
     const week = currentWeek();
-    els.phaseTitle.textContent = `${week.label} · ${phase.label}`;
+    const filterBit = phase.filtered ? ` · ${phase.filterCount} de ${phase.sourceCount}` : "";
+    els.phaseTitle.textContent = `${week.label} · ${phase.label}${filterBit}`;
     els.phaseSubtitle.textContent = phase.hasClients
       ? "Monitoramento em tempo de performance · inclui fluxo de clientes, margem e lucro bruto."
       : "Monitoramento de performance comercial e análise ano contra ano.";
 
     updateStoreBaseUi(phase);
+    updateFilterBadges();
+    renderItemFilterNote(phase);
     renderKpis(phase);
     renderTrend(phase);
     renderChart(phase);
     renderLists(phase);
     renderTable(phase);
+  }
+
+  function updateFilterBadges() {
+    document.querySelectorAll("[data-filter-phase]").forEach((btn) => {
+      const key = btn.dataset.filterPhase;
+      const sel = phaseFilterSet(key);
+      const countEl = btn.querySelector(".nav-filter-count");
+      const on = sel != null;
+      btn.classList.toggle("is-filtered", on);
+      if (countEl) {
+        countEl.textContent = on ? String(sel.length) : "";
+        countEl.classList.toggle("hidden", !on);
+      }
+      btn.setAttribute("aria-expanded", state.filterPopPhase === key ? "true" : "false");
+      btn.closest(".nav-phase")?.classList.toggle("is-open", state.filterPopPhase === key);
+    });
+  }
+
+  function renderItemFilterNote(phase) {
+    if (!els.itemFilterNote) return;
+    if (!phase?.filtered) {
+      els.itemFilterNote.classList.add("hidden");
+      els.itemFilterNote.textContent = "";
+      return;
+    }
+    const names = phaseFilterSet(phase.key) || [];
+    const shown = names.slice(0, 4).map(cleanName).join(" · ");
+    const extra = names.length > 4 ? ` +${names.length - 4}` : "";
+    const word =
+      phase.key === "lojas" ? "lojas" : phase.key === "secao" ? "seções" : phase.key === "grupos" ? "grupos" : "departamentos";
+    els.itemFilterNote.classList.remove("hidden");
+    els.itemFilterNote.innerHTML = `<strong>Filtro ativo:</strong> ${phase.filterCount} de ${phase.sourceCount} ${word} (${shown}${extra}). KPIs, gráfico e tabela usam só essa seleção. <button type="button" class="note-clear" id="itemFilterNoteClear">Limpar</button>`;
+    const clear = document.getElementById("itemFilterNoteClear");
+    if (clear) clear.addEventListener("click", () => {
+      applyPhaseFilter(phase.key, []);
+      render();
+      if (state.filterPopPhase === phase.key) fillPhaseFilterList();
+    });
+  }
+
+  function closePhaseFilterPop() {
+    state.filterPopPhase = null;
+    if (!els.phaseFilterPop) return;
+    els.phaseFilterPop.classList.add("hidden");
+    els.phaseFilterPop.hidden = true;
+    updateFilterBadges();
+  }
+
+  function positionPhaseFilterPop(anchor) {
+    const pop = els.phaseFilterPop;
+    if (!pop || !anchor) return;
+    const rect = anchor.getBoundingClientRect();
+    const width = Math.min(340, window.innerWidth - 16);
+    let left = rect.left;
+    if (left + width > window.innerWidth - 8) left = window.innerWidth - width - 8;
+    if (left < 8) left = 8;
+    pop.style.left = `${left}px`;
+    pop.style.top = `${rect.bottom + 8}px`;
+    pop.style.width = `${width}px`;
+  }
+
+  function fillPhaseFilterList() {
+    const key = state.filterPopPhase;
+    if (!key || !els.phaseFilterList) return;
+    const rows = [...rawPhaseRows(key)].sort((a, b) => cleanName(a.nome).localeCompare(cleanName(b.nome), "pt-BR"));
+    const rawSel = phaseFilterSet(key);
+    const allOn = rawSel == null;
+    const sel = new Set(allOn ? rows.map((r) => r.nome) : rawSel);
+    const q = (els.phaseFilterSearch?.value || "").trim().toLowerCase();
+    const labels = {
+      departamentos: "departamentos",
+      lojas: "lojas",
+      secao: "seções",
+      grupos: "grupos",
+    };
+    if (els.phaseFilterTitle) els.phaseFilterTitle.textContent = `Selecionar ${labels[key] || "itens"}`;
+    if (els.phaseFilterMeta) els.phaseFilterMeta.textContent = `${sel.size} de ${rows.length}`;
+    els.phaseFilterList.innerHTML = rows
+      .filter((r) => !q || cleanName(r.nome).toLowerCase().includes(q))
+      .map((r) => {
+        const checked = [...sel].some((n) => sameItem(n, r.nome)) ? " checked" : "";
+        return `<label class="phase-filter-item"><input type="checkbox" value="${escAttr(r.nome)}"${checked}><span>${cleanName(r.nome)}</span></label>`;
+      })
+      .join("") || `<p class="phase-filter-empty">Nenhum item com esse nome.</p>`;
+  }
+
+  function togglePhaseFilterPop(phaseKey, anchor) {
+    if (state.filterPopPhase === phaseKey && els.phaseFilterPop && !els.phaseFilterPop.hidden) {
+      closePhaseFilterPop();
+      return;
+    }
+    state.filterPopPhase = phaseKey;
+    if (els.phaseFilterSearch) els.phaseFilterSearch.value = "";
+    els.phaseFilterPop.hidden = false;
+    els.phaseFilterPop.classList.remove("hidden");
+    fillPhaseFilterList();
+    positionPhaseFilterPop(anchor.closest(".nav-phase") || anchor);
+    updateFilterBadges();
+    els.phaseFilterSearch?.focus();
+  }
+
+  function readPopSelection() {
+    if (!els.phaseFilterList) return [];
+    return [...els.phaseFilterList.querySelectorAll("input[type=checkbox]:checked")].map((el) => el.value);
   }
 
   function bind() {
@@ -1116,8 +1364,24 @@
     }
 
     els.phaseNav.addEventListener("click", (e) => {
+      const filterBtn = e.target.closest("[data-filter-phase]");
+      if (filterBtn) {
+        const key = filterBtn.dataset.filterPhase;
+        if (state.phaseKey !== key) {
+          state.phaseKey = key;
+          state.selectedNome = null;
+          state.search = "";
+          if (els.searchInput) els.searchInput.value = "";
+          state.sortKey = "deltaLucro";
+          state.sortDir = "asc";
+          render();
+        }
+        togglePhaseFilterPop(key, filterBtn);
+        return;
+      }
       const btn = e.target.closest(".nav-link");
       if (!btn) return;
+      closePhaseFilterPop();
       state.phaseKey = btn.dataset.phase;
       state.selectedNome = null;
       state.search = "";
@@ -1128,15 +1392,87 @@
       window.scrollTo({ top: 0, behavior: "smooth" });
     });
 
+    if (els.phaseFilterList) {
+      els.phaseFilterList.addEventListener("change", (e) => {
+        const input = e.target.closest("input[type=checkbox]");
+        const key = state.filterPopPhase;
+        if (!input || !key) return;
+        const all = rawPhaseRows(key).map((r) => r.nome);
+        const cur = phaseFilterSet(key);
+        const set = new Set(cur == null ? all : cur);
+        if (input.checked) set.add(input.value);
+        else set.delete(input.value);
+        applyPhaseFilter(key, set.size === all.length ? null : [...set]);
+        render();
+        fillPhaseFilterList();
+      });
+    }
+    if (els.phaseFilterSearch) {
+      els.phaseFilterSearch.addEventListener("input", () => fillPhaseFilterList());
+    }
+    if (els.phaseFilterAll) {
+      els.phaseFilterAll.addEventListener("click", () => {
+        if (!state.filterPopPhase) return;
+        applyPhaseFilter(state.filterPopPhase, null);
+        render();
+        fillPhaseFilterList();
+      });
+    }
+    if (els.phaseFilterNone) {
+      els.phaseFilterNone.addEventListener("click", () => {
+        if (!state.filterPopPhase) return;
+        applyPhaseFilter(state.filterPopPhase, []);
+        render();
+        fillPhaseFilterList();
+      });
+    }
+    if (els.phaseFilterClear) {
+      els.phaseFilterClear.addEventListener("click", () => {
+        if (!state.filterPopPhase) return;
+        applyPhaseFilter(state.filterPopPhase, null);
+        render();
+        closePhaseFilterPop();
+      });
+    }
+    document.addEventListener("click", (e) => {
+      if (!state.filterPopPhase) return;
+      if (e.target.closest("#phaseFilterPop") || e.target.closest("[data-filter-phase]")) return;
+      closePhaseFilterPop();
+    });
+    window.addEventListener("resize", () => {
+      if (!state.filterPopPhase) return;
+      const btn = document.querySelector(`[data-filter-phase="${state.filterPopPhase}"]`);
+      if (btn) positionPhaseFilterPop(btn.closest(".nav-phase") || btn);
+    });
+    document.addEventListener(
+      "keydown",
+      (e) => {
+        if (e.key === "Escape" && state.filterPopPhase) {
+          closePhaseFilterPop();
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      },
+      true
+    );
+
     if (els.trendClear) {
       els.trendClear.addEventListener("click", () => selectItem(null));
+    }
+    if (els.chartBackBtn) {
+      els.chartBackBtn.addEventListener("click", () => selectItem(null));
     }
 
     if (els.salesChart) {
       els.salesChart.addEventListener("click", (e) => {
         const group = e.target.closest("[data-nome]");
-        if (!group) return;
-        selectItem(group.dataset.nome);
+        if (group) {
+          selectItem(group.dataset.nome);
+          return;
+        }
+        if (state.selectedNome && els.salesChart.classList.contains("is-weeks")) {
+          selectItem(null);
+        }
       });
     }
 
@@ -1151,16 +1487,24 @@
     const chartPanel = els.salesChart && els.salesChart.closest(".chart-panel");
     if (chartPanel && !chartPanel.dataset.deltaHover) {
       chartPanel.dataset.deltaHover = "1";
-      const clearHot = () => chartPanel.querySelectorAll(".is-hot").forEach((el) => el.classList.remove("is-hot"));
+      const clearHot = () =>
+        chartPanel.querySelectorAll(".is-hot").forEach((el) => {
+          el.classList.remove("is-hot", "is-tip-below", "is-tip-start", "is-tip-end");
+        });
       chartPanel.addEventListener("pointerover", (e) => {
         const item = e.target.closest("[data-nome]");
         clearHot();
         if (!item || !item.dataset.nome) return;
         chartPanel.querySelectorAll(`[data-nome="${cssEscape(item.dataset.nome)}"]`).forEach((el) => {
           el.classList.add("is-hot");
+          placeDeltaTip(el);
         });
       });
       chartPanel.addEventListener("pointerleave", clearHot);
+      chartPanel.addEventListener("focusin", (e) => {
+        const tube = e.target.closest(".delta-tube");
+        if (tube) placeDeltaTip(tube);
+      });
     }
 
     if (els.tableBody) {
@@ -1229,65 +1573,93 @@
       if (phase) renderTable(phase);
     });
 
-    // Tela cheia do detalhamento: Fullscreen API + fallback modo foco
-    const syncExpandUi = () => {
-      const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
-      const expanded = Boolean(fsEl === els.detailPanel || els.detailPanel?.classList.contains("is-expanded"));
-      if (els.tableExpandBtn) {
-        els.tableExpandBtn.setAttribute("aria-pressed", expanded ? "true" : "false");
-        els.tableExpandBtn.title = expanded ? "Voltar ao dashboard" : "Abrir detalhamento em tela cheia";
-      }
-      document.body.classList.toggle("table-focus-open", expanded);
-    };
-
-    const enterTableExpand = async () => {
-      if (!els.detailPanel) return;
-      const req =
-        els.detailPanel.requestFullscreen ||
-        els.detailPanel.webkitRequestFullscreen ||
-        els.detailPanel.msRequestFullscreen;
-      if (typeof req === "function") {
-        try {
-          await req.call(els.detailPanel);
-          syncExpandUi();
-          return;
-        } catch (_) {
-          /* fallback abaixo */
-        }
-      }
-      els.detailPanel.classList.add("is-expanded");
-      syncExpandUi();
-    };
-
-    const exitTableExpand = async () => {
-      const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
-      if (fsEl) {
-        const exit = document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen;
-        if (typeof exit === "function") {
+    // Tela cheia: detalhamento e gráfico YoY
+    const bindPanelExpand = (panel, btn, opts = {}) => {
+      if (!panel || !btn) return;
+      let leaveIntentional = false;
+      const isThisExpanded = () => {
+        const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+        return Boolean(fsEl === panel || panel.classList.contains("is-expanded"));
+      };
+      const sync = () => {
+        const expanded = isThisExpanded();
+        btn.setAttribute("aria-pressed", expanded ? "true" : "false");
+        btn.title = expanded ? "Voltar ao dashboard" : "Abrir em tela cheia";
+        const anyOpen = Boolean(
+          document.fullscreenElement ||
+          document.webkitFullscreenElement ||
+          document.querySelector(".table-panel.is-expanded, .chart-panel.is-expanded")
+        );
+        document.body.classList.toggle("table-focus-open", anyOpen);
+        document.body.classList.toggle("panel-focus-open", anyOpen);
+      };
+      const enter = async () => {
+        const req = panel.requestFullscreen || panel.webkitRequestFullscreen || panel.msRequestFullscreen;
+        if (typeof req === "function") {
           try {
-            await exit.call(document);
+            await req.call(panel);
+            sync();
+            return;
           } catch (_) {}
         }
-      }
-      els.detailPanel?.classList.remove("is-expanded");
-      syncExpandUi();
+        panel.classList.add("is-expanded");
+        sync();
+      };
+      const exit = async () => {
+        leaveIntentional = true;
+        const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+        if (fsEl) {
+          const leave = document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen;
+          if (typeof leave === "function") {
+            try {
+              await leave.call(document);
+            } catch (_) {}
+          }
+        }
+        panel.classList.remove("is-expanded");
+        sync();
+        leaveIntentional = false;
+      };
+      btn.addEventListener("click", () => {
+        if (isThisExpanded()) exit();
+        else enter();
+      });
+      const afterFullscreenChange = () => {
+        const stillOpen = isThisExpanded();
+        sync();
+        if (leaveIntentional || stillOpen) return;
+        if (typeof opts.onNativeExit === "function") opts.onNativeExit();
+      };
+      document.addEventListener("fullscreenchange", afterFullscreenChange);
+      document.addEventListener("webkitfullscreenchange", afterFullscreenChange);
+      document.addEventListener("keydown", (e) => {
+        if (e.key !== "Escape" || !isThisExpanded()) return;
+        if (typeof opts.onEscape === "function" && opts.onEscape()) {
+          e.preventDefault();
+          return;
+        }
+        if (panel.classList.contains("is-expanded")) exit();
+      });
     };
 
-    if (els.tableExpandBtn && els.detailPanel) {
-      els.tableExpandBtn.addEventListener("click", () => {
-        const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
-        const expanded = Boolean(fsEl === els.detailPanel || els.detailPanel.classList.contains("is-expanded"));
-        if (expanded) exitTableExpand();
-        else enterTableExpand();
-      });
-      document.addEventListener("fullscreenchange", syncExpandUi);
-      document.addEventListener("webkitfullscreenchange", syncExpandUi);
-      document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape" && els.detailPanel.classList.contains("is-expanded")) {
-          exitTableExpand();
+    bindPanelExpand(els.detailPanel, els.tableExpandBtn);
+    bindPanelExpand(els.chartPanel, els.chartExpandBtn, {
+      onEscape: () => {
+        if (!state.selectedNome) return false;
+        selectItem(null);
+        return true;
+      },
+      onNativeExit: () => {
+        if (!state.selectedNome) return;
+        selectItem(null);
+        els.chartPanel.classList.add("is-expanded");
+        document.body.classList.add("panel-focus-open", "table-focus-open");
+        if (els.chartExpandBtn) {
+          els.chartExpandBtn.setAttribute("aria-pressed", "true");
+          els.chartExpandBtn.title = "Voltar ao dashboard";
         }
-      });
-    }
+      },
+    });
   }
 
   async function loadData() {

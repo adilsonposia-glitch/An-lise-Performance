@@ -86,6 +86,33 @@
       outline-offset: -1px;
     }
     html.theme-dark .nav-link.active::after { background: #3dd6e0; }
+    html.theme-dark .nav-filter { color: #9aabc0; }
+    html.theme-dark .nav-filter:hover,
+    html.theme-dark .nav-filter.is-filtered { color: #7ee8ef; }
+    html.theme-dark .nav-phase.is-open,
+    html.theme-dark .nav-phase:has(.nav-filter.is-filtered) {
+      background: rgba(61, 214, 224, 0.1);
+    }
+    html.theme-dark .nav-filter-count { background: #3dd6e0; color: #152036; }
+    html.theme-dark .phase-filter-pop {
+      background: #1c2b48;
+      border-color: rgba(61, 214, 224, 0.28);
+      color: #f4f8fb;
+    }
+    html.theme-dark .phase-filter-pop input[type="search"] {
+      background: #152036;
+      border-color: rgba(255,255,255,0.12);
+      color: #fff;
+    }
+    html.theme-dark .phase-filter-item:hover { background: rgba(61, 214, 224, 0.1); }
+    html.theme-dark .phase-filter-actions button,
+    html.theme-dark .phase-filter-clear,
+    html.theme-dark .note-clear {
+      background: rgba(61, 214, 224, 0.12);
+      border-color: rgba(61, 214, 224, 0.35);
+      color: #7ee8ef;
+    }
+    html.theme-dark .base-note.filter-note { background: rgba(61, 214, 224, 0.1); color: #d7eef1; }
     html.theme-dark .period-mini {
       background: rgba(61, 214, 224, 0.12);
       border-color: rgba(61, 214, 224, 0.28);
@@ -156,7 +183,8 @@
     html.theme-dark .trend-card small { color: #8ea0b3; }
     html.theme-dark .trend-card strong { color: #fff; }
     html.theme-dark .trend-card .trend-compare { color: #8ea0b3; }
-    html.theme-dark .trend-clear {
+    html.theme-dark .trend-clear,
+    html.theme-dark .chart-back {
       background: rgba(61, 214, 224, 0.12);
       border-color: rgba(61, 214, 224, 0.35);
       color: #7ee8ef;
@@ -302,7 +330,10 @@
     html.theme-dark tbody td { border-bottom-color: #eef2f3; }
     html.theme-dark .table-panel.is-expanded,
     html.theme-dark .table-panel:fullscreen,
-    html.theme-dark .table-panel:-webkit-full-screen {
+    html.theme-dark .table-panel:-webkit-full-screen,
+    html.theme-dark .chart-panel.is-expanded,
+    html.theme-dark .chart-panel:fullscreen,
+    html.theme-dark .chart-panel:-webkit-full-screen {
       background: #6f7a94;
     }
     html.theme-dark .table-panel.is-expanded .table-wrap,
@@ -337,10 +368,34 @@
       </div>
 
       <nav class="topnav-links" id="phaseNav" aria-label="Fases da análise">
-        <button type="button" class="nav-link active" data-phase="departamentos">Departamentos</button>
-        <button type="button" class="nav-link" data-phase="lojas">Lojas</button>
-        <button type="button" class="nav-link" data-phase="secao">Seção</button>
-        <button type="button" class="nav-link" data-phase="grupos">Grupos</button>
+        <div class="nav-phase">
+          <button type="button" class="nav-link active" data-phase="departamentos">Departamentos</button>
+          <button type="button" class="nav-filter" data-filter-phase="departamentos" aria-expanded="false" title="Escolher departamentos">
+            <span class="nav-filter-count hidden"></span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+        </div>
+        <div class="nav-phase">
+          <button type="button" class="nav-link" data-phase="lojas">Lojas</button>
+          <button type="button" class="nav-filter" data-filter-phase="lojas" aria-expanded="false" title="Escolher lojas">
+            <span class="nav-filter-count hidden"></span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+        </div>
+        <div class="nav-phase">
+          <button type="button" class="nav-link" data-phase="secao">Seção</button>
+          <button type="button" class="nav-filter" data-filter-phase="secao" aria-expanded="false" title="Escolher seções">
+            <span class="nav-filter-count hidden"></span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+        </div>
+        <div class="nav-phase">
+          <button type="button" class="nav-link" data-phase="grupos">Grupos</button>
+          <button type="button" class="nav-filter" data-filter-phase="grupos" aria-expanded="false" title="Escolher grupos">
+            <span class="nav-filter-count hidden"></span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+        </div>
       </nav>
 
       <div class="topnav-right">
@@ -359,6 +414,20 @@
         </button>
       </div>
     </header>
+
+    <div class="phase-filter-pop hidden" id="phaseFilterPop" hidden>
+      <div class="phase-filter-head">
+        <strong id="phaseFilterTitle">Filtrar</strong>
+        <span id="phaseFilterMeta"></span>
+      </div>
+      <input type="search" id="phaseFilterSearch" placeholder="Buscar…" autocomplete="off" />
+      <div class="phase-filter-actions">
+        <button type="button" id="phaseFilterAll">Todos</button>
+        <button type="button" id="phaseFilterNone">Nenhum</button>
+      </div>
+      <div class="phase-filter-list" id="phaseFilterList"></div>
+      <button type="button" class="phase-filter-clear" id="phaseFilterClear">Limpar filtro desta visão</button>
+    </div>
 
     <main class="page">
       <section class="week-bar" aria-label="Semanas da análise">
@@ -399,6 +468,7 @@
       </section>
 
       <p class="base-note" id="storeBaseNote"></p>
+      <p class="base-note filter-note hidden" id="itemFilterNote"></p>
 
       <section class="empty-week-panel hidden" id="emptyWeekPanel" aria-live="polite">
         <div class="empty-week-card">
@@ -422,7 +492,7 @@
         <div class="trend-grid" id="trendGrid"></div>
       </section>
 
-      <section class="panel chart-panel">
+      <section class="panel chart-panel" id="chartPanel">
         <div class="panel-head row">
           <div>
             <h2 id="chartTitle">Comparativo de vendas</h2>
@@ -438,6 +508,19 @@
               <span><i class="dot current"></i> Crescimento YoY</span>
               <span><i class="dot regressao"></i> Regressão YoY</span>
               <span><i class="dot mix"></i> Participação 2026</span>
+            </div>
+            <div class="chart-actions">
+            <button type="button" class="chart-back hidden" id="chartBackBtn">Todos os itens</button>
+            <button type="button" class="expand-btn" id="chartExpandBtn" aria-pressed="false" title="Abrir gráfico em tela cheia">
+              <svg class="expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/>
+              </svg>
+              <svg class="collapse-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <path d="M9 3v5H4M15 3v5h5M9 21v-5H4M15 21v-5h5"/>
+              </svg>
+              <span class="expand-label">Tela cheia</span>
+              <span class="collapse-label">Voltar ao dash</span>
+            </button>
             </div>
           </div>
         </div>
