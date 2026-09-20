@@ -782,6 +782,7 @@ tbody tr.is-selected { background: rgba(63, 154, 168, 0.1); }
 .chart-legend .dot.current { background: var(--teal-800); }
 .chart-legend .dot.previous { background: #d5dee2; }
 .chart-legend .dot.regressao { background: #f0a8a2; }
+.chart-legend .dot.mix { background: var(--teal-500); }
 
 .chart-scroll {
   overflow-x: auto;
@@ -790,6 +791,10 @@ tbody tr.is-selected { background: rgba(63, 154, 168, 0.1); }
   margin: 0 -4px;
   scrollbar-width: thin;
   scrollbar-color: #9bb7bf transparent;
+}
+
+.chart-scroll:has(.is-fit) {
+  overflow: visible;
 }
 
 .chart-scroll::-webkit-scrollbar {
@@ -902,6 +907,261 @@ tbody tr.is-selected { background: rgba(63, 154, 168, 0.1); }
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+}
+
+/* Delta tubes — variação YoY, sem repetir 2025 */
+.chart.is-delta {
+  align-items: end;
+  min-height: 0;
+  gap: clamp(4px, 0.7vw, 10px);
+  padding-top: 12px;
+  grid-template-columns: repeat(var(--cols, 12), minmax(72px, 1fr));
+}
+
+.chart.is-delta.is-fit {
+  width: max-content;
+  min-width: max(100%, calc(var(--cols, 12) * 72px));
+}
+
+@media (min-width: 1100px) {
+  .chart.is-delta.is-fit {
+    width: 100%;
+    min-width: 0;
+    grid-template-columns: repeat(var(--cols, 12), minmax(0, 1fr));
+  }
+}
+
+.bar-label {
+  font-size: 0.64rem;
+  font-weight: 700;
+  color: var(--ink-soft);
+  text-align: center;
+  line-height: 1.2;
+  max-width: 100%;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  word-break: break-word;
+}
+
+.delta-tube {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  width: 100%;
+  padding: 10px 4px 8px;
+  border: 1.5px solid transparent;
+  border-radius: 18px;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  appearance: none;
+  background: transparent;
+  transform: translateZ(0) scale(1);
+  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.22s ease,
+    background 0.22s ease;
+}
+
+.delta-tube:hover,
+.delta-tube.is-hot,
+.delta-tube:focus-visible {
+  z-index: 3;
+  transform: translateY(-6px) scale(1.06);
+  border-color: rgba(52, 116, 133, 0.45);
+  background: rgba(63, 154, 168, 0.08);
+  outline: none;
+}
+
+.delta-tube.is-down:hover,
+.delta-tube.is-down.is-hot,
+.delta-tube.is-down:focus-visible {
+  border-color: rgba(198, 86, 78, 0.45);
+  background: rgba(240, 168, 162, 0.12);
+}
+
+.delta-tube.is-selected {
+  border-color: var(--teal-500);
+  background: rgba(63, 154, 168, 0.1);
+}
+
+.delta-glass {
+  position: relative;
+  width: clamp(18px, 2.4vw, 28px);
+  height: 132px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: linear-gradient(180deg, rgba(255,255,255,0.72), rgba(213, 222, 226, 0.45));
+  border: 1.5px solid rgba(148, 163, 176, 0.45);
+}
+
+.delta-glass::after {
+  content: "";
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  left: 4px;
+  width: 5px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.08));
+  pointer-events: none;
+}
+
+.delta-fill {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 0;
+  border-radius: 999px;
+  transform-origin: bottom;
+  animation: deltaRise 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.delta-tube.is-up .delta-fill {
+  background: linear-gradient(180deg, #5ec4d0 0%, var(--teal-800) 100%);
+}
+
+.delta-tube.is-down .delta-fill {
+  background: linear-gradient(180deg, #f3b7b2 0%, #c6564e 100%);
+}
+
+.delta-tube.is-flat .delta-fill {
+  background: #c5d0d4;
+  height: 6px !important;
+  animation: none;
+}
+
+.delta-pct {
+  font-size: clamp(0.62rem, 1.05vw, 0.8rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--teal-800);
+  line-height: 1.1;
+  max-width: 100%;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.delta-tube.is-down .delta-pct { color: var(--danger); }
+.delta-tube.is-flat .delta-pct { color: var(--muted); }
+
+.delta-delta {
+  display: none;
+}
+
+.delta-tip {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 6px);
+  bottom: auto;
+  transform: translateX(-50%) translateY(-4px);
+  min-width: 168px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 8;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.delta-tip strong {
+  display: block;
+  font-size: 0.72rem;
+  margin-bottom: 4px;
+}
+
+.delta-tip em {
+  display: block;
+  font-style: normal;
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: var(--teal-800);
+}
+
+.delta-tube.is-down .delta-tip em { color: var(--danger); }
+
+.delta-tip small {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 0.68rem;
+}
+
+.delta-tube:hover .delta-tip,
+.delta-tube.is-hot .delta-tip,
+.delta-tube:focus-visible .delta-tip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.delta-mix {
+  display: flex;
+  align-items: stretch;
+  height: 18px;
+  margin-top: 14px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: #eef3f5;
+  border: 1px solid var(--line);
+}
+
+.delta-mix[hidden] { display: none; }
+
+.delta-mix-seg {
+  min-width: 2px;
+  cursor: pointer;
+  transition: filter 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
+  transform: scaleY(1);
+}
+
+.delta-mix-seg.is-up { background: var(--teal-800); }
+.delta-mix-seg.is-down { background: #f0a8a2; }
+.delta-mix-seg.is-flat { background: #c5d0d4; }
+
+.delta-mix-seg:hover,
+.delta-mix-seg.is-hot {
+  filter: brightness(1.12);
+  transform: scaleY(1.45);
+  z-index: 2;
+  border-radius: 4px;
+}
+
+.delta-mix-label {
+  margin-top: 8px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+@keyframes deltaRise {
+  from { height: 0; }
+  to { height: var(--fill, 0%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .delta-fill { animation: none; height: var(--fill, 0%); }
+  .delta-tube,
+  .delta-mix-seg,
+  .delta-tip {
+    transition: none;
+  }
+  .delta-tube:hover,
+  .delta-tube.is-hot,
+  .delta-tube:focus-visible {
+    transform: none;
+  }
 }
 
 /* Spotlight */

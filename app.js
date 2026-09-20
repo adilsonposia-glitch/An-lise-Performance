@@ -38,6 +38,9 @@
     storeBaseNote: document.getElementById("storeBaseNote"),
     metricGroup: document.getElementById("metricGroup"),
     salesChart: document.getElementById("salesChart"),
+    salesMix: document.getElementById("salesMix"),
+    salesMixLabel: document.getElementById("salesMixLabel"),
+    chartLegend: document.getElementById("chartLegend"),
     chartTitle: document.getElementById("chartTitle"),
     chartSubtitle: document.getElementById("chartSubtitle"),
     trendGrid: document.getElementById("trendGrid"),
@@ -651,6 +654,31 @@
     });
   }
 
+  function setChartLegend(mode) {
+    if (!els.chartLegend) return;
+    if (mode === "weeks") {
+      els.chartLegend.innerHTML = `
+        <span><i class="dot current"></i> 2026 deste item</span>
+        <span><i class="dot previous"></i> 2025 deste item</span>
+        <span><i class="dot regressao"></i> 2026 abaixo de 2025</span>`;
+      return;
+    }
+    els.chartLegend.innerHTML = `
+      <span><i class="dot current"></i> Crescimento YoY</span>
+      <span><i class="dot regressao"></i> Regressão YoY</span>
+      <span><i class="dot mix"></i> Participação 2026</span>`;
+  }
+
+  function toneFromPct(pct) {
+    if (pct == null || Number.isNaN(pct) || Math.abs(pct) < 5e-4) return "flat";
+    return pct > 0 ? "up" : "down";
+  }
+
+  function cssEscape(value) {
+    if (window.CSS && typeof window.CSS.escape === "function") return window.CSS.escape(value);
+    return String(value).replace(/"/g, '\\"');
+  }
+
   function renderChart(phase) {
     const m = metricKeys();
     updateMetricButtons(phase);
@@ -680,8 +708,15 @@
     }
     els.salesChart.setAttribute("aria-label", `${name} · ${m.label} nas 4 semanas`);
     els.salesChart.classList.add("is-weeks");
+    els.salesChart.classList.remove("is-delta", "is-fit");
     els.salesChart.style.setProperty("--cols", "4");
     els.salesChart.style.setProperty("--col-min", "150px");
+    setChartLegend("weeks");
+    if (els.salesMix) {
+      els.salesMix.hidden = true;
+      els.salesMix.innerHTML = "";
+    }
+    if (els.salesMixLabel) els.salesMixLabel.hidden = true;
 
     const pairs = series.map((s) => ({ ...s, ...seriesValue(s, m) }));
     const maxVal = Math.max(...pairs.flatMap((s) => [Number(s.v25) || 0, Number(s.v26) || 0]), 1);
@@ -717,51 +752,80 @@
   function renderAllItemsChart(phase, m) {
     const itemWord =
       phase.key === "lojas" ? "loja" : phase.key === "secao" ? "seção" : phase.key === "grupos" ? "grupo" : "departamento";
-    if (els.chartTitle) els.chartTitle.textContent = `${m.labelShort} de cada ${itemWord} · 2026 × 2025`;
+    if (els.chartTitle) els.chartTitle.textContent = `Variação YoY de cada ${itemWord}`;
     if (els.chartSubtitle) {
-      els.chartSubtitle.textContent = `Métrica: ${m.label} daquele ${itemWord} sozinho. Cinza = 2025 dele. Azul = 2026 dele. O total da visão (${fmtMetric(phase.totals[m.key26], m)}) não entra nas barras.`;
+      els.chartSubtitle.textContent = `Só a diferença 2026 vs 2025 em ${m.label}. Altura = intensidade da variação. A faixa de baixo é a participação de 2026. Clique para detalhar.`;
     }
-    els.salesChart.setAttribute("aria-label", `${m.label} por ${itemWord}, 2026 contra 2025`);
+    els.salesChart.setAttribute("aria-label", `Variação percentual YoY de ${m.label} por ${itemWord}`);
     els.salesChart.classList.remove("is-weeks");
+    els.salesChart.classList.add("is-delta");
+    setChartLegend("delta");
 
     const items = [...phase.rows].sort((a, b) => (Number(b[m.key26]) || 0) - (Number(a[m.key26]) || 0));
     if (!items.length) {
       els.salesChart.style.removeProperty("--cols");
       els.salesChart.style.removeProperty("--col-min");
       els.salesChart.innerHTML = `<div class="empty">Sem dados para o gráfico.</div>`;
+      if (els.salesMix) {
+        els.salesMix.hidden = true;
+        els.salesMix.innerHTML = "";
+      }
+      if (els.salesMixLabel) els.salesMixLabel.hidden = true;
       return;
     }
 
-    const colMin = phase.key === "grupos" ? 86 : phase.key === "secao" ? 100 : 108;
+    const fitAll = items.length <= 13;
+    els.salesChart.classList.toggle("is-fit", fitAll);
+    const colMin = fitAll ? 0 : phase.key === "grupos" ? 64 : phase.key === "secao" ? 72 : 78;
     els.salesChart.style.setProperty("--cols", String(items.length));
-    els.salesChart.style.setProperty("--col-min", `${colMin}px`);
+    if (fitAll) els.salesChart.style.removeProperty("--col-min");
+    else els.salesChart.style.setProperty("--col-min", `${colMin}px`);
 
-    const maxVal = Math.max(...items.flatMap((r) => [Number(r[m.key25]) || 0, Number(r[m.key26]) || 0]), 1);
+    const pcts = items.map((r) => Math.abs(Number(r[m.varPct]) || 0));
+    const scaleMax = Math.max(0.08, ...pcts);
+    const tot26 = items.reduce((s, r) => s + Math.max(0, Number(r[m.key26]) || 0), 0) || 1;
 
     els.salesChart.innerHTML = items
-      .map((r) => {
-        const v25 = Number(r[m.key25]) || 0;
+      .map((r, i) => {
         const v26 = Number(r[m.key26]) || 0;
-        const h25 = v25 > 0 ? Math.max(10, Math.round((v25 / maxVal) * 100)) : 4;
-        const h26 = v26 > 0 ? Math.max(10, Math.round((v26 / maxVal) * 100)) : 4;
-        const regressao = v26 < v25;
+        const pct = Number(r[m.varPct]);
+        const delta = rowDelta(r, m);
+        const tone = toneFromPct(pct);
+        const fill = tone === "flat" ? 4 : Math.max(10, Math.round((Math.abs(pct) / scaleMax) * 100));
+        const selected = state.selectedNome && sameItem(state.selectedNome, r.nome) ? " is-selected" : "";
+        const delay = Math.min(i * 28, 360);
         return `
-          <div class="bar-group${regressao ? " regressao" : ""}" data-nome="${escAttr(r.nome)}" title="${cleanName(r.nome)} · 2025 ${fmtMetric(v25, m)} · 2026 ${fmtMetric(v26, m)} · só este item, não o total da rede">
-            <div class="bars">
-              <div class="bar-col">
-                <div class="bar previous" style="height:${h25}px"></div>
-                <span class="bar-year">25</span>
-              </div>
-              <div class="bar-col">
-                <div class="bar current${regressao ? " regressao" : ""}" style="height:${h26}px"></div>
-                <span class="bar-year">26</span>
-              </div>
-            </div>
-            <div class="bar-value-line">${fmtBar(v26, m)}</div>
-            <div class="bar-label">${cleanName(r.nome)}</div>
-          </div>`;
+          <button type="button" class="delta-tube is-${tone}${selected}" data-nome="${escAttr(r.nome)}" style="animation-delay:${delay}ms">
+            <span class="delta-tip">
+              <strong>${cleanName(r.nome)}</strong>
+              <em>${fmtPct(pct)}</em>
+              <small>Δ ${fmtBar(delta, m)} · 2026 ${fmtMetric(v26, m)}</small>
+            </span>
+            <span class="delta-glass" aria-hidden="true">
+              <span class="delta-fill" style="--fill:${fill}%; animation-delay:${delay}ms"></span>
+            </span>
+            <span class="delta-pct">${fmtPct(pct)}</span>
+            <span class="delta-delta">${delta >= 0 ? "+" : ""}${fmtBar(delta, m)}</span>
+            <span class="bar-label">${cleanName(r.nome)}</span>
+          </button>`;
       })
       .join("");
+
+    if (els.salesMix) {
+      els.salesMix.hidden = false;
+      els.salesMix.innerHTML = items
+        .map((r) => {
+          const v26 = Math.max(0, Number(r[m.key26]) || 0);
+          const share = (v26 / tot26) * 100;
+          const tone = toneFromPct(Number(r[m.varPct]));
+          return `<span class="delta-mix-seg is-${tone}" data-nome="${escAttr(r.nome)}" style="flex:${Math.max(share, 0.35)} 1 0" title="${cleanName(r.nome)} · ${share.toFixed(1)}% da visão"></span>`;
+        })
+        .join("");
+    }
+    if (els.salesMixLabel) {
+      els.salesMixLabel.hidden = false;
+      els.salesMixLabel.textContent = `Participação de cada ${itemWord} no total 2026 · passe o cursor para destacar`;
+    }
   }
 
   function renderKpis(phase) {
@@ -1074,6 +1138,29 @@
         if (!group) return;
         selectItem(group.dataset.nome);
       });
+    }
+
+    if (els.salesMix) {
+      els.salesMix.addEventListener("click", (e) => {
+        const seg = e.target.closest("[data-nome]");
+        if (!seg) return;
+        selectItem(seg.dataset.nome);
+      });
+    }
+
+    const chartPanel = els.salesChart && els.salesChart.closest(".chart-panel");
+    if (chartPanel && !chartPanel.dataset.deltaHover) {
+      chartPanel.dataset.deltaHover = "1";
+      const clearHot = () => chartPanel.querySelectorAll(".is-hot").forEach((el) => el.classList.remove("is-hot"));
+      chartPanel.addEventListener("pointerover", (e) => {
+        const item = e.target.closest("[data-nome]");
+        clearHot();
+        if (!item || !item.dataset.nome) return;
+        chartPanel.querySelectorAll(`[data-nome="${cssEscape(item.dataset.nome)}"]`).forEach((el) => {
+          el.classList.add("is-hot");
+        });
+      });
+      chartPanel.addEventListener("pointerleave", clearHot);
     }
 
     if (els.tableBody) {

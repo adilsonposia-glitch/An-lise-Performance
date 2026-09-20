@@ -221,6 +221,39 @@
     html.theme-dark .chart-legend .dot.current { background: #3dd6e0; }
     html.theme-dark .chart-legend .dot.previous { background: #3b5bdb; }
     html.theme-dark .chart-legend .dot.regressao { background: #ff8a80; }
+    html.theme-dark .chart-legend .dot.mix { background: #7ee8ef; }
+    html.theme-dark .delta-tube {
+      background: rgba(255, 255, 255, 0.03);
+    }
+    html.theme-dark .delta-tube:hover,
+    html.theme-dark .delta-tube.is-hot,
+    html.theme-dark .delta-tube.is-selected {
+      background: rgba(61, 214, 224, 0.08);
+      border-color: rgba(61, 214, 224, 0.55);
+    }
+    html.theme-dark .delta-tube.is-down:hover,
+    html.theme-dark .delta-tube.is-down.is-hot,
+    html.theme-dark .delta-tube.is-down.is-selected {
+      border-color: rgba(255, 138, 128, 0.6);
+      background: rgba(255, 138, 128, 0.08);
+    }
+    html.theme-dark .delta-glass {
+      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+      border-color: rgba(255, 255, 255, 0.14);
+    }
+    html.theme-dark .delta-pct { color: #f4f8fb; }
+    html.theme-dark .delta-tube.is-down .delta-pct { color: #ffb4ad; }
+    html.theme-dark .delta-delta { color: #8ea0b3; }
+    html.theme-dark .delta-tip {
+      background: #152036;
+      border-color: rgba(61, 214, 224, 0.28);
+      color: #e8eef6;
+    }
+    html.theme-dark .delta-mix {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(255, 255, 255, 0.08);
+    }
+    html.theme-dark .delta-mix-label { color: #8ea0b3; }
     html.theme-dark .bar.previous { background: #3b5bdb; }
     html.theme-dark .bar-year,
     html.theme-dark .bar-value { color: #8ea0b3; }
@@ -402,15 +435,17 @@
               <button type="button" class="chip hidden" data-metric="clientes" id="metricClientes">Clientes</button>
             </div>
             <div class="chart-legend" id="chartLegend">
-              <span><i class="dot current"></i> 2026 deste item</span>
-              <span><i class="dot previous"></i> 2025 deste item</span>
-              <span><i class="dot regressao"></i> 2026 abaixo de 2025</span>
+              <span><i class="dot current"></i> Crescimento YoY</span>
+              <span><i class="dot regressao"></i> Regressão YoY</span>
+              <span><i class="dot mix"></i> Participação 2026</span>
             </div>
           </div>
         </div>
         <div class="chart-scroll">
-          <div class="chart" id="salesChart" role="img" aria-label="Gráfico comparativo"></div>
+          <div class="chart" id="salesChart" role="img" aria-label="Variação YoY por item"></div>
         </div>
+        <div class="delta-mix" id="salesMix" hidden></div>
+        <p class="delta-mix-label" id="salesMixLabel" hidden>Participação de cada item no total 2026 · passe o cursor para destacar</p>
       </section>
 
       <section class="spotlight-grid">
