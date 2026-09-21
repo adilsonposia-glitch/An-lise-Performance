@@ -200,6 +200,8 @@ if ($EstoqueCsv -and (Test-Path -LiteralPath $EstoqueCsv)) {
       $acc[$key] = [pscustomobject]@{
         nome = $grupo.Trim()
         key = $key
+        secao = $parts[1]
+        dept = $parts[0]
         skus = 0.0
         valor = 0.0
         mediaCustoDia = 0.0
@@ -546,6 +548,8 @@ foreach ($e in $estoques) {
   $rowsOut += [pscustomobject]@{
     nome = if ($v) { $v.nome } else { $e.nome }
     key = if ($v) { Get-NameKey $v.nome } else { $e.key }
+    secao = if ($e.PSObject.Properties["secao"]) { [string]$e.secao } else { "" }
+    dept = if ($e.PSObject.Properties["dept"]) { [string]$e.dept } else { "" }
     skus = $e.skus
     valorEstoque = $e.valor
     mediaVendaCustoDia = $e.mediaCustoDia
@@ -624,6 +628,16 @@ $payload = [ordered]@{
     [ordered]@{ status = "excesso"; label = "Excesso"; count = $excesso.Count; tom = "warn" }
     [ordered]@{ status = "saudavel"; label = "Saudavel"; count = $saudavel.Count; tom = "ok" }
   )
+  grupos = @($rowsOut | ForEach-Object {
+    [ordered]@{
+      nome = $_.nome
+      secao = $_.secao
+      dept = $_.dept
+      valorEstoque = $_.valorEstoque
+      diasCobertura = $_.diasCobertura
+      status = $_.status
+    }
+  })
   distribuicao = $distribuicao
 }
 

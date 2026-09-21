@@ -277,22 +277,172 @@
     .pill-status.danger { background: #ffe4e6; color: #9f1239; }
     .pill-status.warn { background: #ffedd5; color: #9a3412; }
     .pill-status.ok { background: #ccfbf1; color: #0f766e; }
-    .est-meta-panel { margin-bottom: 18px; }
-    .est-meta-panel .table-wrap { max-height: 420px; }
-    .est-meta-table {
-      min-width: 720px;
-      font-size: 0.8rem;
+    .est-help-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--teal-800);
+      font: 800 1.05rem/1 var(--display);
+      cursor: pointer;
     }
-    .est-meta-table th,
-    .est-meta-table td {
-      padding: 7px 10px;
-      white-space: nowrap;
+    .est-help-btn:hover,
+    .est-help-btn[aria-expanded="true"] {
+      background: var(--teal-800);
+      color: #fff;
+      border-color: var(--teal-800);
+    }
+    .est-help-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(28, 42, 49, 0.35);
+      z-index: 4000;
+    }
+    .est-help-drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      z-index: 4001;
+      width: min(480px, 100vw);
+      height: 100%;
+      background: #fff;
+      padding: 18px 18px 28px;
+      overflow: auto;
+      box-sizing: border-box;
+      border-left: 1px solid var(--line);
+    }
+    .est-help-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .est-help-head h2 { margin: 0; font-size: 1.15rem; }
+    .est-help-close {
+      border: 0;
+      background: transparent;
+      font-size: 1.6rem;
+      line-height: 1;
+      cursor: pointer;
+      color: var(--ink-soft);
+    }
+    .est-help-tabs { display: flex; gap: 8px; margin-bottom: 14px; }
+    .est-help-tab {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-weight: 700;
+      font-size: 0.78rem;
+      cursor: pointer;
+    }
+    .est-help-tab.active { background: var(--teal-800); color: #fff; border-color: var(--teal-800); }
+    .est-help-pane { font-size: 0.84rem; color: var(--ink-soft); line-height: 1.5; }
+    .est-help-pane h3 { margin: 14px 0 6px; color: var(--ink); font-size: 0.88rem; }
+    .est-help-pane p { margin: 0 0 8px; }
+    .est-help-card {
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      margin-bottom: 8px;
+      background: #f7fafb;
+    }
+    .est-help-card strong { display: block; color: var(--ink); margin-bottom: 4px; }
+    .est-help-card.danger { background: #fff1f2; border-color: #fecaca; }
+    .est-help-card.warn { background: #fff7ed; border-color: #fed7aa; }
+    .est-help-mini {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.74rem;
+      margin-top: 8px;
+    }
+    .est-help-mini th,
+    .est-help-mini td {
+      padding: 5px 6px;
+      border-bottom: 1px solid var(--line);
+      text-align: right;
       font-variant-numeric: tabular-nums;
     }
-    .est-meta-table th.num,
-    .est-meta-table td.num { text-align: right; }
-    .est-meta-table td.is-down { color: #9a3412; font-weight: 700; }
-    .est-meta-table tfoot td { font-weight: 800; background: #f7fafb; }
+    .est-help-mini th:first-child,
+    .est-help-mini td:first-child { text-align: left; }
+    .est-help-mini tfoot td { font-weight: 800; }
+    .est-journey {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      margin-bottom: 12px;
+      border-radius: 12px;
+      background: #eef7f9;
+      border: 1px solid #d9eef2;
+      font-size: 0.8rem;
+    }
+    .est-journey strong { display: block; font-size: 1rem; }
+    .est-journey-bar {
+      height: 10px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #fed7aa, #ccfbf1);
+      position: relative;
+    }
+    .est-journey-now,
+    .est-journey-goal {
+      position: absolute;
+      top: -4px;
+      width: 3px;
+      height: 18px;
+      border-radius: 2px;
+    }
+    .est-journey-now { background: #c2410c; }
+    .est-journey-goal { background: #0f766e; }
+    .est-fora-kpis {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .est-fora-kpis article {
+      padding: 8px 10px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+    .est-fora-kpis small { display: block; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; color: var(--ink-soft); }
+    .est-fora-kpis strong { display: block; margin-top: 2px; }
+    .est-fora-kpis article.is-over { background: #fff1f2; border-color: #fecaca; }
+    .est-fora-kpis article.is-ok { background: #f0fdfa; border-color: #99f6e4; }
+    .est-fora-table { min-width: 780px; font-size: 0.78rem; }
+    .est-fora-table th,
+    .est-fora-table td {
+      padding: 7px 8px;
+      vertical-align: middle;
+    }
+    .est-fora-table .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .est-fora-table tr.is-over td { background: #fff7ed; }
+    .est-fora-table tr.is-far td { background: #fff1f2; }
+    .est-fora-table tr.is-over td:first-child { box-shadow: inset 4px 0 0 #c2410c; }
+    .est-fora-table tr.is-far td:first-child { box-shadow: inset 4px 0 0 #be123c; }
+    .est-fora-table .delta-over { color: #9f1239; font-weight: 800; }
+    .est-fora-table .delta-ok { color: #0f766e; font-weight: 700; }
+    .meta-track {
+      position: relative;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(31, 74, 87, 0.08);
+      min-width: 88px;
+    }
+    .meta-fill { height: 100%; border-radius: 999px; background: #0f766e; }
+    .meta-fill.warn { background: #c2410c; }
+    .meta-fill.danger { background: #be123c; }
+    .meta-mark {
+      position: absolute;
+      top: -3px;
+      width: 2px;
+      height: 14px;
+      background: var(--ink);
+    }
   </style>
 </head>
 <body>
@@ -315,8 +465,25 @@
       </nav>
       <div class="topnav-right">
         <span class="period-mini" id="estPosicao">Posição · —</span>
+        <button type="button" class="est-help-btn" id="estHelpBtn" aria-haspopup="dialog" aria-expanded="false" title="Regras e gabarito de cobertura">
+          ?
+        </button>
       </div>
     </header>
+
+    <div class="est-help-backdrop" id="estHelpBackdrop" hidden></div>
+    <aside class="est-help-drawer" id="estHelpDrawer" hidden role="dialog" aria-labelledby="estHelpTitle">
+      <div class="est-help-head">
+        <h2 id="estHelpTitle">Regras do radar</h2>
+        <button type="button" class="est-help-close" id="estHelpClose" aria-label="Fechar">×</button>
+      </div>
+      <div class="est-help-tabs" role="tablist">
+        <button type="button" class="est-help-tab active" data-help="regras">Regras</button>
+        <button type="button" class="est-help-tab" data-help="gabarito">Gabarito 30→27</button>
+      </div>
+      <div class="est-help-pane" id="estHelpRegras"></div>
+      <div class="est-help-pane" id="estHelpGabarito" hidden></div>
+    </aside>
 
     <main class="page">
       <section class="page-head est-hero">
@@ -327,8 +494,6 @@
       </section>
 
       <p class="est-exec" id="estExec"></p>
-
-      <div class="est-rules" id="estRules" aria-label="Regras de classificação"></div>
 
       <section class="kpi-row" id="estKpis" aria-label="Indicadores de estoque"></section>
 
@@ -423,24 +588,33 @@
           </section>
         </div>
 
-        <section class="panel table-panel est-meta-panel">
-          <div class="panel-head">
-            <h2>Meta de cobertura · 27 dias</h2>
-            <p id="estMetaSub">Gabarito nível 2 · atual 30,51 d · fator 27 ÷ 30,51 = −11,5% no estoque</p>
+        <section class="panel table-panel est-meta-panel" id="estForaPanel">
+          <div class="panel-head row">
+            <div>
+              <h2>Grupos fora da meta 27 dias</h2>
+              <p id="estForaSub">Cobertura do grupo vs dias-meta da seção (gabarito × 27/30,51)</p>
+            </div>
+            <div class="table-tools">
+              <button type="button" class="expand-btn" id="estGabaritoBtn" title="Abrir gabarito atual × meta">
+                Ver gabarito
+              </button>
+            </div>
           </div>
+          <div class="est-journey" id="estJourney"></div>
+          <div class="est-fora-kpis" id="estForaKpis"></div>
           <div class="table-wrap">
-            <table class="est-meta-table" id="estMetaTable">
+            <table class="est-fora-table" id="estForaTable">
               <thead>
                 <tr>
-                  <th>Nível 2</th>
-                  <th class="num">Dias atual</th>
-                  <th class="num">% venda</th>
-                  <th class="num">Dias meta 27d</th>
-                  <th class="num">Δ dias</th>
+                  <th>Grupo</th>
+                  <th>Seção</th>
+                  <th class="num">Dias</th>
+                  <th class="num">Meta seção</th>
+                  <th class="num">Δ</th>
+                  <th>Vs meta</th>
                 </tr>
               </thead>
-              <tbody id="estMetaBody"></tbody>
-              <tfoot id="estMetaFoot"></tfoot>
+              <tbody id="estForaBody"></tbody>
             </table>
           </div>
         </section>
@@ -490,18 +664,6 @@
         `A cobertura usa o CMV médio semanal 2026 das últimas 4 semanas (mesmo unidade do estoque), não a quantidade. ` +
         `Fora do estoque: Bolsas e sacolas (Bazar), Lanchonete e Padaria fabricação própria — permanece Padaria industrializada. ` +
         `A matriz ao lado inclui o CD 70 e a Loja 17 para ver o estoque total da empresa e o que pode ser movimentado.`;
-
-      document.getElementById("estRules").innerHTML = [
-        ["Ruptura", m.regras.ruptura, "danger"],
-        ["Crítico baixo", m.regras.critico_baixo, "danger"],
-        ["Atenção baixo", m.regras.atencao_baixo, "warn"],
-        ["Excesso", m.regras.excesso, "warn"],
-      ]
-        .map(
-          ([title, body, cls]) =>
-            `<article class="est-rule ${cls}"><strong>${title}</strong>${body}</article>`
-        )
-        .join("");
 
       document.getElementById("estKpis").innerHTML = [
         ["Valor em estoque", brl(t.valorEstoque), `${num(t.grupos)} grupos`, t.valorEstoque],
@@ -1030,41 +1192,178 @@
           ["PERECIVEIS \\ SALGADOS", 27.29, 2.92],
         ],
       };
-      const renderMeta27 = () => {
-        const fator = meta27.alvo / meta27.atual;
-        const body = document.getElementById("estMetaBody");
-        const foot = document.getElementById("estMetaFoot");
-        if (!body) return;
-        body.innerHTML = meta27.linhas
+      const metaFator = meta27.alvo / meta27.atual;
+      const normKey = (s) =>
+        String(s || "")
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .toUpperCase()
+          .trim();
+      const metaBySecao = {};
+      meta27.linhas.forEach(([path, dias, part]) => {
+        const bits = path.split("\\").map((x) => x.trim());
+        const sec = bits[bits.length - 1];
+        metaBySecao[normKey(sec)] = {
+          path,
+          secao: sec,
+          atual: dias,
+          part,
+          alvo: dias * metaFator,
+        };
+      });
+
+      const gabaritoRowsHtml = () =>
+        meta27.linhas
           .map(([nome, dias, part]) => {
-            const alvo = dias * fator;
-            const delta = alvo - dias;
+            const alvo = dias * metaFator;
             return `<tr>
               <td>${esc(nome)}</td>
-              <td class="num">${num(dias, 2)}</td>
-              <td class="num">${num(part, 2)}%</td>
-              <td class="num">${num(alvo, 2)}</td>
-              <td class="num is-down">${num(delta, 2)}</td>
+              <td>${num(dias, 2)}</td>
+              <td>${num(part, 2)}%</td>
+              <td>${num(alvo, 2)}</td>
+              <td>${num(alvo - dias, 2)}</td>
             </tr>`;
           })
           .join("");
-        if (foot) {
-          foot.innerHTML = `<tr>
-            <td>LOJA</td>
-            <td class="num">${num(meta27.atual, 2)}</td>
-            <td class="num">100%</td>
-            <td class="num">${num(meta27.alvo, 2)}</td>
-            <td class="num is-down">${num(meta27.alvo - meta27.atual, 2)}</td>
-          </tr>`;
-        }
+
+      const setHelpTab = (key) => {
+        document.querySelectorAll(".est-help-tab").forEach((b) => {
+          b.classList.toggle("active", b.getAttribute("data-help") === key);
+        });
+        document.getElementById("estHelpRegras").hidden = key !== "regras";
+        document.getElementById("estHelpGabarito").hidden = key !== "gabarito";
       };
+      const openHelp = (tab) => {
+        document.getElementById("estHelpBackdrop").hidden = false;
+        document.getElementById("estHelpDrawer").hidden = false;
+        document.getElementById("estHelpBtn").setAttribute("aria-expanded", "true");
+        setHelpTab(tab || "regras");
+      };
+      const closeHelp = () => {
+        document.getElementById("estHelpBackdrop").hidden = true;
+        document.getElementById("estHelpDrawer").hidden = true;
+        document.getElementById("estHelpBtn").setAttribute("aria-expanded", "false");
+      };
+
+      const renderHelp = () => {
+        document.getElementById("estHelpRegras").innerHTML = `
+          <div class="est-help-card danger"><strong>Ruptura</strong>${esc(m.regras.ruptura)}</div>
+          <div class="est-help-card danger"><strong>Crítico baixo</strong>${esc(m.regras.critico_baixo)}</div>
+          <div class="est-help-card warn"><strong>Atenção baixo</strong>${esc(m.regras.atencao_baixo)}</div>
+          <div class="est-help-card warn"><strong>Excesso</strong>${esc(m.regras.excesso)}</div>
+          <h3>Cobertura</h3>
+          <p>Dias = estoque R$ ÷ CMV médio semanal das 4 semanas × 7. Mesma base (12 lojas), sem CD 70 e sem Loja 17 nessa conta.</p>
+          <h3>Fora do estoque</h3>
+          <p>Bolsas e sacolas (Bazar), Lanchonete e Padaria fabricação própria. Permanece só Padaria industrializada.</p>
+          <h3>Matriz por loja</h3>
+          <p>Subgrupo × CD 70 + 13 lojas (inclui 17). Célula vermelha = estoque no CD e zero na loja. Filtro Valor R$ / Quantidade.</p>
+          <h3>Meta 27 dias</h3>
+          <p>Partida = 30,51 dias da loja (gabarito nível 2). Meta = 27 dias. Fator 27 ÷ 30,51 = −11,5% no estoque, mantendo a % de venda de cada seção. Dias-meta da seção = dias atuais × esse fator. Grupo acima da meta = cobertura do grupo maior que o dias-meta da seção.</p>
+        `;
+        document.getElementById("estHelpGabarito").innerHTML = `
+          <p>Realidade <strong>30,51 d</strong> → objetivo <strong>27 d</strong>. Participações de venda ficam iguais; cada seção reduz 11,5% dos dias.</p>
+          <table class="est-help-mini">
+            <thead>
+              <tr><th>Nível 2</th><th>Atual</th><th>% venda</th><th>Meta 27d</th><th>Δ</th></tr>
+            </thead>
+            <tbody>${gabaritoRowsHtml()}</tbody>
+            <tfoot>
+              <tr>
+                <td>LOJA</td>
+                <td>${num(meta27.atual, 2)}</td>
+                <td>100%</td>
+                <td>${num(meta27.alvo, 2)}</td>
+                <td>${num(meta27.alvo - meta27.atual, 2)}</td>
+              </tr>
+            </tfoot>
+          </table>
+        `;
+      };
+
+      const renderJourney = () => {
+        const maxD = Math.max(meta27.atual, meta27.alvo);
+        const nowPct = (meta27.atual / maxD) * 100;
+        const goalPct = (meta27.alvo / maxD) * 100;
+        document.getElementById("estJourney").innerHTML = `
+          <div><small>Atual</small><strong>${num(meta27.atual, 2)} d</strong></div>
+          <div class="est-journey-bar" title="De 30,51 para 27 dias">
+            <i class="est-journey-now" style="left:${nowPct}%"></i>
+            <i class="est-journey-goal" style="left:${goalPct}%"></i>
+          </div>
+          <div><small>Meta</small><strong>${num(meta27.alvo, 2)} d</strong></div>
+        `;
+      };
+
+      const renderForaMeta = () => {
+        const grupos = data.grupos || [];
+        const rows = grupos
+          .map((g) => {
+            const meta = metaBySecao[normKey(g.secao)];
+            if (!meta || g.diasCobertura == null) return null;
+            const delta = Number(g.diasCobertura) - meta.alvo;
+            return { ...g, meta, delta, over: delta > 0.05 };
+          })
+          .filter(Boolean)
+          .sort((a, b) => b.delta - a.delta);
+        const over = rows.filter((r) => r.over);
+        const far = over.filter((r) => r.delta / r.meta.alvo >= 0.2);
+        document.getElementById("estForaKpis").innerHTML = `
+          <article class="is-over"><small>Acima da meta</small><strong>${over.length}</strong><span>grupos a reduzir</span></article>
+          <article class="is-over"><small>Bem acima (+20%)</small><strong>${far.length}</strong><span>prioridade</span></article>
+          <article class="is-ok"><small>Na meta ou abaixo</small><strong>${rows.length - over.length}</strong><span>já no caminho</span></article>
+        `;
+        document.getElementById("estForaSub").textContent =
+          `${over.length} grupos acima do dias-meta da seção · barra laranja/vermelha = fora · traço = meta`;
+        const shown = rows.filter((r) => r.over);
+        document.getElementById("estForaBody").innerHTML = shown
+          .map((r) => {
+            const scale = Math.max(r.diasCobertura, r.meta.alvo, 1);
+            const fill = Math.min(100, (r.diasCobertura / scale) * 100);
+            const mark = Math.min(100, (r.meta.alvo / scale) * 100);
+            const farRow = r.delta / r.meta.alvo >= 0.2;
+            const tone = farRow ? "danger" : "warn";
+            return `<tr class="${farRow ? "is-far" : "is-over"}">
+              <td><strong>${esc(r.nome)}</strong></td>
+              <td>${esc(r.secao || r.meta.secao)}</td>
+              <td class="num">${num(r.diasCobertura, 1)}</td>
+              <td class="num">${num(r.meta.alvo, 1)}</td>
+              <td class="num delta-over">+${num(r.delta, 1)}</td>
+              <td>
+                <div class="meta-track" title="${num(r.diasCobertura, 1)} d vs meta ${num(r.meta.alvo, 1)} d">
+                  <div class="meta-fill ${tone}" style="width:${fill}%"></div>
+                  <i class="meta-mark" style="left:${mark}%"></i>
+                </div>
+              </td>
+            </tr>`;
+          })
+          .join("");
+      };
+
+      renderHelp();
+      document.getElementById("estHelpBtn")?.addEventListener("click", () => {
+        const open = document.getElementById("estHelpBtn").getAttribute("aria-expanded") === "true";
+        if (open) closeHelp();
+        else openHelp("regras");
+      });
+      document.getElementById("estHelpClose")?.addEventListener("click", closeHelp);
+      document.getElementById("estHelpBackdrop")?.addEventListener("click", closeHelp);
+      document.querySelectorAll(".est-help-tab").forEach((btn) => {
+        btn.addEventListener("click", () => setHelpTab(btn.getAttribute("data-help")));
+      });
+      document.getElementById("estGabaritoBtn")?.addEventListener("click", () => openHelp("gabarito"));
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && document.getElementById("estHelpBtn").getAttribute("aria-expanded") === "true") {
+          closeHelp();
+        }
+      });
 
       applyTabDefaultSort();
       paintTabs();
       renderTable();
       renderExcessoMini();
       renderMatriz();
-      renderMeta27();
+      renderJourney();
+      renderForaMeta();
     })();
   </script>
 </body>
