@@ -277,9 +277,22 @@
     .pill-status.danger { background: #ffe4e6; color: #9f1239; }
     .pill-status.warn { background: #ffedd5; color: #9a3412; }
     .pill-status.ok { background: #ccfbf1; color: #0f766e; }
-    @media (max-width: 980px) {
-      .est-rules, .est-grid-2 { grid-template-columns: 1fr; }
+    .est-meta-panel { margin-bottom: 18px; }
+    .est-meta-panel .table-wrap { max-height: 420px; }
+    .est-meta-table {
+      min-width: 720px;
+      font-size: 0.8rem;
     }
+    .est-meta-table th,
+    .est-meta-table td {
+      padding: 7px 10px;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+    .est-meta-table th.num,
+    .est-meta-table td.num { text-align: right; }
+    .est-meta-table td.is-down { color: #9a3412; font-weight: 700; }
+    .est-meta-table tfoot td { font-weight: 800; background: #f7fafb; }
   </style>
 </head>
 <body>
@@ -391,24 +404,46 @@
         <section class="panel chart-panel est-excesso-panel">
           <div class="panel-head">
             <h2>Maior capital em excesso</h2>
-            <p>Clique em Estoque para ordenar · cobertura &gt; 60 dias</p>
+              <p>Clique em Estoque para ordenar · cobertura &gt; 60 dias</p>
+            </div>
+            <div class="table-wrap">
+              <table class="est-excesso-table" id="estExcessoTable">
+                <thead>
+                  <tr>
+                    <th>Grupo</th>
+                    <th>Dias</th>
+                    <th class="sortable is-active" data-sort="valorEstoque" id="estExcessoSortValor" title="Ordenar por valor de estoque">
+                      Estoque <span class="sort-ind" aria-hidden="true">↓</span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody id="estExcessoMini"></tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+
+        <section class="panel table-panel est-meta-panel">
+          <div class="panel-head">
+            <h2>Meta de cobertura · 27 dias</h2>
+            <p id="estMetaSub">Gabarito nível 2 · atual 30,51 d · fator 27 ÷ 30,51 = −11,5% no estoque</p>
           </div>
           <div class="table-wrap">
-            <table class="est-excesso-table" id="estExcessoTable">
+            <table class="est-meta-table" id="estMetaTable">
               <thead>
                 <tr>
-                  <th>Grupo</th>
-                  <th>Dias</th>
-                  <th class="sortable is-active" data-sort="valorEstoque" id="estExcessoSortValor" title="Ordenar por valor de estoque">
-                    Estoque <span class="sort-ind" aria-hidden="true">↓</span>
-                  </th>
+                  <th>Nível 2</th>
+                  <th class="num">Dias atual</th>
+                  <th class="num">% venda</th>
+                  <th class="num">Dias meta 27d</th>
+                  <th class="num">Δ dias</th>
                 </tr>
               </thead>
-              <tbody id="estExcessoMini"></tbody>
+              <tbody id="estMetaBody"></tbody>
+              <tfoot id="estMetaFoot"></tfoot>
             </table>
           </div>
         </section>
-      </div>
 
       <footer class="footer">
         <div class="footer-copy">
@@ -453,6 +488,7 @@
         `Há ${t.ruptura} ruptura(s) com giro recente, ${t.criticoBaixo} grupos com menos de 1 semana de cobertura ` +
         `e ${t.excesso} em excesso (capital parado ≈ ${brl(t.valorEmExcesso)}). ` +
         `A cobertura usa o CMV médio semanal 2026 das últimas 4 semanas (mesmo unidade do estoque), não a quantidade. ` +
+        `Fora do estoque: Bolsas e sacolas (Bazar), Lanchonete e Padaria fabricação própria — permanece Padaria industrializada. ` +
         `A matriz ao lado inclui o CD 70 e a Loja 17 para ver o estoque total da empresa e o que pode ser movimentado.`;
 
       document.getElementById("estRules").innerHTML = [
@@ -966,11 +1002,69 @@
         });
       });
 
+      const meta27 = {
+        atual: 30.51,
+        alvo: 27,
+        linhas: [
+          ["MERCEARIA NAO ALIMENTOS \\ BAZAR", 33.3, 3.43],
+          ["MERCEARIA NAO ALIMENTOS \\ LIMPEZA", 40.34, 6.59],
+          ["MERCEARIA NAO ALIMENTOS \\ PERFUMARIA", 49.25, 7.73],
+          ["MERCEARIA NAO ALIMENTOS \\ PETSHOP", 47.48, 0.34],
+          ["MERCEARIA \\ BEBIDAS ALCOOLICAS", 32.1, 5.33],
+          ["MERCEARIA \\ BEBIDAS NAO ALCOOLICAS", 22.53, 3.88],
+          ["MERCEARIA \\ BISCOITO-TORRADA-BATATA", 42.8, 6.14],
+          ["MERCEARIA \\ BOMBONIERE", 44.45, 2.75],
+          ["MERCEARIA \\ CEREAIS", 34.09, 3.73],
+          ["MERCEARIA \\ CONSERVAS", 35.44, 3.81],
+          ["MERCEARIA \\ MASSAS", 36.66, 1.39],
+          ["MERCEARIA \\ MATINAIS", 57.3, 9.46],
+          ["MERCEARIA \\ OLEOS VEGETAIS - BANHA", 45.77, 2.91],
+          ["MERCEARIA \\ SOBREMESAS", 34.35, 2.96],
+          ["PERECIVEIS \\ ACOUGUE", 28.78, 16.5],
+          ["PERECIVEIS \\ CONGELADO", 33.32, 3.9],
+          ["PERECIVEIS \\ FLV", 3.57, 1.81],
+          ["PERECIVEIS \\ LATICINIOS", 21.66, 8.87],
+          ["PERECIVEIS \\ LEITES", 39.36, 3.48],
+          ["PERECIVEIS \\ PADARIA", 8.69, 0.76],
+          ["PERECIVEIS \\ PEIXARIA", 70.31, 1.31],
+          ["PERECIVEIS \\ SALGADOS", 27.29, 2.92],
+        ],
+      };
+      const renderMeta27 = () => {
+        const fator = meta27.alvo / meta27.atual;
+        const body = document.getElementById("estMetaBody");
+        const foot = document.getElementById("estMetaFoot");
+        if (!body) return;
+        body.innerHTML = meta27.linhas
+          .map(([nome, dias, part]) => {
+            const alvo = dias * fator;
+            const delta = alvo - dias;
+            return `<tr>
+              <td>${esc(nome)}</td>
+              <td class="num">${num(dias, 2)}</td>
+              <td class="num">${num(part, 2)}%</td>
+              <td class="num">${num(alvo, 2)}</td>
+              <td class="num is-down">${num(delta, 2)}</td>
+            </tr>`;
+          })
+          .join("");
+        if (foot) {
+          foot.innerHTML = `<tr>
+            <td>LOJA</td>
+            <td class="num">${num(meta27.atual, 2)}</td>
+            <td class="num">100%</td>
+            <td class="num">${num(meta27.alvo, 2)}</td>
+            <td class="num is-down">${num(meta27.alvo - meta27.atual, 2)}</td>
+          </tr>`;
+        }
+      };
+
       applyTabDefaultSort();
       paintTabs();
       renderTable();
       renderExcessoMini();
       renderMatriz();
+      renderMeta27();
     })();
   </script>
 </body>

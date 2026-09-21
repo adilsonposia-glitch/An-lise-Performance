@@ -42,9 +42,17 @@ function Get-NameKey([string]$name) {
 function Test-Excluded([string]$name) {
   $n = Normalize-Name $name
   $base = ($n -replace "\s*\(\d+\)\s*$", "").Trim()
-  foreach ($p in @("^NAO REVENDA\b","^INATIVOS\b","^SERVICOS\b","^SERVICO\b","^RECICLAVEIS\b","^FRETE\b","^COMODATO\b","^MATERIA PRIMA\b")) {
+  foreach ($p in @("^NAO REVENDA\b","^INATIVOS\b","^SERVICOS\b","^SERVICO\b","^RECICLAVEIS\b","^FRETE\b","^COMODATO\b","^MATERIA PRIMA\b","^BOLSAS E SACOLAS\b","^LANCHONETE\b","^PADARIA FABRICACAO\b")) {
     if ($base -match $p) { return $true }
   }
+  return $false
+}
+
+function Test-SkipEstoqueItem([string]$secao, [string]$grupo) {
+  $s = Normalize-Name $secao
+  $g = Normalize-Name $grupo
+  if ($s -match '\bBAZAR\b' -and $g -match 'BOLSAS E SACOLAS') { return $true }
+  if ($s -match '\bPADARIA\b' -and ($g -match '^LANCHONETE\b' -or $g -match 'PADARIA FABRICACAO')) { return $true }
   return $false
 }
 
@@ -146,6 +154,7 @@ if ($EstoqueCsv -and (Test-Path -LiteralPath $EstoqueCsv)) {
     $grupo = $parts[2]
     $subgrupo = $parts[3]
     if ([string]::IsNullOrWhiteSpace($grupo) -or [string]::IsNullOrWhiteSpace($subgrupo)) { continue }
+    if (Test-SkipEstoqueItem $parts[1] $grupo) { continue }
     $skus = if ($iSku -ge 0) { Parse-BrNum $cols[$iSku] } else { 0 }
     $qtdEst = if ($iQtd -ge 0) { Parse-BrNum $cols[$iQtd] } else { 0 }
     $valor = if ($iCusto -ge 0) { Parse-BrNum $cols[$iCusto] } else { 0 }
@@ -530,6 +539,7 @@ function Classify-Row($e, $v, $cob) {
 
 $rowsOut = @()
 foreach ($e in $estoques) {
+  if ($e.excluido) { continue }
   $v = Resolve-Venda $e
   $cob = Get-Cobertura $e.valor $v $e.diasCobertura
   $cls = Classify-Row $e $v $cob
