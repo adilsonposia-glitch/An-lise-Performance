@@ -33,7 +33,7 @@
                                 "atencao_baixo":  "Cobertura entre 7 e 14 dias",
                                 "excesso":  "Cobertura acima de 60 dias e valor estoque \u003e= 50000"
                             },
-                 "geradoEm":  "2026-09-21 16:05"
+                 "geradoEm":  "2026-09-21 16:48"
              },
     "totais":  {
                    "grupos":  185,
@@ -57,6 +57,7 @@
                              "dept":  "PERECIVEIS",
                              "skus":  664,
                              "valorEstoque":  267148.13,
+                             "qtdEstoque":  42009,
                              "mediaVendaCustoDia":  12950.17,
                              "diasCobertura":  3.9,
                              "semanasCobertura":  0.56,
@@ -83,6 +84,7 @@
                              "dept":  "PERECIVEIS",
                              "skus":  574,
                              "valorEstoque":  205440.01,
+                             "qtdEstoque":  35347,
                              "mediaVendaCustoDia":  10127.05,
                              "diasCobertura":  4.1,
                              "semanasCobertura":  0.59,
@@ -109,6 +111,7 @@
                              "dept":  "PERECIVEIS",
                              "skus":  642,
                              "valorEstoque":  1722046.65,
+                             "qtdEstoque":  65685,
                              "mediaVendaCustoDia":  8087.09,
                              "diasCobertura":  6.9,
                              "semanasCobertura":  0.99,
@@ -135,6 +138,7 @@
                              "dept":  "PERECIVEIS",
                              "skus":  442,
                              "valorEstoque":  37372.89,
+                             "qtdEstoque":  14674,
                              "mediaVendaCustoDia":  5450.33,
                              "diasCobertura":  3.2,
                              "semanasCobertura":  0.45,
@@ -161,6 +165,7 @@
                              "dept":  "PERECIVEIS",
                              "skus":  142,
                              "valorEstoque":  180001.85,
+                             "qtdEstoque":  20160,
                              "mediaVendaCustoDia":  3645.64,
                              "diasCobertura":  5.6,
                              "semanasCobertura":  0.8,
@@ -187,6 +192,7 @@
                              "dept":  "PERECIVEIS",
                              "skus":  262,
                              "valorEstoque":  85167.05,
+                             "qtdEstoque":  9887,
                              "mediaVendaCustoDia":  1155.56,
                              "diasCobertura":  6.2,
                              "semanasCobertura":  0.88,
@@ -213,6 +219,7 @@
                              "dept":  "PERECIVEIS",
                              "skus":  55,
                              "valorEstoque":  70329.52,
+                             "qtdEstoque":  5520,
                              "mediaVendaCustoDia":  842.09,
                              "diasCobertura":  6.7,
                              "semanasCobertura":  0.96,
@@ -239,6 +246,7 @@
                              "dept":  "PERECIVEIS",
                              "skus":  13,
                              "valorEstoque":  3603.2,
+                             "qtdEstoque":  378,
                              "mediaVendaCustoDia":  67.76,
                              "diasCobertura":  1.3,
                              "semanasCobertura":  0.19,
@@ -265,6 +273,7 @@
                              "dept":  "PERECIVEIS",
                              "skus":  10,
                              "valorEstoque":  1783.58,
+                             "qtdEstoque":  279,
                              "mediaVendaCustoDia":  35.07,
                              "diasCobertura":  6.6,
                              "semanasCobertura":  0.95,
@@ -293,6 +302,7 @@
                              "dept":  "PERECIVEIS",
                              "skus":  1479,
                              "valorEstoque":  1034045.7,
+                             "qtdEstoque":  103448,
                              "mediaVendaCustoDia":  10957.85,
                              "diasCobertura":  9.2,
                              "semanasCobertura":  1.31,
@@ -319,6 +329,7 @@
                              "dept":  "PERECIVEIS",
                              "skus":  407,
                              "valorEstoque":  569455.17,
+                             "qtdEstoque":  147999,
                              "mediaVendaCustoDia":  8143.17,
                              "diasCobertura":  11.4,
                              "semanasCobertura":  1.62,
@@ -345,6 +356,7 @@
                              "dept":  "MERCEARIA",
                              "skus":  97,
                              "valorEstoque":  129537.99,
+                             "qtdEstoque":  89126,
                              "mediaVendaCustoDia":  5458.58,
                              "diasCobertura":  10,
                              "semanasCobertura":  1.42,
@@ -371,6 +383,7 @@
                              "dept":  "PERECIVEIS",
                              "skus":  2496,
                              "valorEstoque":  1252608.86,
+                             "qtdEstoque":  101187,
                              "mediaVendaCustoDia":  6604.23,
                              "diasCobertura":  11.1,
                              "semanasCobertura":  1.58,
@@ -397,6 +410,7 @@
                              "dept":  "PERECIVEIS",
                              "skus":  2438,
                              "valorEstoque":  494849.06,
+                             "qtdEstoque":  78777,
                              "mediaVendaCustoDia":  6155.51,
                              "diasCobertura":  11.5,
                              "semanasCobertura":  1.64,
@@ -423,6 +437,7 @@
                              "dept":  "PERECIVEIS",
                              "skus":  2976,
                              "valorEstoque":  433191.56,
+                             "qtdEstoque":  98318,
                              "mediaVendaCustoDia":  6257.07,
                              "diasCobertura":  13.4,
                              "semanasCobertura":  1.91,
@@ -449,6 +464,7 @@
                              "dept":  "PERECIVEIS",
                              "skus":  634,
                              "valorEstoque":  305414.99,
+                             "qtdEstoque":  45437,
                              "mediaVendaCustoDia":  3280.98,
                              "diasCobertura":  11.5,
                              "semanasCobertura":  1.64,
@@ -475,6 +491,7 @@
                              "dept":  "PERECIVEIS",
                              "skus":  402,
                              "valorEstoque":  350784.55,
+                             "qtdEstoque":  32729,
                              "mediaVendaCustoDia":  2562.21,
                              "diasCobertura":  11.1,
                              "semanasCobertura":  1.59,
@@ -501,6 +518,7 @@
                              "dept":  "PERECIVEIS",
                              "skus":  313,
                              "valorEstoque":  186530.85,
+                             "qtdEstoque":  16986,
                              "mediaVendaCustoDia":  1444.85,
                              "diasCobertura":  9.3,
                              "semanasCobertura":  1.32,
@@ -527,6 +545,7 @@
                              "dept":  "MERCEARIA",
                              "skus":  404,
                              "valorEstoque":  59851.19,
+                             "qtdEstoque":  21266,
                              "mediaVendaCustoDia":  1385.45,
                              "diasCobertura":  13.3,
                              "semanasCobertura":  1.9,
@@ -553,6 +572,7 @@
                              "dept":  "PERECIVEIS",
                              "skus":  69,
                              "valorEstoque":  45663.46,
+                             "qtdEstoque":  6750,
                              "mediaVendaCustoDia":  820.83,
                              "diasCobertura":  8,
                              "semanasCobertura":  1.15,
@@ -579,6 +599,7 @@
                              "dept":  "PERECIVEIS",
                              "skus":  108,
                              "valorEstoque":  89312.16,
+                             "qtdEstoque":  8349,
                              "mediaVendaCustoDia":  509.53,
                              "diasCobertura":  12.1,
                              "semanasCobertura":  1.73,
@@ -605,6 +626,7 @@
                              "dept":  "MERCEARIA",
                              "skus":  164,
                              "valorEstoque":  23195.53,
+                             "qtdEstoque":  4415,
                              "mediaVendaCustoDia":  374.42,
                              "diasCobertura":  8.9,
                              "semanasCobertura":  1.28,
@@ -631,6 +653,7 @@
                              "dept":  "PERECIVEIS",
                              "skus":  273,
                              "valorEstoque":  18696.33,
+                             "qtdEstoque":  5467,
                              "mediaVendaCustoDia":  421.6,
                              "diasCobertura":  11.2,
                              "semanasCobertura":  1.6,
@@ -657,6 +680,7 @@
                              "dept":  "PERECIVEIS",
                              "skus":  4,
                              "valorEstoque":  199.83,
+                             "qtdEstoque":  -9,
                              "mediaVendaCustoDia":  1.68,
                              "diasCobertura":  10.1,
                              "semanasCobertura":  1.45,
@@ -685,6 +709,7 @@
                         "dept":  "MERCEARIA",
                         "skus":  820,
                         "valorEstoque":  290938.8,
+                        "qtdEstoque":  10096,
                         "mediaVendaCustoDia":  260.36,
                         "diasCobertura":  61.1,
                         "semanasCobertura":  8.73,
@@ -711,6 +736,7 @@
                         "dept":  "MERCEARIA NAO ALIMENTOS",
                         "skus":  510,
                         "valorEstoque":  225474.59,
+                        "qtdEstoque":  21984,
                         "mediaVendaCustoDia":  267.87,
                         "diasCobertura":  77.2,
                         "semanasCobertura":  11.03,
@@ -737,6 +763,7 @@
                         "dept":  "MERCEARIA NAO ALIMENTOS",
                         "skus":  391,
                         "valorEstoque":  144191.2,
+                        "qtdEstoque":  16864,
                         "mediaVendaCustoDia":  304.42,
                         "diasCobertura":  61.3,
                         "semanasCobertura":  8.76,
@@ -763,6 +790,7 @@
                         "dept":  "PERECIVEIS",
                         "skus":  34,
                         "valorEstoque":  83835.92,
+                        "qtdEstoque":  1343,
                         "mediaVendaCustoDia":  5.48,
                         "diasCobertura":  309.4,
                         "semanasCobertura":  44.2,
@@ -789,6 +817,7 @@
                         "dept":  "MERCEARIA",
                         "skus":  384,
                         "valorEstoque":  72820.6,
+                        "qtdEstoque":  12072,
                         "mediaVendaCustoDia":  214.96,
                         "diasCobertura":  146.7,
                         "semanasCobertura":  20.95,
@@ -815,6 +844,7 @@
                         "dept":  "MERCEARIA NAO ALIMENTOS",
                         "skus":  491,
                         "valorEstoque":  69311.72,
+                        "qtdEstoque":  8432,
                         "mediaVendaCustoDia":  93.52,
                         "diasCobertura":  100.3,
                         "semanasCobertura":  14.33,
@@ -843,6 +873,7 @@
                            "dept":  "MERCEARIA",
                            "skus":  820,
                            "valorEstoque":  290938.8,
+                           "qtdEstoque":  10096,
                            "mediaVendaCustoDia":  260.36,
                            "diasCobertura":  61.1,
                            "semanasCobertura":  8.73,
@@ -869,6 +900,7 @@
                            "dept":  "MERCEARIA NAO ALIMENTOS",
                            "skus":  510,
                            "valorEstoque":  225474.59,
+                           "qtdEstoque":  21984,
                            "mediaVendaCustoDia":  267.87,
                            "diasCobertura":  77.2,
                            "semanasCobertura":  11.03,
@@ -895,6 +927,7 @@
                            "dept":  "MERCEARIA NAO ALIMENTOS",
                            "skus":  391,
                            "valorEstoque":  144191.2,
+                           "qtdEstoque":  16864,
                            "mediaVendaCustoDia":  304.42,
                            "diasCobertura":  61.3,
                            "semanasCobertura":  8.76,
@@ -921,6 +954,7 @@
                            "dept":  "PERECIVEIS",
                            "skus":  34,
                            "valorEstoque":  83835.92,
+                           "qtdEstoque":  1343,
                            "mediaVendaCustoDia":  5.48,
                            "diasCobertura":  309.4,
                            "semanasCobertura":  44.2,
@@ -947,6 +981,7 @@
                            "dept":  "MERCEARIA",
                            "skus":  384,
                            "valorEstoque":  72820.6,
+                           "qtdEstoque":  12072,
                            "mediaVendaCustoDia":  214.96,
                            "diasCobertura":  146.7,
                            "semanasCobertura":  20.95,
@@ -973,6 +1008,7 @@
                            "dept":  "MERCEARIA NAO ALIMENTOS",
                            "skus":  491,
                            "valorEstoque":  69311.72,
+                           "qtdEstoque":  8432,
                            "mediaVendaCustoDia":  93.52,
                            "diasCobertura":  100.3,
                            "semanasCobertura":  14.33,
@@ -1004,6 +1040,7 @@
                            "dept":  "PERECIVEIS",
                            "skus":  13,
                            "valorEstoque":  3603.2,
+                           "qtdEstoque":  378,
                            "mediaVendaCustoDia":  67.76,
                            "diasCobertura":  1.3,
                            "semanasCobertura":  0.19,
@@ -1030,6 +1067,7 @@
                            "dept":  "PERECIVEIS",
                            "skus":  442,
                            "valorEstoque":  37372.89,
+                           "qtdEstoque":  14674,
                            "mediaVendaCustoDia":  5450.33,
                            "diasCobertura":  3.2,
                            "semanasCobertura":  0.45,
@@ -1056,6 +1094,7 @@
                            "dept":  "PERECIVEIS",
                            "skus":  664,
                            "valorEstoque":  267148.13,
+                           "qtdEstoque":  42009,
                            "mediaVendaCustoDia":  12950.17,
                            "diasCobertura":  3.9,
                            "semanasCobertura":  0.56,
@@ -1082,6 +1121,7 @@
                            "dept":  "PERECIVEIS",
                            "skus":  574,
                            "valorEstoque":  205440.01,
+                           "qtdEstoque":  35347,
                            "mediaVendaCustoDia":  10127.05,
                            "diasCobertura":  4.1,
                            "semanasCobertura":  0.59,
@@ -1108,6 +1148,7 @@
                            "dept":  "PERECIVEIS",
                            "skus":  142,
                            "valorEstoque":  180001.85,
+                           "qtdEstoque":  20160,
                            "mediaVendaCustoDia":  3645.64,
                            "diasCobertura":  5.6,
                            "semanasCobertura":  0.8,
@@ -1134,6 +1175,7 @@
                            "dept":  "PERECIVEIS",
                            "skus":  262,
                            "valorEstoque":  85167.05,
+                           "qtdEstoque":  9887,
                            "mediaVendaCustoDia":  1155.56,
                            "diasCobertura":  6.2,
                            "semanasCobertura":  0.88,
@@ -1160,6 +1202,7 @@
                            "dept":  "PERECIVEIS",
                            "skus":  10,
                            "valorEstoque":  1783.58,
+                           "qtdEstoque":  279,
                            "mediaVendaCustoDia":  35.07,
                            "diasCobertura":  6.6,
                            "semanasCobertura":  0.95,
@@ -1186,6 +1229,7 @@
                            "dept":  "PERECIVEIS",
                            "skus":  55,
                            "valorEstoque":  70329.52,
+                           "qtdEstoque":  5520,
                            "mediaVendaCustoDia":  842.09,
                            "diasCobertura":  6.7,
                            "semanasCobertura":  0.96,
@@ -1212,6 +1256,7 @@
                            "dept":  "PERECIVEIS",
                            "skus":  642,
                            "valorEstoque":  1722046.65,
+                           "qtdEstoque":  65685,
                            "mediaVendaCustoDia":  8087.09,
                            "diasCobertura":  6.9,
                            "semanasCobertura":  0.99,
@@ -1270,6 +1315,7 @@
                        "secao":  "SOBREMESAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  3588.55,
+                       "qtdEstoque":  780,
                        "diasCobertura":  18.7,
                        "status":  "saudavel"
                    },
@@ -1278,6 +1324,7 @@
                        "secao":  "SOBREMESAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  11807.82,
+                       "qtdEstoque":  6350,
                        "diasCobertura":  15.1,
                        "status":  "saudavel"
                    },
@@ -1286,6 +1333,7 @@
                        "secao":  "BEBIDAS ALCOOLICAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  147447.41,
+                       "qtdEstoque":  18446,
                        "diasCobertura":  52.5,
                        "status":  "saudavel"
                    },
@@ -1294,6 +1342,7 @@
                        "secao":  "BEBIDAS ALCOOLICAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  3454.64,
+                       "qtdEstoque":  240,
                        "diasCobertura":  87.8,
                        "status":  "saudavel"
                    },
@@ -1302,6 +1351,7 @@
                        "secao":  "BAZAR",
                        "dept":  "MERCEARIA NAO ALIMENTOS",
                        "valorEstoque":  42151.45,
+                       "qtdEstoque":  3453,
                        "diasCobertura":  60.4,
                        "status":  "saudavel"
                    },
@@ -1310,6 +1360,7 @@
                        "secao":  "BAZAR",
                        "dept":  "MERCEARIA NAO ALIMENTOS",
                        "valorEstoque":  12921.34,
+                       "qtdEstoque":  1961,
                        "diasCobertura":  99.9,
                        "status":  "saudavel"
                    },
@@ -1318,6 +1369,7 @@
                        "secao":  "SOBREMESAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  106213.51,
+                       "qtdEstoque":  12334,
                        "diasCobertura":  42.2,
                        "status":  "saudavel"
                    },
@@ -1326,6 +1378,7 @@
                        "secao":  "MASSAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  1968.86,
+                       "qtdEstoque":  205,
                        "diasCobertura":  33.3,
                        "status":  "saudavel"
                    },
@@ -1334,6 +1387,7 @@
                        "secao":  "LIMPEZA",
                        "dept":  "MERCEARIA NAO ALIMENTOS",
                        "valorEstoque":  239348.73,
+                       "qtdEstoque":  112447,
                        "diasCobertura":  21.3,
                        "status":  "saudavel"
                    },
@@ -1342,6 +1396,7 @@
                        "secao":  "PERFUMARIA",
                        "dept":  "MERCEARIA NAO ALIMENTOS",
                        "valorEstoque":  780737.2,
+                       "qtdEstoque":  170760,
                        "diasCobertura":  36.9,
                        "status":  "saudavel"
                    },
@@ -1350,6 +1405,7 @@
                        "secao":  "BISCOITO-TORRADA-BATATA",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  93761.38,
+                       "qtdEstoque":  21693,
                        "diasCobertura":  29,
                        "status":  "saudavel"
                    },
@@ -1358,6 +1414,7 @@
                        "secao":  "CONSERVAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  183491.76,
+                       "qtdEstoque":  64602,
                        "diasCobertura":  42.6,
                        "status":  "saudavel"
                    },
@@ -1366,6 +1423,7 @@
                        "secao":  "LATICINIOS",
                        "dept":  "PERECIVEIS",
                        "valorEstoque":  154532.3,
+                       "qtdEstoque":  6143,
                        "diasCobertura":  38.2,
                        "status":  "saudavel"
                    },
@@ -1374,6 +1432,7 @@
                        "secao":  "MASSAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  1725.74,
+                       "qtdEstoque":  176,
                        "diasCobertura":  113.5,
                        "status":  "saudavel"
                    },
@@ -1382,6 +1441,7 @@
                        "secao":  "LATICINIOS",
                        "dept":  "PERECIVEIS",
                        "valorEstoque":  39860.94,
+                       "qtdEstoque":  2623,
                        "diasCobertura":  28,
                        "status":  "saudavel"
                    },
@@ -1390,6 +1450,7 @@
                        "secao":  "BAZAR",
                        "dept":  "MERCEARIA NAO ALIMENTOS",
                        "valorEstoque":  16781.45,
+                       "qtdEstoque":  7448,
                        "diasCobertura":  79.2,
                        "status":  "saudavel"
                    },
@@ -1398,6 +1459,7 @@
                        "secao":  "BEBIDAS ALCOOLICAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  1089717.19,
+                       "qtdEstoque":  180380,
                        "diasCobertura":  34,
                        "status":  "saudavel"
                    },
@@ -1406,6 +1468,7 @@
                        "secao":  "PEIXARIA",
                        "dept":  "PERECIVEIS",
                        "valorEstoque":  12710.92,
+                       "qtdEstoque":  297,
                        "diasCobertura":  154.9,
                        "status":  "saudavel"
                    },
@@ -1414,6 +1477,7 @@
                        "secao":  "BEBIDAS NAO ALCOOLICAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  163300.31,
+                       "qtdEstoque":  18366,
                        "diasCobertura":  26.8,
                        "status":  "saudavel"
                    },
@@ -1422,6 +1486,7 @@
                        "secao":  "BEBIDAS NAO ALCOOLICAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  48001.67,
+                       "qtdEstoque":  6067,
                        "diasCobertura":  24.3,
                        "status":  "saudavel"
                    },
@@ -1430,6 +1495,7 @@
                        "secao":  "BEBIDAS NAO ALCOOLICAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  72820.6,
+                       "qtdEstoque":  12072,
                        "diasCobertura":  146.7,
                        "status":  "excesso"
                    },
@@ -1438,6 +1504,7 @@
                        "secao":  "PERFUMARIA",
                        "dept":  "MERCEARIA NAO ALIMENTOS",
                        "valorEstoque":  55362.41,
+                       "qtdEstoque":  8758,
                        "diasCobertura":  30,
                        "status":  "saudavel"
                    },
@@ -1446,6 +1513,7 @@
                        "secao":  "MASSAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  13198.69,
+                       "qtdEstoque":  2830,
                        "diasCobertura":  37.2,
                        "status":  "saudavel"
                    },
@@ -1454,6 +1522,7 @@
                        "secao":  "PETSHOP",
                        "dept":  "MERCEARIA NAO ALIMENTOS",
                        "valorEstoque":  84936.31,
+                       "qtdEstoque":  24464,
                        "diasCobertura":  58.4,
                        "status":  "saudavel"
                    },
@@ -1462,6 +1531,7 @@
                        "secao":  "SALGADOS",
                        "dept":  "PERECIVEIS",
                        "valorEstoque":  89312.16,
+                       "qtdEstoque":  8349,
                        "diasCobertura":  12.1,
                        "status":  "atencao_baixo"
                    },
@@ -1470,6 +1540,7 @@
                        "secao":  "MATINAIS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  39090.56,
+                       "qtdEstoque":  6316,
                        "diasCobertura":  18.9,
                        "status":  "saudavel"
                    },
@@ -1478,6 +1549,7 @@
                        "secao":  "LATICINIOS",
                        "dept":  "PERECIVEIS",
                        "valorEstoque":  1783.58,
+                       "qtdEstoque":  279,
                        "diasCobertura":  6.6,
                        "status":  "critico_baixo"
                    },
@@ -1486,6 +1558,7 @@
                        "secao":  "BEBIDAS NAO ALCOOLICAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  165156.45,
+                       "qtdEstoque":  84731,
                        "diasCobertura":  15.7,
                        "status":  "saudavel"
                    },
@@ -1494,6 +1567,7 @@
                        "secao":  "BAZAR",
                        "dept":  "MERCEARIA NAO ALIMENTOS",
                        "valorEstoque":  265596.26,
+                       "qtdEstoque":  56039,
                        "diasCobertura":  45.6,
                        "status":  "saudavel"
                    },
@@ -1502,6 +1576,7 @@
                        "secao":  "CONSERVAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  45795.2,
+                       "qtdEstoque":  15282,
                        "diasCobertura":  24.9,
                        "status":  "saudavel"
                    },
@@ -1510,6 +1585,7 @@
                        "secao":  "MATINAIS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  12257.54,
+                       "qtdEstoque":  224,
                        "diasCobertura":  104,
                        "status":  "saudavel"
                    },
@@ -1518,6 +1594,7 @@
                        "secao":  "LEITES",
                        "dept":  "PERECIVEIS",
                        "valorEstoque":  468.1,
+                       "qtdEstoque":  71,
                        "diasCobertura":  72.9,
                        "status":  "saudavel"
                    },
@@ -1526,6 +1603,7 @@
                        "secao":  "CONSERVAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  26492.75,
+                       "qtdEstoque":  6349,
                        "diasCobertura":  19.9,
                        "status":  "saudavel"
                    },
@@ -1534,6 +1612,7 @@
                        "secao":  "LATICINIOS",
                        "dept":  "PERECIVEIS",
                        "valorEstoque":  18696.33,
+                       "qtdEstoque":  5467,
                        "diasCobertura":  11.2,
                        "status":  "atencao_baixo"
                    },
@@ -1542,6 +1621,7 @@
                        "secao":  "SOBREMESAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  3116.19,
+                       "qtdEstoque":  618,
                        "diasCobertura":  19.8,
                        "status":  "saudavel"
                    },
@@ -1550,6 +1630,7 @@
                        "secao":  "CONGELADO",
                        "dept":  "PERECIVEIS",
                        "valorEstoque":  281085.37,
+                       "qtdEstoque":  26966,
                        "diasCobertura":  36.3,
                        "status":  "saudavel"
                    },
@@ -1558,6 +1639,7 @@
                        "secao":  "PERFUMARIA",
                        "dept":  "MERCEARIA NAO ALIMENTOS",
                        "valorEstoque":  26553.66,
+                       "qtdEstoque":  8237,
                        "diasCobertura":  31.4,
                        "status":  "saudavel"
                    },
@@ -1566,6 +1648,7 @@
                        "secao":  "SALGADOS",
                        "dept":  "PERECIVEIS",
                        "valorEstoque":  3388.02,
+                       "qtdEstoque":  118,
                        "diasCobertura":  15.3,
                        "status":  "saudavel"
                    },
@@ -1574,6 +1657,7 @@
                        "secao":  "BAZAR",
                        "dept":  "MERCEARIA NAO ALIMENTOS",
                        "valorEstoque":  69311.72,
+                       "qtdEstoque":  8432,
                        "diasCobertura":  100.3,
                        "status":  "excesso"
                    },
@@ -1582,6 +1666,7 @@
                        "secao":  "SOBREMESAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  23500.22,
+                       "qtdEstoque":  6295,
                        "diasCobertura":  17.7,
                        "status":  "saudavel"
                    },
@@ -1590,6 +1675,7 @@
                        "secao":  "LIMPEZA",
                        "dept":  "MERCEARIA NAO ALIMENTOS",
                        "valorEstoque":  611973.47,
+                       "qtdEstoque":  107587,
                        "diasCobertura":  26.8,
                        "status":  "saudavel"
                    },
@@ -1598,6 +1684,7 @@
                        "secao":  "CONGELADO",
                        "dept":  "PERECIVEIS",
                        "valorEstoque":  144817.85,
+                       "qtdEstoque":  22403,
                        "diasCobertura":  17.8,
                        "status":  "saudavel"
                    },
@@ -1606,6 +1693,7 @@
                        "secao":  "OLEOS VEGETAIS - BANHA",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  358410.06,
+                       "qtdEstoque":  17415,
                        "diasCobertura":  19.7,
                        "status":  "saudavel"
                    },
@@ -1614,6 +1702,7 @@
                        "secao":  "CEREAIS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  241056.9,
+                       "qtdEstoque":  45413,
                        "diasCobertura":  16.9,
                        "status":  "saudavel"
                    },
@@ -1622,6 +1711,7 @@
                        "secao":  "ACOUGUE",
                        "dept":  "PERECIVEIS",
                        "valorEstoque":  1722046.65,
+                       "qtdEstoque":  65685,
                        "diasCobertura":  6.9,
                        "status":  "critico_baixo"
                    },
@@ -1630,6 +1720,7 @@
                        "secao":  "SOBREMESAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  4068.61,
+                       "qtdEstoque":  1694,
                        "diasCobertura":  54.6,
                        "status":  "saudavel"
                    },
@@ -1638,6 +1729,7 @@
                        "secao":  "PERFUMARIA",
                        "dept":  "MERCEARIA NAO ALIMENTOS",
                        "valorEstoque":  163123.64,
+                       "qtdEstoque":  4687,
                        "diasCobertura":  57.8,
                        "status":  "saudavel"
                    },
@@ -1646,6 +1738,7 @@
                        "secao":  "MATINAIS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  8077.55,
+                       "qtdEstoque":  984,
                        "diasCobertura":  52.9,
                        "status":  "saudavel"
                    },
@@ -1654,6 +1747,7 @@
                        "secao":  "MASSAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  29194.59,
+                       "qtdEstoque":  7995,
                        "diasCobertura":  36.3,
                        "status":  "saudavel"
                    },
@@ -1662,6 +1756,7 @@
                        "secao":  "MATINAIS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  208557.79,
+                       "qtdEstoque":  13382,
                        "diasCobertura":  23.6,
                        "status":  "saudavel"
                    },
@@ -1670,6 +1765,7 @@
                        "secao":  "FLV",
                        "dept":  "PERECIVEIS",
                        "valorEstoque":  79158.66,
+                       "qtdEstoque":  2145,
                        "diasCobertura":  51.2,
                        "status":  "saudavel"
                    },
@@ -1678,6 +1774,7 @@
                        "secao":  "SOBREMESAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  879.91,
+                       "qtdEstoque":  135,
                        "diasCobertura":  77.3,
                        "status":  "saudavel"
                    },
@@ -1686,6 +1783,7 @@
                        "secao":  "MATINAIS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  27830.95,
+                       "qtdEstoque":  8632,
                        "diasCobertura":  20.3,
                        "status":  "saudavel"
                    },
@@ -1694,6 +1792,7 @@
                        "secao":  "PADARIA",
                        "dept":  "PERECIVEIS",
                        "valorEstoque":  494849.06,
+                       "qtdEstoque":  78777,
                        "diasCobertura":  11.5,
                        "status":  "atencao_baixo"
                    },
@@ -1702,6 +1801,7 @@
                        "secao":  "CONGELADO",
                        "dept":  "PERECIVEIS",
                        "valorEstoque":  182216.07,
+                       "qtdEstoque":  17486,
                        "diasCobertura":  19.3,
                        "status":  "saudavel"
                    },
@@ -1710,6 +1810,7 @@
                        "secao":  "PERFUMARIA",
                        "dept":  "MERCEARIA NAO ALIMENTOS",
                        "valorEstoque":  17688.16,
+                       "qtdEstoque":  3486,
                        "diasCobertura":  33.2,
                        "status":  "saudavel"
                    },
@@ -1718,6 +1819,7 @@
                        "secao":  "MASSAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  2456.6,
+                       "qtdEstoque":  654,
                        "diasCobertura":  22,
                        "status":  "saudavel"
                    },
@@ -1726,6 +1828,7 @@
                        "secao":  "FLV",
                        "dept":  "PERECIVEIS",
                        "valorEstoque":  42947.49,
+                       "qtdEstoque":  2290,
                        "diasCobertura":  27.1,
                        "status":  "saudavel"
                    },
@@ -1734,6 +1837,7 @@
                        "secao":  "LIMPEZA",
                        "dept":  "MERCEARIA NAO ALIMENTOS",
                        "valorEstoque":  820449.76,
+                       "qtdEstoque":  83335,
                        "diasCobertura":  18.4,
                        "status":  "saudavel"
                    },
@@ -1742,6 +1846,7 @@
                        "secao":  "BEBIDAS NAO ALCOOLICAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  651586.43,
+                       "qtdEstoque":  140294,
                        "diasCobertura":  14.1,
                        "status":  "saudavel"
                    },
@@ -1750,6 +1855,7 @@
                        "secao":  "MASSAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  13315.61,
+                       "qtdEstoque":  4179,
                        "diasCobertura":  33.1,
                        "status":  "saudavel"
                    },
@@ -1758,6 +1864,7 @@
                        "secao":  "CEREAIS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  59851.19,
+                       "qtdEstoque":  21266,
                        "diasCobertura":  13.3,
                        "status":  "atencao_baixo"
                    },
@@ -1766,6 +1873,7 @@
                        "secao":  "BAZAR",
                        "dept":  "MERCEARIA NAO ALIMENTOS",
                        "valorEstoque":  144191.2,
+                       "qtdEstoque":  16864,
                        "diasCobertura":  61.3,
                        "status":  "excesso"
                    },
@@ -1774,6 +1882,7 @@
                        "secao":  "MASSAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  1007.48,
+                       "qtdEstoque":  286,
                        "diasCobertura":  33.6,
                        "status":  "saudavel"
                    },
@@ -1782,6 +1891,7 @@
                        "secao":  "BAZAR",
                        "dept":  "MERCEARIA NAO ALIMENTOS",
                        "valorEstoque":  387691.67,
+                       "qtdEstoque":  103289,
                        "diasCobertura":  33.8,
                        "status":  "saudavel"
                    },
@@ -1790,6 +1900,7 @@
                        "secao":  "CONGELADO",
                        "dept":  "PERECIVEIS",
                        "valorEstoque":  8122.78,
+                       "qtdEstoque":  1172,
                        "diasCobertura":  37.7,
                        "status":  "saudavel"
                    },
@@ -1798,6 +1909,7 @@
                        "secao":  "SOBREMESAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  6429.31,
+                       "qtdEstoque":  1657,
                        "diasCobertura":  32.2,
                        "status":  "saudavel"
                    },
@@ -1806,6 +1918,7 @@
                        "secao":  "BEBIDAS NAO ALCOOLICAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  23195.53,
+                       "qtdEstoque":  4415,
                        "diasCobertura":  8.9,
                        "status":  "atencao_baixo"
                    },
@@ -1814,6 +1927,7 @@
                        "secao":  "BEBIDAS NAO ALCOOLICAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  181636.98,
+                       "qtdEstoque":  27895,
                        "diasCobertura":  24.4,
                        "status":  "saudavel"
                    },
@@ -1822,6 +1936,7 @@
                        "secao":  "MATINAIS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  4603.68,
+                       "qtdEstoque":  902,
                        "diasCobertura":  23.6,
                        "status":  "saudavel"
                    },
@@ -1830,6 +1945,7 @@
                        "secao":  "BAZAR",
                        "dept":  "MERCEARIA NAO ALIMENTOS",
                        "valorEstoque":  30695.5,
+                       "qtdEstoque":  4961,
                        "diasCobertura":  24,
                        "status":  "saudavel"
                    },
@@ -1838,6 +1954,7 @@
                        "secao":  "BAZAR",
                        "dept":  "MERCEARIA NAO ALIMENTOS",
                        "valorEstoque":  0,
+                       "qtdEstoque":  4,
                        "diasCobertura":  0,
                        "status":  "zerado_sem_giro"
                    },
@@ -1846,6 +1963,7 @@
                        "secao":  "FLV",
                        "dept":  "PERECIVEIS",
                        "valorEstoque":  267148.13,
+                       "qtdEstoque":  42009,
                        "diasCobertura":  3.9,
                        "status":  "critico_baixo"
                    },
@@ -1854,6 +1972,7 @@
                        "secao":  "MASSAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  19881,
+                       "qtdEstoque":  3186,
                        "diasCobertura":  68.8,
                        "status":  "saudavel"
                    },
@@ -1862,6 +1981,7 @@
                        "secao":  "BOMBONIERE",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  92984.95,
+                       "qtdEstoque":  16561,
                        "diasCobertura":  28.8,
                        "status":  "saudavel"
                    },
@@ -1870,6 +1990,7 @@
                        "secao":  "LIMPEZA",
                        "dept":  "MERCEARIA NAO ALIMENTOS",
                        "valorEstoque":  164720.65,
+                       "qtdEstoque":  17430,
                        "diasCobertura":  44,
                        "status":  "saudavel"
                    },
@@ -1878,6 +1999,7 @@
                        "secao":  "PEIXARIA",
                        "dept":  "PERECIVEIS",
                        "valorEstoque":  217854.1,
+                       "qtdEstoque":  10269,
                        "diasCobertura":  25.1,
                        "status":  "saudavel"
                    },
@@ -1886,6 +2008,7 @@
                        "secao":  "MASSAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  14866.43,
+                       "qtdEstoque":  3821,
                        "diasCobertura":  26.2,
                        "status":  "saudavel"
                    },
@@ -1894,6 +2017,7 @@
                        "secao":  "MATINAIS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  12881.42,
+                       "qtdEstoque":  1265,
                        "diasCobertura":  18,
                        "status":  "saudavel"
                    },
@@ -1902,6 +2026,7 @@
                        "secao":  "MATINAIS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  388773.43,
+                       "qtdEstoque":  36776,
                        "diasCobertura":  16.6,
                        "status":  "saudavel"
                    },
@@ -1910,6 +2035,7 @@
                        "secao":  "LEITES",
                        "dept":  "PERECIVEIS",
                        "valorEstoque":  521364.52,
+                       "qtdEstoque":  193461,
                        "diasCobertura":  33.6,
                        "status":  "saudavel"
                    },
@@ -1918,6 +2044,7 @@
                        "secao":  "SOBREMESAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  88128.12,
+                       "qtdEstoque":  11048,
                        "diasCobertura":  28.3,
                        "status":  "saudavel"
                    },
@@ -1926,6 +2053,7 @@
                        "secao":  "BISCOITO-TORRADA-BATATA",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  354370.87,
+                       "qtdEstoque":  54205,
                        "diasCobertura":  20.4,
                        "status":  "saudavel"
                    },
@@ -1934,6 +2062,7 @@
                        "secao":  "ACOUGUE",
                        "dept":  "PERECIVEIS",
                        "valorEstoque":  20612.95,
+                       "qtdEstoque":  331,
                        "diasCobertura":  108.9,
                        "status":  "saudavel"
                    },
@@ -1942,6 +2071,7 @@
                        "secao":  "PETSHOP",
                        "dept":  "MERCEARIA NAO ALIMENTOS",
                        "valorEstoque":  3655.54,
+                       "qtdEstoque":  553,
                        "diasCobertura":  42.9,
                        "status":  "saudavel"
                    },
@@ -1950,6 +2080,7 @@
                        "secao":  "FLV",
                        "dept":  "PERECIVEIS",
                        "valorEstoque":  37372.89,
+                       "qtdEstoque":  14674,
                        "diasCobertura":  3.2,
                        "status":  "critico_baixo"
                    },
@@ -1958,6 +2089,7 @@
                        "secao":  "SOBREMESAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  965.49,
+                       "qtdEstoque":  319,
                        "diasCobertura":  78.2,
                        "status":  "saudavel"
                    },
@@ -1966,6 +2098,7 @@
                        "secao":  "BISCOITO-TORRADA-BATATA",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  487849.35,
+                       "qtdEstoque":  153543,
                        "diasCobertura":  21.3,
                        "status":  "saudavel"
                    },
@@ -1974,6 +2107,7 @@
                        "secao":  "BEBIDAS NAO ALCOOLICAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  4615.1,
+                       "qtdEstoque":  144,
                        "diasCobertura":  106.2,
                        "status":  "saudavel"
                    },
@@ -1982,6 +2116,7 @@
                        "secao":  "SOBREMESAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  1057.31,
+                       "qtdEstoque":  418,
                        "diasCobertura":  44.9,
                        "status":  "saudavel"
                    },
@@ -1990,6 +2125,7 @@
                        "secao":  "PERFUMARIA",
                        "dept":  "MERCEARIA NAO ALIMENTOS",
                        "valorEstoque":  225474.59,
+                       "qtdEstoque":  21984,
                        "diasCobertura":  77.2,
                        "status":  "excesso"
                    },
@@ -1998,6 +2134,7 @@
                        "secao":  "MATINAIS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  8221.02,
+                       "qtdEstoque":  2093,
                        "diasCobertura":  17.7,
                        "status":  "saudavel"
                    },
@@ -2006,6 +2143,7 @@
                        "secao":  "MASSAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  58553.99,
+                       "qtdEstoque":  16826,
                        "diasCobertura":  17.9,
                        "status":  "saudavel"
                    },
@@ -2014,6 +2152,7 @@
                        "secao":  "ACOUGUE",
                        "dept":  "PERECIVEIS",
                        "valorEstoque":  350784.55,
+                       "qtdEstoque":  32729,
                        "diasCobertura":  11.1,
                        "status":  "atencao_baixo"
                    },
@@ -2022,6 +2161,7 @@
                        "secao":  "CONSERVAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  126627.2,
+                       "qtdEstoque":  15831,
                        "diasCobertura":  22.9,
                        "status":  "saudavel"
                    },
@@ -2030,6 +2170,7 @@
                        "secao":  "LATICINIOS",
                        "dept":  "PERECIVEIS",
                        "valorEstoque":  334094.8,
+                       "qtdEstoque":  21275,
                        "diasCobertura":  14.7,
                        "status":  "saudavel"
                    },
@@ -2038,6 +2179,7 @@
                        "secao":  "SALGADOS",
                        "dept":  "PERECIVEIS",
                        "valorEstoque":  83835.92,
+                       "qtdEstoque":  1343,
                        "diasCobertura":  309.4,
                        "status":  "excesso"
                    },
@@ -2046,6 +2188,7 @@
                        "secao":  "FLV",
                        "dept":  "PERECIVEIS",
                        "valorEstoque":  180001.85,
+                       "qtdEstoque":  20160,
                        "diasCobertura":  5.6,
                        "status":  "critico_baixo"
                    },
@@ -2054,6 +2197,7 @@
                        "secao":  "CEREAIS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  210207.1,
+                       "qtdEstoque":  63766,
                        "diasCobertura":  17.2,
                        "status":  "saudavel"
                    },
@@ -2062,6 +2206,7 @@
                        "secao":  "ACOUGUE",
                        "dept":  "PERECIVEIS",
                        "valorEstoque":  192247.13,
+                       "qtdEstoque":  18526,
                        "diasCobertura":  14.4,
                        "status":  "saudavel"
                    },
@@ -2070,6 +2215,7 @@
                        "secao":  "BAZAR",
                        "dept":  "MERCEARIA NAO ALIMENTOS",
                        "valorEstoque":  22.48,
+                       "qtdEstoque":  8,
                        "diasCobertura":  0,
                        "status":  "saudavel"
                    },
@@ -2078,6 +2224,7 @@
                        "secao":  "BEBIDAS ALCOOLICAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  698436.38,
+                       "qtdEstoque":  28056,
                        "diasCobertura":  44.9,
                        "status":  "saudavel"
                    },
@@ -2086,6 +2233,7 @@
                        "secao":  "PERFUMARIA",
                        "dept":  "MERCEARIA NAO ALIMENTOS",
                        "valorEstoque":  15928.39,
+                       "qtdEstoque":  1456,
                        "diasCobertura":  89.7,
                        "status":  "saudavel"
                    },
@@ -2094,6 +2242,7 @@
                        "secao":  "FLV",
                        "dept":  "PERECIVEIS",
                        "valorEstoque":  5728.68,
+                       "qtdEstoque":  881,
                        "diasCobertura":  28.1,
                        "status":  "saudavel"
                    },
@@ -2102,6 +2251,7 @@
                        "secao":  "LATICINIOS",
                        "dept":  "PERECIVEIS",
                        "valorEstoque":  11097.39,
+                       "qtdEstoque":  638,
                        "diasCobertura":  53.8,
                        "status":  "saudavel"
                    },
@@ -2110,6 +2260,7 @@
                        "secao":  "LEITES",
                        "dept":  "PERECIVEIS",
                        "valorEstoque":  569455.17,
+                       "qtdEstoque":  147999,
                        "diasCobertura":  11.4,
                        "status":  "atencao_baixo"
                    },
@@ -2118,6 +2269,7 @@
                        "secao":  "BAZAR",
                        "dept":  "MERCEARIA NAO ALIMENTOS",
                        "valorEstoque":  4648.84,
+                       "qtdEstoque":  827,
                        "diasCobertura":  114.6,
                        "status":  "saudavel"
                    },
@@ -2126,6 +2278,7 @@
                        "secao":  "LATICINIOS",
                        "dept":  "PERECIVEIS",
                        "valorEstoque":  2582.54,
+                       "qtdEstoque":  159,
                        "diasCobertura":  35.6,
                        "status":  "saudavel"
                    },
@@ -2134,6 +2287,7 @@
                        "secao":  "CONGELADO",
                        "dept":  "PERECIVEIS",
                        "valorEstoque":  26018.16,
+                       "qtdEstoque":  2093,
                        "diasCobertura":  24.9,
                        "status":  "saudavel"
                    },
@@ -2142,6 +2296,7 @@
                        "secao":  "PETSHOP",
                        "dept":  "MERCEARIA NAO ALIMENTOS",
                        "valorEstoque":  71387.84,
+                       "qtdEstoque":  20176,
                        "diasCobertura":  50.4,
                        "status":  "saudavel"
                    },
@@ -2150,6 +2305,7 @@
                        "secao":  "PERFUMARIA",
                        "dept":  "MERCEARIA NAO ALIMENTOS",
                        "valorEstoque":  336836.58,
+                       "qtdEstoque":  36905,
                        "diasCobertura":  17.2,
                        "status":  "saudavel"
                    },
@@ -2158,6 +2314,7 @@
                        "secao":  "PETSHOP",
                        "dept":  "MERCEARIA NAO ALIMENTOS",
                        "valorEstoque":  3064.45,
+                       "qtdEstoque":  421,
                        "diasCobertura":  41.9,
                        "status":  "saudavel"
                    },
@@ -2166,6 +2323,7 @@
                        "secao":  "SOBREMESAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  5154.23,
+                       "qtdEstoque":  359,
                        "diasCobertura":  64.8,
                        "status":  "saudavel"
                    },
@@ -2174,6 +2332,7 @@
                        "secao":  "BOMBONIERE",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  655054.16,
+                       "qtdEstoque":  111273,
                        "diasCobertura":  28.5,
                        "status":  "saudavel"
                    },
@@ -2182,6 +2341,7 @@
                        "secao":  "LATICINIOS",
                        "dept":  "PERECIVEIS",
                        "valorEstoque":  33331.66,
+                       "qtdEstoque":  5002,
                        "diasCobertura":  22.8,
                        "status":  "saudavel"
                    },
@@ -2190,6 +2350,7 @@
                        "secao":  "MATINAIS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  136729.12,
+                       "qtdEstoque":  11798,
                        "diasCobertura":  18.1,
                        "status":  "saudavel"
                    },
@@ -2198,6 +2359,7 @@
                        "secao":  "LATICINIOS",
                        "dept":  "PERECIVEIS",
                        "valorEstoque":  305414.99,
+                       "qtdEstoque":  45437,
                        "diasCobertura":  11.5,
                        "status":  "atencao_baixo"
                    },
@@ -2206,6 +2368,7 @@
                        "secao":  "SOBREMESAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  34375.57,
+                       "qtdEstoque":  2123,
                        "diasCobertura":  25.9,
                        "status":  "saudavel"
                    },
@@ -2214,6 +2377,7 @@
                        "secao":  "BAZAR",
                        "dept":  "MERCEARIA NAO ALIMENTOS",
                        "valorEstoque":  14326.38,
+                       "qtdEstoque":  4361,
                        "diasCobertura":  49.7,
                        "status":  "saudavel"
                    },
@@ -2222,6 +2386,7 @@
                        "secao":  "BAZAR",
                        "dept":  "MERCEARIA NAO ALIMENTOS",
                        "valorEstoque":  62.89,
+                       "qtdEstoque":  13,
                        "diasCobertura":  0,
                        "status":  "saudavel"
                    },
@@ -2230,6 +2395,7 @@
                        "secao":  "MATINAIS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  30112.44,
+                       "qtdEstoque":  5894,
                        "diasCobertura":  21.1,
                        "status":  "saudavel"
                    },
@@ -2238,6 +2404,7 @@
                        "secao":  "LATICINIOS",
                        "dept":  "PERECIVEIS",
                        "valorEstoque":  29803.84,
+                       "qtdEstoque":  3091,
                        "diasCobertura":  32.6,
                        "status":  "saudavel"
                    },
@@ -2246,6 +2413,7 @@
                        "secao":  "SALGADOS",
                        "dept":  "PERECIVEIS",
                        "valorEstoque":  69742.53,
+                       "qtdEstoque":  4612,
                        "diasCobertura":  15.6,
                        "status":  "saudavel"
                    },
@@ -2254,6 +2422,7 @@
                        "secao":  "BAZAR",
                        "dept":  "MERCEARIA NAO ALIMENTOS",
                        "valorEstoque":  296.32,
+                       "qtdEstoque":  49,
                        "diasCobertura":  181.82,
                        "status":  "saudavel"
                    },
@@ -2262,6 +2431,7 @@
                        "secao":  "MASSAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  9287.79,
+                       "qtdEstoque":  1759,
                        "diasCobertura":  18.7,
                        "status":  "saudavel"
                    },
@@ -2270,6 +2440,7 @@
                        "secao":  "PERFUMARIA",
                        "dept":  "MERCEARIA NAO ALIMENTOS",
                        "valorEstoque":  531023.88,
+                       "qtdEstoque":  73623,
                        "diasCobertura":  45.9,
                        "status":  "saudavel"
                    },
@@ -2278,6 +2449,7 @@
                        "secao":  "MATINAIS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  22055.67,
+                       "qtdEstoque":  1086,
                        "diasCobertura":  50.3,
                        "status":  "saudavel"
                    },
@@ -2286,6 +2458,7 @@
                        "secao":  "MATINAIS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  161517.58,
+                       "qtdEstoque":  61122,
                        "diasCobertura":  15,
                        "status":  "saudavel"
                    },
@@ -2294,6 +2467,7 @@
                        "secao":  "PERFUMARIA",
                        "dept":  "MERCEARIA NAO ALIMENTOS",
                        "valorEstoque":  1992.97,
+                       "qtdEstoque":  188,
                        "diasCobertura":  47.2,
                        "status":  "saudavel"
                    },
@@ -2302,6 +2476,7 @@
                        "secao":  "MASSAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  1980.64,
+                       "qtdEstoque":  463,
                        "diasCobertura":  39,
                        "status":  "saudavel"
                    },
@@ -2310,6 +2485,7 @@
                        "secao":  "PERFUMARIA",
                        "dept":  "MERCEARIA NAO ALIMENTOS",
                        "valorEstoque":  122437.47,
+                       "qtdEstoque":  16159,
                        "diasCobertura":  40.5,
                        "status":  "saudavel"
                    },
@@ -2318,6 +2494,7 @@
                        "secao":  "PERFUMARIA",
                        "dept":  "MERCEARIA NAO ALIMENTOS",
                        "valorEstoque":  423745.7,
+                       "qtdEstoque":  34446,
                        "diasCobertura":  40.5,
                        "status":  "saudavel"
                    },
@@ -2326,6 +2503,7 @@
                        "secao":  "MASSAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  5369.92,
+                       "qtdEstoque":  1578,
                        "diasCobertura":  26,
                        "status":  "saudavel"
                    },
@@ -2334,6 +2512,7 @@
                        "secao":  "BEBIDAS NAO ALCOOLICAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  101161.13,
+                       "qtdEstoque":  96237,
                        "diasCobertura":  19.2,
                        "status":  "saudavel"
                    },
@@ -2342,6 +2521,7 @@
                        "secao":  "BOMBONIERE",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  56007.28,
+                       "qtdEstoque":  11473,
                        "diasCobertura":  30.1,
                        "status":  "saudavel"
                    },
@@ -2350,6 +2530,7 @@
                        "secao":  "LATICINIOS",
                        "dept":  "PERECIVEIS",
                        "valorEstoque":  17915.95,
+                       "qtdEstoque":  3609,
                        "diasCobertura":  27.1,
                        "status":  "saudavel"
                    },
@@ -2358,6 +2539,7 @@
                        "secao":  "CONSERVAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  26992.64,
+                       "qtdEstoque":  3310,
                        "diasCobertura":  248.6,
                        "status":  "saudavel"
                    },
@@ -2366,6 +2548,7 @@
                        "secao":  "LATICINIOS",
                        "dept":  "PERECIVEIS",
                        "valorEstoque":  433191.56,
+                       "qtdEstoque":  98318,
                        "diasCobertura":  13.4,
                        "status":  "atencao_baixo"
                    },
@@ -2374,6 +2557,7 @@
                        "secao":  "MASSAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  3845.28,
+                       "qtdEstoque":  625,
                        "diasCobertura":  28.4,
                        "status":  "saudavel"
                    },
@@ -2382,6 +2566,7 @@
                        "secao":  "CONGELADO",
                        "dept":  "PERECIVEIS",
                        "valorEstoque":  85167.05,
+                       "qtdEstoque":  9887,
                        "diasCobertura":  6.2,
                        "status":  "critico_baixo"
                    },
@@ -2390,6 +2575,7 @@
                        "secao":  "PERFUMARIA",
                        "dept":  "MERCEARIA NAO ALIMENTOS",
                        "valorEstoque":  474.91,
+                       "qtdEstoque":  34,
                        "diasCobertura":  1030.3,
                        "status":  "saudavel"
                    },
@@ -2398,6 +2584,7 @@
                        "secao":  "MASSAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  132870.57,
+                       "qtdEstoque":  44986,
                        "diasCobertura":  24.7,
                        "status":  "saudavel"
                    },
@@ -2406,6 +2593,7 @@
                        "secao":  "BISCOITO-TORRADA-BATATA",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  693378.45,
+                       "qtdEstoque":  284531,
                        "diasCobertura":  20.2,
                        "status":  "saudavel"
                    },
@@ -2414,6 +2602,7 @@
                        "secao":  "MASSAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  21765.86,
+                       "qtdEstoque":  2950,
                        "diasCobertura":  52.3,
                        "status":  "saudavel"
                    },
@@ -2422,6 +2611,7 @@
                        "secao":  "CONSERVAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  22177.95,
+                       "qtdEstoque":  5486,
                        "diasCobertura":  41.2,
                        "status":  "saudavel"
                    },
@@ -2430,6 +2620,7 @@
                        "secao":  "MASSAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  298.66,
+                       "qtdEstoque":  29,
                        "diasCobertura":  55.2,
                        "status":  "saudavel"
                    },
@@ -2438,6 +2629,7 @@
                        "secao":  "SALGADOS",
                        "dept":  "PERECIVEIS",
                        "valorEstoque":  205957.11,
+                       "qtdEstoque":  7314,
                        "diasCobertura":  20.4,
                        "status":  "saudavel"
                    },
@@ -2446,6 +2638,7 @@
                        "secao":  "CONSERVAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  176553.73,
+                       "qtdEstoque":  27888,
                        "diasCobertura":  31,
                        "status":  "saudavel"
                    },
@@ -2454,6 +2647,7 @@
                        "secao":  "FLV",
                        "dept":  "PERECIVEIS",
                        "valorEstoque":  3603.2,
+                       "qtdEstoque":  378,
                        "diasCobertura":  1.3,
                        "status":  "critico_baixo"
                    },
@@ -2462,6 +2656,7 @@
                        "secao":  "SOBREMESAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  129537.99,
+                       "qtdEstoque":  89126,
                        "diasCobertura":  10,
                        "status":  "atencao_baixo"
                    },
@@ -2470,6 +2665,7 @@
                        "secao":  "CONSERVAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  177369.89,
+                       "qtdEstoque":  28549,
                        "diasCobertura":  26.7,
                        "status":  "saudavel"
                    },
@@ -2478,6 +2674,7 @@
                        "secao":  "LATICINIOS",
                        "dept":  "PERECIVEIS",
                        "valorEstoque":  1252608.86,
+                       "qtdEstoque":  101187,
                        "diasCobertura":  11.1,
                        "status":  "atencao_baixo"
                    },
@@ -2486,6 +2683,7 @@
                        "secao":  "MATINAIS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  886607.86,
+                       "qtdEstoque":  57051,
                        "diasCobertura":  17.4,
                        "status":  "saudavel"
                    },
@@ -2494,6 +2692,7 @@
                        "secao":  "PETSHOP",
                        "dept":  "MERCEARIA NAO ALIMENTOS",
                        "valorEstoque":  26.52,
+                       "qtdEstoque":  2,
                        "diasCobertura":  181.82,
                        "status":  "saudavel"
                    },
@@ -2502,6 +2701,7 @@
                        "secao":  "BEBIDAS ALCOOLICAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  290938.8,
+                       "qtdEstoque":  10096,
                        "diasCobertura":  61.1,
                        "status":  "excesso"
                    },
@@ -2510,6 +2710,7 @@
                        "secao":  "BAZAR",
                        "dept":  "MERCEARIA NAO ALIMENTOS",
                        "valorEstoque":  12926.73,
+                       "qtdEstoque":  180,
                        "diasCobertura":  77.5,
                        "status":  "saudavel"
                    },
@@ -2518,6 +2719,7 @@
                        "secao":  "LATICINIOS",
                        "dept":  "PERECIVEIS",
                        "valorEstoque":  102598.12,
+                       "qtdEstoque":  10749,
                        "diasCobertura":  22.9,
                        "status":  "saudavel"
                    },
@@ -2526,6 +2728,7 @@
                        "secao":  "OLEOS VEGETAIS - BANHA",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  327853.63,
+                       "qtdEstoque":  49818,
                        "diasCobertura":  15.6,
                        "status":  "saudavel"
                    },
@@ -2534,6 +2737,7 @@
                        "secao":  "BOMBONIERE",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  199023.65,
+                       "qtdEstoque":  48185,
                        "diasCobertura":  33.2,
                        "status":  "saudavel"
                    },
@@ -2542,6 +2746,7 @@
                        "secao":  "MASSAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  121389.84,
+                       "qtdEstoque":  30709,
                        "diasCobertura":  24.1,
                        "status":  "saudavel"
                    },
@@ -2550,6 +2755,7 @@
                        "secao":  "ACOUGUE",
                        "dept":  "PERECIVEIS",
                        "valorEstoque":  45663.46,
+                       "qtdEstoque":  6750,
                        "diasCobertura":  8,
                        "status":  "atencao_baixo"
                    },
@@ -2558,6 +2764,7 @@
                        "secao":  "SOBREMESAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  38433.1,
+                       "qtdEstoque":  10636,
                        "diasCobertura":  18.7,
                        "status":  "saudavel"
                    },
@@ -2566,6 +2773,7 @@
                        "secao":  "PEIXARIA",
                        "dept":  "PERECIVEIS",
                        "valorEstoque":  47258.91,
+                       "qtdEstoque":  2033,
                        "diasCobertura":  50.3,
                        "status":  "saudavel"
                    },
@@ -2574,6 +2782,7 @@
                        "secao":  "SALGADOS",
                        "dept":  "PERECIVEIS",
                        "valorEstoque":  186530.85,
+                       "qtdEstoque":  16986,
                        "diasCobertura":  9.3,
                        "status":  "atencao_baixo"
                    },
@@ -2582,6 +2791,7 @@
                        "secao":  "CONSERVAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  20846.75,
+                       "qtdEstoque":  3387,
                        "diasCobertura":  58.5,
                        "status":  "saudavel"
                    },
@@ -2590,6 +2800,7 @@
                        "secao":  "CONSERVAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  193419.5,
+                       "qtdEstoque":  85360,
                        "diasCobertura":  23.5,
                        "status":  "saudavel"
                    },
@@ -2598,6 +2809,7 @@
                        "secao":  "CONSERVAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  69506.28,
+                       "qtdEstoque":  32297,
                        "diasCobertura":  37.6,
                        "status":  "saudavel"
                    },
@@ -2606,6 +2818,7 @@
                        "secao":  "LATICINIOS",
                        "dept":  "PERECIVEIS",
                        "valorEstoque":  74475.18,
+                       "qtdEstoque":  11863,
                        "diasCobertura":  24.4,
                        "status":  "saudavel"
                    },
@@ -2614,6 +2827,7 @@
                        "secao":  "SOBREMESAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  36137.91,
+                       "qtdEstoque":  20897,
                        "diasCobertura":  26.3,
                        "status":  "saudavel"
                    },
@@ -2622,6 +2836,7 @@
                        "secao":  "LIMPEZA",
                        "dept":  "MERCEARIA NAO ALIMENTOS",
                        "valorEstoque":  100477.6,
+                       "qtdEstoque":  28826,
                        "diasCobertura":  42.4,
                        "status":  "saudavel"
                    },
@@ -2630,6 +2845,7 @@
                        "secao":  "MATINAIS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  55650.3,
+                       "qtdEstoque":  12514,
                        "diasCobertura":  29.9,
                        "status":  "saudavel"
                    },
@@ -2638,6 +2854,7 @@
                        "secao":  "MATINAIS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  77345.16,
+                       "qtdEstoque":  10134,
                        "diasCobertura":  36.4,
                        "status":  "saudavel"
                    },
@@ -2646,6 +2863,7 @@
                        "secao":  "FLV",
                        "dept":  "PERECIVEIS",
                        "valorEstoque":  3690.52,
+                       "qtdEstoque":  275,
                        "diasCobertura":  18.4,
                        "status":  "saudavel"
                    },
@@ -2654,6 +2872,7 @@
                        "secao":  "MASSAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  3223.83,
+                       "qtdEstoque":  594,
                        "diasCobertura":  42.5,
                        "status":  "saudavel"
                    },
@@ -2662,6 +2881,7 @@
                        "secao":  "CONSERVAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  262766.89,
+                       "qtdEstoque":  53262,
                        "diasCobertura":  35.4,
                        "status":  "saudavel"
                    },
@@ -2670,6 +2890,7 @@
                        "secao":  "MATINAIS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  30022.29,
+                       "qtdEstoque":  4057,
                        "diasCobertura":  38.7,
                        "status":  "saudavel"
                    },
@@ -2678,6 +2899,7 @@
                        "secao":  "SOBREMESAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  430.96,
+                       "qtdEstoque":  111,
                        "diasCobertura":  45.9,
                        "status":  "saudavel"
                    },
@@ -2686,6 +2908,7 @@
                        "secao":  "CONGELADO",
                        "dept":  "PERECIVEIS",
                        "valorEstoque":  291104.89,
+                       "qtdEstoque":  35435,
                        "diasCobertura":  17.5,
                        "status":  "saudavel"
                    },
@@ -2694,6 +2917,7 @@
                        "secao":  "FLV",
                        "dept":  "PERECIVEIS",
                        "valorEstoque":  70329.52,
+                       "qtdEstoque":  5520,
                        "diasCobertura":  6.7,
                        "status":  "critico_baixo"
                    },
@@ -2702,6 +2926,7 @@
                        "secao":  "SALGADOS",
                        "dept":  "PERECIVEIS",
                        "valorEstoque":  199.83,
+                       "qtdEstoque":  -9,
                        "diasCobertura":  10.1,
                        "status":  "atencao_baixo"
                    },
@@ -2710,6 +2935,7 @@
                        "secao":  "FLV",
                        "dept":  "PERECIVEIS",
                        "valorEstoque":  205440.01,
+                       "qtdEstoque":  35347,
                        "diasCobertura":  4.1,
                        "status":  "critico_baixo"
                    },
@@ -2718,6 +2944,7 @@
                        "secao":  "CEREAIS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  349779.18,
+                       "qtdEstoque":  34035,
                        "diasCobertura":  16.3,
                        "status":  "saudavel"
                    },
@@ -2726,6 +2953,7 @@
                        "secao":  "BEBIDAS NAO ALCOOLICAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  205481.74,
+                       "qtdEstoque":  53054,
                        "diasCobertura":  18.9,
                        "status":  "saudavel"
                    },
@@ -2734,6 +2962,7 @@
                        "secao":  "ACOUGUE",
                        "dept":  "PERECIVEIS",
                        "valorEstoque":  1034045.7,
+                       "qtdEstoque":  103448,
                        "diasCobertura":  9.2,
                        "status":  "atencao_baixo"
                    },
@@ -2742,6 +2971,7 @@
                        "secao":  "SOBREMESAS",
                        "dept":  "MERCEARIA",
                        "valorEstoque":  294489.39,
+                       "qtdEstoque":  70983,
                        "diasCobertura":  14.2,
                        "status":  "saudavel"
                    }

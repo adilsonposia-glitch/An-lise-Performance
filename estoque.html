@@ -8,6 +8,15 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
+  <script>
+    (function () {
+      try {
+        if (localStorage.getItem("perf-theme") === "dark") {
+          document.documentElement.classList.add("theme-dark");
+        }
+      } catch (e) {}
+    })();
+  </script>
   <style>
     .est-hero { margin-bottom: 16px; }
     .est-hero h1 { margin: 0 0 6px; }
@@ -51,12 +60,7 @@
       color: var(--ink-soft);
       line-height: 1.55;
     }
-    .est-grid-2 {
-      display: grid;
-      grid-template-columns: 1.45fr 0.55fr;
-      gap: 16px;
-      margin-bottom: 18px;
-    }
+    .est-matriz-panel { margin-bottom: 18px; }
     .est-matriz-panel .table-wrap { max-height: 360px; }
     .est-matriz-panel.is-expanded .table-wrap,
     .est-matriz-panel:fullscreen .table-wrap,
@@ -384,53 +388,139 @@
       display: flex;
       justify-content: space-between;
       gap: 8px;
-      margin: 0 0 6px;
-      font-size: 0.68rem;
+      margin: 0 0 10px;
+      font-size: 0.78rem;
       color: var(--ink-soft);
     }
     .est-gab-head strong { color: var(--ink); }
-    .est-gab-grid {
+    .est-gab-view {
+      display: flex;
+      flex-direction: column;
+      min-height: 420px;
+    }
+    .est-gab-view[hidden],
+    #estForaMain[hidden] {
+      display: none !important;
+    }
+    .est-gab-board {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0 10px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
       flex: 1 1 auto;
-      min-height: 0;
-      overflow: auto;
-      align-content: start;
     }
-    .est-gab-row {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto auto;
-      gap: 4px;
-      align-items: baseline;
-      padding: 0;
-      line-height: 1.28;
-      border-bottom: 1px solid var(--line);
-      font-size: 0.62rem;
-      font-variant-numeric: tabular-nums;
+    .est-gab-tile {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      text-align: left;
+      font: inherit;
+      cursor: pointer;
+      color: inherit;
+      transition:
+        transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1),
+        opacity 0.22s ease,
+        box-shadow 0.28s ease,
+        border-color 0.22s ease,
+        background 0.22s ease;
     }
-    .est-gab-row b {
+    .est-gab-board:hover .est-gab-tile:not(:hover):not(:focus-visible) {
+      opacity: 0.38;
+      transform: scale(0.97);
+    }
+    .est-gab-tile:hover,
+    .est-gab-tile:focus-visible {
+      z-index: 1;
+      opacity: 1;
+      transform: translateY(-3px) scale(1.03);
+      background: #f0fdfa;
+      border-color: var(--teal-500);
+      box-shadow: 0 12px 28px rgba(15, 118, 110, 0.16);
+      outline: none;
+    }
+    .est-gab-tile .gab-name {
+      font-size: 0.8rem;
+      font-weight: 800;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      font-weight: 700;
-      color: var(--ink);
+      transition: color 0.22s ease, letter-spacing 0.22s ease;
     }
-    .est-gab-row span { color: var(--ink); white-space: nowrap; }
-    .est-gab-row i { font-style: normal; color: var(--ink-soft); white-space: nowrap; }
-    .est-gab-foot {
-      margin-top: 6px;
-      padding: 5px 6px;
+    .est-gab-tile:hover .gab-name,
+    .est-gab-tile:focus-visible .gab-name {
+      color: var(--teal-800);
+      letter-spacing: 0.02em;
+    }
+    .gab-metrics {
+      display: flex;
+      align-items: stretch;
+      gap: 6px;
+    }
+    .gab-atual,
+    .gab-meta {
+      flex: 1;
+      padding: 5px 8px;
       border-radius: 8px;
+      font-variant-numeric: tabular-nums;
+      transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.22s ease;
+    }
+    .gab-atual { background: #fff7ed; }
+    .gab-meta { background: #ccfbf1; }
+    .gab-atual small,
+    .gab-meta small {
+      display: block;
+      font-size: 0.62rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--ink-soft);
+    }
+    .gab-atual strong,
+    .gab-meta strong {
+      display: block;
+      font-size: 0.95rem;
+      line-height: 1.2;
+    }
+    .est-gab-tile:hover .gab-atual,
+    .est-gab-tile:hover .gab-meta,
+    .est-gab-tile:focus-visible .gab-atual,
+    .est-gab-tile:focus-visible .gab-meta {
+      animation: gab-focus-num 0.5s ease;
+      box-shadow: inset 0 0 0 2px rgba(15, 118, 110, 0.28);
+    }
+    .est-gab-tile:hover .gab-atual,
+    .est-gab-tile:focus-visible .gab-atual {
+      box-shadow: inset 0 0 0 2px #c2410c;
+    }
+    @keyframes gab-focus-num {
+      0% { transform: scale(0.9); }
+      55% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+    .gab-part {
+      font-size: 0.68rem;
+      font-style: normal;
+      color: var(--ink-soft);
+    }
+    .est-gab-foot {
+      margin-top: 10px;
+      padding: 8px 10px;
+      border-radius: 10px;
       background: #eef7f9;
-      font-size: 0.7rem;
+      font-size: 0.8rem;
       font-weight: 800;
       display: flex;
       justify-content: space-between;
       gap: 8px;
     }
-    @media (max-width: 360px) {
-      .est-gab-grid { grid-template-columns: 1fr; }
+    @media (max-width: 900px) {
+      .est-gab-board { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 560px) {
+      .est-gab-board { grid-template-columns: 1fr; }
     }
     .est-journey {
       display: grid;
@@ -489,7 +579,35 @@
     .est-fora-kpis .is-over { background: #fff1f2; border-color: #fecaca; }
     .est-fora-kpis .is-far { background: #fff1f2; border-color: #fecaca; }
     .est-fora-kpis .is-ok { background: #f0fdfa; border-color: #99f6e4; }
-    .est-fora-table { min-width: 780px; font-size: 0.78rem; }
+    .est-fora-secao {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--ink-soft);
+    }
+    .est-fora-secao select {
+      min-width: 180px;
+      max-width: 240px;
+      padding: 6px 8px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      font: inherit;
+      color: var(--ink);
+    }
+    .est-fora-table { min-width: 920px; font-size: 0.78rem; }
+    .est-fora-table th.sortable { cursor: pointer; user-select: none; }
+    .est-fora-table th.sortable:hover { color: var(--teal-800); }
+    .est-fora-table th.sortable.is-active { color: var(--teal-800); }
+    .est-fora-table th.sortable .sort-ind {
+      display: inline-block;
+      margin-left: 3px;
+      opacity: 0.4;
+      font-size: 0.7rem;
+    }
+    .est-fora-table th.sortable.is-active .sort-ind { opacity: 1; }
     .est-fora-table th,
     .est-fora-table td {
       padding: 7px 8px;
@@ -521,6 +639,192 @@
       height: 14px;
       background: var(--ink);
     }
+    .theme-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 7px 12px;
+      font: inherit;
+      font-size: 0.78rem;
+      font-weight: 800;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: 0.2s ease;
+    }
+    .theme-toggle svg { width: 16px; height: 16px; flex: 0 0 auto; }
+    .theme-toggle .icon-sun { display: none; }
+    .theme-toggle:hover { border-color: var(--teal-500); color: var(--teal-800); }
+    html.theme-dark .theme-toggle {
+      background: rgba(61, 214, 224, 0.12);
+      border-color: rgba(61, 214, 224, 0.45);
+      color: #7ee8ef;
+    }
+    html.theme-dark .theme-toggle .icon-moon { display: none; }
+    html.theme-dark .theme-toggle .icon-sun { display: block; }
+    @media (max-width: 980px) {
+      .theme-toggle-label { display: none; }
+      .theme-toggle { padding: 8px; }
+    }
+
+    html.theme-dark body {
+      color: #e8eef6;
+      background:
+        radial-gradient(900px 480px at 8% -10%, rgba(61, 214, 224, 0.16), transparent 50%),
+        radial-gradient(700px 400px at 100% 0%, rgba(59, 91, 219, 0.18), transparent 46%),
+        linear-gradient(180deg, #8b96ae 0%, #6f7a94 100%);
+    }
+    html.theme-dark .topnav {
+      background: #152036;
+      border: 0;
+      border-radius: 22px;
+      padding: 12px 16px;
+      margin-top: 14px;
+      margin-bottom: 18px;
+      box-shadow: 0 16px 40px rgba(15, 23, 42, 0.28);
+    }
+    html.theme-dark .brand-pill {
+      background: rgba(61, 214, 224, 0.14);
+      color: #7ee8ef;
+    }
+    html.theme-dark .topnav-brand { color: #f4f8fb; }
+    html.theme-dark .topnav-links {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(255, 255, 255, 0.08);
+    }
+    html.theme-dark .nav-link { color: #9aabc0; }
+    html.theme-dark .nav-link:hover { color: #7ee8ef; }
+    html.theme-dark .nav-link.active {
+      color: #7ee8ef;
+      background: transparent;
+      box-shadow: none;
+      outline: 1.5px solid #3dd6e0;
+      outline-offset: -1px;
+    }
+    html.theme-dark .nav-link.active::after { background: #3dd6e0; }
+    html.theme-dark .period-mini {
+      background: rgba(61, 214, 224, 0.12);
+      border-color: rgba(61, 214, 224, 0.28);
+      color: #7ee8ef;
+    }
+    html.theme-dark .est-help-btn {
+      background: rgba(61, 214, 224, 0.12);
+      border-color: rgba(61, 214, 224, 0.45);
+      color: #7ee8ef;
+    }
+    html.theme-dark .est-help-btn:hover,
+    html.theme-dark .est-help-btn[aria-expanded="true"] {
+      background: #3dd6e0;
+      color: #152036;
+      border-color: #3dd6e0;
+    }
+    html.theme-dark .page-head h1 { color: #152036; }
+    html.theme-dark .lede { color: #243044; }
+    html.theme-dark .est-exec {
+      color: #243044;
+    }
+    html.theme-dark .kpi,
+    html.theme-dark .panel {
+      border: 0;
+      border-radius: 22px;
+      box-shadow: 0 16px 36px rgba(15, 23, 42, 0.22);
+    }
+    html.theme-dark .kpi {
+      background: linear-gradient(180deg, #1c2b48 0%, #121a2e 100%);
+    }
+    html.theme-dark .kpi-label { color: #8ea0b3; }
+    html.theme-dark .kpi-value { color: #fff; }
+    html.theme-dark .kpi .delta { background: rgba(61, 214, 224, 0.16); color: #7ee8ef; }
+    html.theme-dark .est-tab {
+      background: #152036;
+      border-color: rgba(255, 255, 255, 0.08);
+      color: #9aabc0;
+    }
+    html.theme-dark .est-tab.active {
+      background: #3dd6e0;
+      color: #102033;
+      border-color: #3dd6e0;
+    }
+    html.theme-dark .table-panel,
+    html.theme-dark .chart-panel {
+      background: #f7f8fb;
+      color: #1c2a31;
+    }
+    html.theme-dark .table-panel .panel-head h2,
+    html.theme-dark .chart-panel .panel-head h2 { color: #152036; }
+    html.theme-dark .table-panel .panel-head p,
+    html.theme-dark .chart-panel .panel-head p { color: #5b6b73; }
+    html.theme-dark .search input,
+    html.theme-dark .expand-btn,
+    html.theme-dark .est-fora-secao select {
+      background: #fff;
+      color: #1c2a31;
+      border-color: #e4eaed;
+    }
+    html.theme-dark .chip {
+      background: #fff;
+      color: #5b6b73;
+      border-color: #e4eaed;
+    }
+    html.theme-dark .chip.active {
+      background: #3dd6e0;
+      color: #102033;
+      border-color: #3dd6e0;
+    }
+    html.theme-dark .table-wrap { border-color: #e4eaed; background: #fff; }
+    html.theme-dark thead th { background: #eef2f6; color: #5b6b73; }
+    html.theme-dark tbody td { border-bottom-color: #eef2f3; }
+    html.theme-dark .est-journey {
+      background: #eef4f8;
+      border-color: #d9e3ea;
+    }
+    html.theme-dark .est-help-drawer {
+      background: #152036;
+      border-left-color: rgba(61, 214, 224, 0.22);
+      color: #e8eef6;
+    }
+    html.theme-dark .est-help-head h2,
+    html.theme-dark .est-help-pane h3 { color: #f4f8fb; }
+    html.theme-dark .est-help-close { color: #9aabc0; }
+    html.theme-dark .est-help-pane { color: #9aabc0; }
+    html.theme-dark .est-help-tab {
+      background: #1c2b48;
+      border-color: rgba(255, 255, 255, 0.08);
+      color: #9aabc0;
+    }
+    html.theme-dark .est-help-tab.active {
+      background: #3dd6e0;
+      color: #102033;
+      border-color: #3dd6e0;
+    }
+    html.theme-dark .est-help-card {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(255, 255, 255, 0.08);
+    }
+    html.theme-dark .est-help-card strong { color: #f4f8fb; }
+    html.theme-dark .est-help-card.danger { background: rgba(255, 107, 107, 0.12); border-color: rgba(255, 107, 107, 0.28); }
+    html.theme-dark .est-help-card.warn { background: rgba(255, 196, 80, 0.12); border-color: rgba(255, 196, 80, 0.28); }
+    html.theme-dark .est-gab-tile {
+      background: #fff;
+      border-color: #e4eaed;
+    }
+    html.theme-dark .est-gab-tile:hover,
+    html.theme-dark .est-gab-tile:focus-visible {
+      background: #eef8f8;
+      border-color: #3dd6e0;
+    }
+    html.theme-dark .est-gab-foot { background: #eef4f8; }
+    html.theme-dark .footer { color: #243044; }
+    html.theme-dark .footer .muted { color: #3a4658; }
+    html.theme-dark .footer-logo { filter: drop-shadow(0 8px 16px rgba(15, 23, 42, 0.25)); }
+    html.theme-dark .table-panel.is-expanded,
+    html.theme-dark .table-panel:fullscreen,
+    html.theme-dark .table-panel:-webkit-full-screen {
+      background: #6f7a94;
+    }
   </style>
 </head>
 <body>
@@ -543,6 +847,16 @@
       </nav>
       <div class="topnav-right">
         <span class="period-mini" id="estPosicao">Posição · —</span>
+        <button type="button" class="theme-toggle" id="themeToggle" aria-pressed="false" title="Visual Dark para apresentação">
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <path d="M21 14.5A8.5 8.5 0 0 1 9.5 3 7 7 0 1 0 21 14.5z"/>
+          </svg>
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"/>
+            <path d="M12 3v1.5M12 19.5V21M4.2 4.2l1.1 1.1M18.7 18.7l1.1 1.1M3 12h1.5M19.5 12H21M4.2 19.8l1.1-1.1M18.7 5.3l1.1-1.1"/>
+          </svg>
+          <span class="theme-toggle-label">Dark</span>
+        </button>
         <button type="button" class="est-help-btn" id="estHelpBtn" aria-haspopup="dialog" aria-expanded="false" title="Regras e gabarito de cobertura">
           ?
         </button>
@@ -604,8 +918,7 @@
         </div>
       </section>
 
-      <div class="est-grid-2">
-        <section class="panel table-panel est-matriz-panel" id="estMatrizPanel">
+      <section class="panel table-panel est-matriz-panel" id="estMatrizPanel">
           <div class="panel-head row">
             <div>
               <h2>Estoque por loja</h2>
@@ -644,27 +957,6 @@
             </table>
           </div>
         </section>
-        <section class="panel chart-panel est-excesso-panel">
-          <div class="panel-head">
-            <h2>Maior capital em excesso</h2>
-              <p>Clique em Estoque para ordenar · cobertura &gt; 60 dias</p>
-            </div>
-            <div class="table-wrap">
-              <table class="est-excesso-table" id="estExcessoTable">
-                <thead>
-                  <tr>
-                    <th>Grupo</th>
-                    <th>Dias</th>
-                    <th class="sortable is-active" data-sort="valorEstoque" id="estExcessoSortValor" title="Ordenar por valor de estoque">
-                      Estoque <span class="sort-ind" aria-hidden="true">↓</span>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody id="estExcessoMini"></tbody>
-              </table>
-            </div>
-          </section>
-        </div>
 
         <section class="panel table-panel est-meta-panel" id="estForaPanel">
           <div class="panel-head row">
@@ -673,11 +965,18 @@
               <p id="estForaSub">Cobertura do grupo vs dias-meta da seção (gabarito × 27/30,51)</p>
             </div>
             <div class="table-tools">
-              <button type="button" class="expand-btn" id="estGabaritoBtn" title="Abrir gabarito atual × meta">
+              <label class="est-fora-secao">
+                <span>Seção</span>
+                <select id="estForaSecao" aria-label="Filtrar por seção">
+                  <option value="">Todas as seções</option>
+                </select>
+              </label>
+              <button type="button" class="expand-btn" id="estGabaritoBtn" aria-pressed="false" title="Abrir gabarito atual × meta">
                 Ver gabarito
               </button>
             </div>
           </div>
+          <div id="estForaMain">
           <div class="est-journey" id="estJourney"></div>
           <div class="est-fora-kpis" id="estForaKpis"></div>
           <div class="table-wrap">
@@ -686,15 +985,19 @@
                 <tr>
                   <th>Grupo</th>
                   <th>Seção</th>
-                  <th class="num">Dias</th>
+                  <th class="num sortable" data-sort="qtdEstoque" title="Ordenar por quantidade em estoque">Qtd <span class="sort-ind" aria-hidden="true"></span></th>
+                  <th class="num sortable" data-sort="valorEstoque" title="Ordenar por valor de estoque">Valor <span class="sort-ind" aria-hidden="true"></span></th>
+                  <th class="num sortable" data-sort="diasCobertura" title="Ordenar por dias de cobertura">Dias <span class="sort-ind" aria-hidden="true"></span></th>
                   <th class="num">Meta seção</th>
-                  <th class="num">Δ</th>
+                  <th class="num sortable is-active" data-sort="delta" title="Ordenar pelo desvio da meta">Δ <span class="sort-ind" aria-hidden="true">↓</span></th>
                   <th>Vs meta</th>
                 </tr>
               </thead>
               <tbody id="estForaBody"></tbody>
             </table>
           </div>
+          </div>
+          <div class="est-gab-view" id="estGabaritoView" hidden></div>
         </section>
 
       <footer class="footer">
@@ -741,7 +1044,7 @@
         `e ${t.excesso} em excesso (capital parado ≈ ${brl(t.valorEmExcesso)}). ` +
         `A cobertura usa o CMV médio semanal 2026 das últimas 4 semanas (mesmo unidade do estoque), não a quantidade. ` +
         `Fora do estoque: Bolsas e sacolas (Bazar), Lanchonete e Padaria fabricação própria — permanece Padaria industrializada. ` +
-        `A matriz ao lado inclui o CD 70 e a Loja 17 para ver o estoque total da empresa e o que pode ser movimentado.`;
+        `A matriz de estoque por loja inclui o CD 70 e a Loja 17 para ver o total da empresa e o que pode ser movimentado.`;
 
       document.getElementById("estKpis").innerHTML = [
         ["Valor em estoque", brl(t.valorEstoque), `${num(t.grupos)} grupos`, t.valorEstoque],
@@ -781,7 +1084,6 @@
       let active = tabs.find((x) => x[2] > 0)?.[0] || "excesso";
       let prioSortKey = "valorEstoque";
       let prioSortDir = "desc";
-      let excessoSortDir = "desc";
 
       const shortPeriodo = (p) => {
         const match = String(p.periodo2026 || "").match(
@@ -822,8 +1124,6 @@
           if (bEmpty) return -1;
           return dir === "asc" ? Number(av) - Number(bv) : Number(bv) - Number(av);
         });
-
-      const sortByValor = (rows, dir) => sortRows(rows, "valorEstoque", dir);
 
       const applyTabDefaultSort = () => {
         if (active === "excesso" || active === "ruptura") {
@@ -902,24 +1202,6 @@
           .join("");
       };
 
-      const renderExcessoMini = () => {
-        const rows = sortByValor(data.topExcesso || data.excesso || [], excessoSortDir).slice(0, 12);
-        const sortEl = document.getElementById("estExcessoSortValor");
-        if (sortEl) {
-          sortEl.classList.add("is-active");
-          sortEl.querySelector(".sort-ind").textContent = excessoSortDir === "asc" ? "↑" : "↓";
-        }
-        document.getElementById("estExcessoMini").innerHTML = rows
-          .map(
-            (r) =>
-              `<tr title="${r.nome}">
-                <td>${r.nome}</td>
-                <td>${diasTxt(r.diasCobertura)}</td>
-                <td>${brl(r.valorEstoque)}</td>
-              </tr>`
-          )
-          .join("");
-      };
 
       const tabsEl = document.getElementById("estTabs");
       const paintTabs = () => {
@@ -950,10 +1232,6 @@
           prioSortDir = textSortKeys.has(key) || key === "diasCobertura" ? "asc" : "desc";
         }
         renderTable();
-      });
-      document.getElementById("estExcessoSortValor")?.addEventListener("click", () => {
-        excessoSortDir = excessoSortDir === "desc" ? "asc" : "desc";
-        renderExcessoMini();
       });
 
       const dist = data.distribuicao || { lojas: [], linhas: [], totais: {} };
@@ -1295,23 +1573,30 @@
           .map(([nome, dias, part]) => {
             const alvo = dias * metaFator;
             const short = nome.split("\\").pop().trim();
-            return `<div class="est-gab-row" title="${esc(nome)} · ${num(part, 2)}% venda">
-              <b>${esc(short)}</b>
-              <span>${num(dias, 1)}→${num(alvo, 1)}</span>
-              <i>${num(alvo - dias, 1)}</i>
-            </div>`;
+            return `<button type="button" class="est-gab-tile" data-secao="${esc(normKey(short))}" title="${esc(nome)}">
+              <b class="gab-name">${esc(short)}</b>
+              <div class="gab-metrics">
+                <span class="gab-atual"><small>Atual</small><strong>${num(dias, 1)}</strong></span>
+                <span class="gab-meta"><small>Meta</small><strong>${num(alvo, 1)}</strong></span>
+              </div>
+              <em class="gab-part">${num(part, 2)}% venda · ${num(alvo - dias, 1)} d</em>
+            </button>`;
           })
           .join("");
 
       const setHelpTab = (key) => {
+        if (key === "gabarito") {
+          closeHelp();
+          openGabaritoCard();
+          return;
+        }
         document.querySelectorAll(".est-help-tab").forEach((b) => {
           b.classList.toggle("active", b.getAttribute("data-help") === key);
         });
-        document.getElementById("estHelpRegras").hidden = key !== "regras";
-        document.getElementById("estHelpGabarito").hidden = key !== "gabarito";
-        document.getElementById("estHelpDrawer").classList.toggle("is-gabarito", key === "gabarito");
-        document.getElementById("estHelpTitle").textContent =
-          key === "gabarito" ? "Gabarito 30→27" : "Regras do radar";
+        document.getElementById("estHelpRegras").hidden = false;
+        document.getElementById("estHelpGabarito").hidden = true;
+        document.getElementById("estHelpDrawer").classList.remove("is-gabarito");
+        document.getElementById("estHelpTitle").textContent = "Regras do radar";
       };
       const openHelp = (tab) => {
         document.getElementById("estHelpBackdrop").hidden = false;
@@ -1339,17 +1624,52 @@
           <h3>Matriz por loja</h3>
           <p>Subgrupo × CD 70 + 13 lojas (inclui 17). Célula vermelha = estoque no CD e zero na loja. Filtro Valor R$ / Quantidade.</p>
           <h3>Meta 27 dias</h3>
-          <p>Partida = 30,51 dias da loja (gabarito nível 2). Meta = 27 dias. Fator 27 ÷ 30,51 = −11,5% no estoque, mantendo a % de venda de cada seção. Dias-meta da seção = dias atuais × esse fator. Grupo acima da meta = cobertura do grupo maior que o dias-meta da seção.</p>
+          <p>Partida = 30,51 dias da loja (gabarito nível 2). Meta = 27 dias. Fator 27 ÷ 30,51 = −11,5% no estoque, mantendo a % de venda de cada seção. Dias-meta da seção = dias atuais × esse fator. Grupo acima da meta = cobertura do grupo maior que o dias-meta da seção. Qtd e Valor mostram o peso do estoque; o filtro de seção lista todos os grupos daquela seção. Excesso acima de 60 dias continua na aba Excesso do card de prioridades.</p>
         `;
-        document.getElementById("estHelpGabarito").innerHTML = `
-          <p class="est-gab-head"><strong>Atual → meta 27 d</strong><span>−11,5% · % venda igual</span></p>
-          <div class="est-gab-grid">${gabaritoRowsHtml()}</div>
+        document.getElementById("estHelpGabarito").innerHTML = "";
+        document.getElementById("estGabaritoView").innerHTML = `
+          <p class="est-gab-head"><strong>Gabarito 30,51 d → 27 d</strong><span>passe o cursor na seção · atual e meta se destacam</span></p>
+          <div class="est-gab-board">${gabaritoRowsHtml()}</div>
           <div class="est-gab-foot">
             <span>LOJA</span>
-            <span>${num(meta27.atual, 2)} → ${num(meta27.alvo, 2)} d (${num(meta27.alvo - meta27.atual, 2)})</span>
+            <span>Atual ${num(meta27.atual, 2)} d → Meta ${num(meta27.alvo, 2)} d (${num(meta27.alvo - meta27.atual, 2)})</span>
           </div>
         `;
+        document.querySelectorAll("#estGabaritoView .est-gab-tile").forEach((tile) => {
+          tile.addEventListener("click", () => {
+            const key = tile.getAttribute("data-secao") || "";
+            const sel = document.getElementById("estForaSecao");
+            if (sel && key) {
+              sel.value = key;
+              foraSecao = key;
+              foraFilter = "all";
+              paintForaCards();
+              paintForaTable();
+            }
+            closeGabaritoCard();
+          });
+        });
       };
+
+      const setGabaritoOpen = (open) => {
+        document.getElementById("estForaMain").hidden = open;
+        document.getElementById("estGabaritoView").hidden = !open;
+        const btn = document.getElementById("estGabaritoBtn");
+        if (btn) {
+          btn.textContent = open ? "Voltar aos grupos" : "Ver gabarito";
+          btn.setAttribute("aria-pressed", open ? "true" : "false");
+        }
+        document.getElementById("estForaPanel")?.classList.toggle("is-gabarito", open);
+        if (open) {
+          document.getElementById("estForaSub").textContent =
+            "Passe o cursor na seção para focar o nome, o atual e a meta";
+          document.getElementById("estForaPanel")?.scrollIntoView({ block: "start", behavior: "smooth" });
+        } else {
+          paintForaTable();
+        }
+      };
+      const openGabaritoCard = () => setGabaritoOpen(true);
+      const closeGabaritoCard = () => setGabaritoOpen(false);
 
       const renderJourney = () => {
         const maxD = Math.max(meta27.atual, meta27.alvo);
@@ -1366,27 +1686,81 @@
       };
 
       let foraFilter = "over";
+      let foraSecao = "";
+      let foraSortKey = "delta";
+      let foraSortDir = "desc";
       let foraRows = [];
 
       const isFar = (r) => r.over && r.delta / r.meta.alvo >= 0.2;
 
-      const paintForaTable = () => {
-        const shown = foraRows.filter((r) => {
-          if (foraFilter === "far") return isFar(r);
-          if (foraFilter === "ok") return !r.over;
-          return r.over;
+      const rowsInSecao = () =>
+        foraRows.filter((r) => !foraSecao || normKey(r.secao || r.meta.secao) === foraSecao);
+
+      const sortFora = (rows) => {
+        const dir = foraSortDir;
+        const key = foraSortKey;
+        return [...rows].sort((a, b) => {
+          const av = key === "delta" ? a.delta : a[key];
+          const bv = key === "delta" ? b.delta : b[key];
+          const aEmpty = av == null || av === "";
+          const bEmpty = bv == null || bv === "";
+          if (aEmpty && bEmpty) return 0;
+          if (aEmpty) return 1;
+          if (bEmpty) return -1;
+          return dir === "asc" ? Number(av) - Number(bv) : Number(bv) - Number(av);
         });
+      };
+
+      const paintForaCards = () => {
+        const base = rowsInSecao();
+        const over = base.filter((r) => r.over);
+        const far = over.filter(isFar);
+        const ok = base.length - over.length;
+        document.getElementById("estForaKpis").innerHTML = `
+          <button type="button" class="est-fora-card is-over" data-filter="over" aria-pressed="${foraFilter === "over"}">
+            <small>Acima da meta</small><strong>${over.length}</strong><span>clique para ver</span>
+          </button>
+          <button type="button" class="est-fora-card is-far" data-filter="far" aria-pressed="${foraFilter === "far"}">
+            <small>Bem acima (+20%)</small><strong>${far.length}</strong><span>clique para ver</span>
+          </button>
+          <button type="button" class="est-fora-card is-ok" data-filter="ok" aria-pressed="${foraFilter === "ok"}">
+            <small>Na meta ou abaixo</small><strong>${ok}</strong><span>clique para ver</span>
+          </button>`;
+        document.querySelectorAll("#estForaKpis [data-filter]").forEach((btn) => {
+          btn.classList.toggle("is-active", btn.getAttribute("data-filter") === foraFilter);
+          btn.addEventListener("click", () => {
+            foraFilter = btn.getAttribute("data-filter") || "over";
+            paintForaCards();
+            paintForaTable();
+          });
+        });
+      };
+
+      const paintForaTable = () => {
+        const shown = sortFora(
+          rowsInSecao().filter((r) => {
+            if (foraFilter === "all") return true;
+            if (foraFilter === "far") return isFar(r);
+            if (foraFilter === "ok") return !r.over;
+            return r.over;
+          })
+        );
         const labels = {
+          all: "da seção",
           over: "acima da meta",
           far: "bem acima da meta (+20%)",
           ok: "na meta ou abaixo",
         };
+        const secLbl = foraSecao
+          ? (rowsInSecao()[0] && (rowsInSecao()[0].secao || rowsInSecao()[0].meta.secao)) || "seção"
+          : "todas as seções";
         document.getElementById("estForaSub").textContent =
-          `${shown.length} grupos ${labels[foraFilter] || ""} · clique no card para filtrar`;
-        document.querySelectorAll("#estForaKpis [data-filter]").forEach((btn) => {
-          const on = btn.getAttribute("data-filter") === foraFilter;
-          btn.classList.toggle("is-active", on);
-          btn.setAttribute("aria-pressed", on ? "true" : "false");
+          `${shown.length} grupos ${labels[foraFilter] || ""} · ${secLbl} · clique no card ou no cabeçalho`;
+        document.querySelectorAll("#estForaTable th.sortable").forEach((th) => {
+          const on = th.getAttribute("data-sort") === foraSortKey;
+          th.classList.toggle("is-active", on);
+          const ind = th.querySelector(".sort-ind");
+          if (ind) ind.textContent = on ? (foraSortDir === "asc" ? "↑" : "↓") : "";
         });
         document.getElementById("estForaBody").innerHTML = shown
           .map((r) => {
@@ -1400,6 +1774,8 @@
             return `<tr class="${cls}">
               <td><strong>${esc(r.nome)}</strong></td>
               <td>${esc(r.secao || r.meta.secao)}</td>
+              <td class="num">${num(r.qtdEstoque, 0)}</td>
+              <td class="num">${brl(r.valorEstoque)}</td>
               <td class="num">${num(r.diasCobertura, 1)}</td>
               <td class="num">${num(r.meta.alvo, 1)}</td>
               <td class="num ${r.over ? "delta-over" : "delta-ok"}">${deltaTxt}</td>
@@ -1423,27 +1799,23 @@
             const delta = Number(g.diasCobertura) - meta.alvo;
             return { ...g, meta, delta, over: delta > 0.05 };
           })
-          .filter(Boolean)
-          .sort((a, b) => b.delta - a.delta);
-        const over = foraRows.filter((r) => r.over);
-        const far = over.filter(isFar);
-        const ok = foraRows.length - over.length;
-        document.getElementById("estForaKpis").innerHTML = `
-          <button type="button" class="est-fora-card is-over" data-filter="over" aria-pressed="true">
-            <small>Acima da meta</small><strong>${over.length}</strong><span>clique para ver</span>
-          </button>
-          <button type="button" class="est-fora-card is-far" data-filter="far" aria-pressed="false">
-            <small>Bem acima (+20%)</small><strong>${far.length}</strong><span>clique para ver</span>
-          </button>
-          <button type="button" class="est-fora-card is-ok" data-filter="ok" aria-pressed="false">
-            <small>Na meta ou abaixo</small><strong>${ok}</strong><span>clique para ver</span>
-          </button>`;
-        document.querySelectorAll("#estForaKpis [data-filter]").forEach((btn) => {
-          btn.addEventListener("click", () => {
-            foraFilter = btn.getAttribute("data-filter") || "over";
-            paintForaTable();
-          });
+          .filter(Boolean);
+        const seen = new Map();
+        foraRows.forEach((r) => {
+          const name = (r.secao || r.meta.secao || "").trim();
+          const key = normKey(name);
+          if (key && !seen.has(key)) seen.set(key, name);
         });
+        const sel = document.getElementById("estForaSecao");
+        const current = foraSecao;
+        sel.innerHTML =
+          `<option value="">Todas as seções</option>` +
+          [...seen.entries()]
+            .sort((a, b) => a[1].localeCompare(b[1], "pt-BR"))
+            .map(([key, name]) => `<option value="${esc(key)}">${esc(name)}</option>`)
+            .join("");
+        sel.value = current;
+        paintForaCards();
         paintForaTable();
       };
 
@@ -1458,20 +1830,63 @@
       document.querySelectorAll(".est-help-tab").forEach((btn) => {
         btn.addEventListener("click", () => setHelpTab(btn.getAttribute("data-help")));
       });
-      document.getElementById("estGabaritoBtn")?.addEventListener("click", () => openHelp("gabarito"));
+      document.getElementById("estGabaritoBtn")?.addEventListener("click", () => {
+        const open = document.getElementById("estGabaritoBtn").getAttribute("aria-pressed") === "true";
+        if (open) closeGabaritoCard();
+        else openGabaritoCard();
+      });
+      document.getElementById("estForaSecao")?.addEventListener("change", (e) => {
+        foraSecao = e.target.value || "";
+        if (foraSecao) foraFilter = "all";
+        else if (foraFilter === "all") foraFilter = "over";
+        paintForaCards();
+        paintForaTable();
+      });
+      document.querySelector("#estForaTable thead")?.addEventListener("click", (e) => {
+        const th = e.target.closest("th[data-sort]");
+        if (!th) return;
+        const key = th.getAttribute("data-sort");
+        if (foraSortKey === key) foraSortDir = foraSortDir === "desc" ? "asc" : "desc";
+        else {
+          foraSortKey = key;
+          foraSortDir = "desc";
+        }
+        paintForaTable();
+      });
       document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape" && document.getElementById("estHelpBtn").getAttribute("aria-expanded") === "true") {
+        if (e.key !== "Escape") return;
+        if (document.getElementById("estHelpBtn").getAttribute("aria-expanded") === "true") {
           closeHelp();
+          return;
+        }
+        if (document.getElementById("estGabaritoBtn")?.getAttribute("aria-pressed") === "true") {
+          closeGabaritoCard();
         }
       });
 
       applyTabDefaultSort();
       paintTabs();
       renderTable();
-      renderExcessoMini();
       renderMatriz();
       renderJourney();
       renderForaMeta();
+
+      const themeBtn = document.getElementById("themeToggle");
+      if (themeBtn) {
+        const syncTheme = () => {
+          const dark = document.documentElement.classList.contains("theme-dark");
+          themeBtn.setAttribute("aria-pressed", dark ? "true" : "false");
+          themeBtn.title = dark ? "Voltar ao visual padrão" : "Visual Dark para apresentação";
+          const label = themeBtn.querySelector(".theme-toggle-label");
+          if (label) label.textContent = dark ? "Claro" : "Dark";
+        };
+        themeBtn.addEventListener("click", () => {
+          const dark = document.documentElement.classList.toggle("theme-dark");
+          try { localStorage.setItem("perf-theme", dark ? "dark" : "light"); } catch (e) {}
+          syncTheme();
+        });
+        syncTheme();
+      }
     })();
   </script>
 </body>

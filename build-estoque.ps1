@@ -204,6 +204,7 @@ if ($EstoqueCsv -and (Test-Path -LiteralPath $EstoqueCsv)) {
         dept = $parts[0]
         skus = 0.0
         valor = 0.0
+        qtd = 0.0
         mediaCustoDia = 0.0
         diasCobertura = $null
         estoquePendente = 0.0
@@ -212,6 +213,7 @@ if ($EstoqueCsv -and (Test-Path -LiteralPath $EstoqueCsv)) {
     }
     $acc[$key].skus += $skus
     $acc[$key].valor += $valor
+    $acc[$key].qtd += $qtdEst
     $acc[$key].mediaCustoDia += $media
     $acc[$key].estoquePendente += $pend
     if ($null -ne $dias) { $acc[$key].diasCobertura = $dias }
@@ -219,6 +221,7 @@ if ($EstoqueCsv -and (Test-Path -LiteralPath $EstoqueCsv)) {
   $estoques = @($acc.Values | ForEach-Object {
     $_.skus = [math]::Round($_.skus, 0)
     $_.valor = [math]::Round($_.valor, 2)
+    $_.qtd = [math]::Round($(if ($_.PSObject.Properties["qtd"]) { $_.qtd } else { 0 }), 0)
     $_.mediaCustoDia = [math]::Round($_.mediaCustoDia, 2)
     $_.estoquePendente = [math]::Round($_.estoquePendente, 2)
     $_
@@ -552,6 +555,7 @@ foreach ($e in $estoques) {
     dept = if ($e.PSObject.Properties["dept"]) { [string]$e.dept } else { "" }
     skus = $e.skus
     valorEstoque = $e.valor
+    qtdEstoque = if ($e.PSObject.Properties["qtd"]) { [double]$e.qtd } else { $null }
     mediaVendaCustoDia = $e.mediaCustoDia
     diasCobertura = $cob.dias
     semanasCobertura = $cob.semanas
@@ -634,6 +638,7 @@ $payload = [ordered]@{
       secao = $_.secao
       dept = $_.dept
       valorEstoque = $_.valorEstoque
+      qtdEstoque = $_.qtdEstoque
       diasCobertura = $_.diasCobertura
       status = $_.status
     }
