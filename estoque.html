@@ -53,9 +53,111 @@
     }
     .est-grid-2 {
       display: grid;
-      grid-template-columns: 1.25fr 0.75fr;
+      grid-template-columns: 1.45fr 0.55fr;
       gap: 16px;
       margin-bottom: 18px;
+    }
+    .est-matriz-panel .table-wrap { max-height: 360px; }
+    .est-matriz-panel.is-expanded .table-wrap,
+    .est-matriz-panel:fullscreen .table-wrap,
+    .est-matriz-panel:-webkit-full-screen .table-wrap {
+      flex: 1 1 auto;
+      max-height: none;
+      min-height: 240px;
+    }
+    .est-matriz-table th:not(:first-child),
+    .est-matriz-table td:not(:first-child) {
+      min-width: 4.6rem;
+    }
+    .est-matriz-panel .table-tools { align-items: center; }
+    .est-mover-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--ink-soft);
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .est-matriz-kpis {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
+      gap: 8px;
+      margin: 0 0 12px;
+    }
+    .est-matriz-kpis article {
+      padding: 8px 10px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.8);
+      border: 1px solid rgba(31, 74, 87, 0.08);
+    }
+    .est-matriz-kpis small {
+      display: block;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+    }
+    .est-matriz-kpis strong {
+      display: block;
+      margin-top: 2px;
+      font-size: 0.92rem;
+    }
+    .est-matriz-kpis span {
+      display: block;
+      font-size: 0.7rem;
+      color: var(--ink-soft);
+    }
+    .est-matriz-kpis article.is-cd { background: #fff7ed; border-color: #fed7aa; }
+    .est-matriz-kpis article.is-17 { background: #eef7f9; border-color: #d9eef2; }
+    .est-matriz-kpis article.is-move { background: #fff1f2; border-color: #fecaca; }
+    .est-matriz-table {
+      min-width: 1280px;
+      width: max-content;
+      font-size: 0.74rem;
+    }
+    .est-matriz-table th,
+    .est-matriz-table td {
+      padding: 6px 8px;
+      white-space: nowrap;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      vertical-align: middle;
+    }
+    .est-matriz-table th:first-child,
+    .est-matriz-table td:first-child {
+      position: sticky;
+      left: 0;
+      z-index: 2;
+      text-align: left;
+      background: #fff;
+      min-width: 168px;
+      max-width: 220px;
+    }
+    .est-matriz-table thead th:first-child { z-index: 5; }
+    .est-matriz-table th.col-cd,
+    .est-matriz-table td.col-cd {
+      position: sticky;
+      left: 168px;
+      z-index: 2;
+      background: #fff7ed;
+      font-weight: 800;
+    }
+    .est-matriz-table thead th.col-cd,
+    .est-matriz-table tfoot td.col-cd { z-index: 5; }
+    .est-matriz-table td.col-17 { background: #eef7f9; }
+    .est-matriz-table td.is-zero { color: var(--muted); }
+    .est-matriz-table td.is-gap { background: #fff1f2; color: #9f1239; font-weight: 700; }
+    .est-matriz-table .sg-name { display: block; font-weight: 800; overflow: hidden; text-overflow: ellipsis; }
+    .est-matriz-table .sg-sub { display: block; font-size: 0.64rem; color: var(--ink-soft); font-weight: 600; }
+    .est-matriz-table tfoot td { font-weight: 800; background: #f7fafb; }
+    .est-matriz-table tfoot td:first-child { background: #f7fafb; }
+    .est-matriz-table th.sortable { cursor: pointer; user-select: none; }
+    .est-matriz-table th.sortable.is-active { color: var(--teal-800); }
+    @media (max-width: 980px) {
+      .est-matriz-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
     .est-excesso-panel .table-wrap {
       max-height: 360px;
@@ -247,12 +349,40 @@
       </section>
 
       <div class="est-grid-2">
-        <section class="panel chart-panel">
-          <div class="panel-head">
-            <h2>Distribuição por status</h2>
-            <p>Quantidade de grupos sinalizados</p>
+        <section class="panel table-panel est-matriz-panel" id="estMatrizPanel">
+          <div class="panel-head row">
+            <div>
+              <h2>Estoque por loja</h2>
+              <p>Subgrupo · CD 70 · cada loja (inclui 17) · valor de custo</p>
+            </div>
+            <div class="table-tools">
+              <label class="est-mover-toggle">
+                <input type="checkbox" id="estMoverOnly" />
+                CD com loja zerada
+              </label>
+              <div class="search">
+                <input type="search" id="estMatrizQ" placeholder="Buscar subgrupo" autocomplete="off" />
+              </div>
+              <button type="button" class="expand-btn" id="estMatrizExpandBtn" aria-pressed="false" title="Abrir matriz em tela cheia">
+                <svg class="expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                  <path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/>
+                </svg>
+                <svg class="collapse-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                  <path d="M9 3v5H4M15 3v5h5M9 21v-5H4M15 21v-5h5"/>
+                </svg>
+                <span class="expand-label">Tela cheia</span>
+                <span class="collapse-label">Voltar ao radar</span>
+              </button>
+            </div>
           </div>
-          <div class="rede-chart" id="estBars"></div>
+          <div class="est-matriz-kpis" id="estMatrizKpis"></div>
+          <div class="table-wrap">
+            <table class="est-matriz-table" id="estMatrizTable">
+              <thead id="estMatrizHead"></thead>
+              <tbody id="estMatrizBody"></tbody>
+              <tfoot id="estMatrizFoot"></tfoot>
+            </table>
+          </div>
         </section>
         <section class="panel chart-panel est-excesso-panel">
           <div class="panel-head">
@@ -318,7 +448,8 @@
         `Em ${m.posicaoEm}, ${num(t.grupos)} grupos somam ${brl(t.valorEstoque)} em estoque. ` +
         `Há ${t.ruptura} ruptura(s) com giro recente, ${t.criticoBaixo} grupos com menos de 1 semana de cobertura ` +
         `e ${t.excesso} em excesso (capital parado ≈ ${brl(t.valorEmExcesso)}). ` +
-        `A cobertura usa o CMV médio semanal 2026 das últimas 4 semanas (mesmo unidade do estoque), não a quantidade.`;
+        `A cobertura usa o CMV médio semanal 2026 das últimas 4 semanas (mesmo unidade do estoque), não a quantidade. ` +
+        `A matriz ao lado inclui o CD 70 e a Loja 17 para ver o estoque total da empresa e o que pode ser movimentado.`;
 
       document.getElementById("estRules").innerHTML = [
         ["Ruptura", m.regras.ruptura, "danger"],
@@ -545,50 +676,204 @@
         renderExcessoMini();
       });
 
-      const maxCount = Math.max(...(data.porStatus || []).map((s) => s.count), 1);
-      document.getElementById("estBars").innerHTML = (data.porStatus || [])
-        .filter((s) => s.status !== "saudavel")
-        .map((s) => {
-          const w = Math.max(6, (s.count / maxCount) * 100);
-          const neg = s.tom === "danger";
-          return `<div class="rede-bar-row">
-            <strong>${s.label}</strong>
-            <div class="rede-bar-track"><div class="rede-bar-fill ${neg ? "neg" : ""}" style="width:${w}%"></div></div>
-            <span>${s.count}</span>
-          </div>`;
-        })
-        .join("");
+      const dist = data.distribuicao || { lojas: [], linhas: [], totais: {} };
+      const lojas = dist.lojas || [];
+      const idx17 = lojas.findIndex((l) => String(l.id) === "17");
+      const idxCd = lojas.findIndex((l) => String(l.id) === "70" || l.papel === "cd");
+      let mxSortKey = "cd";
+      let mxSortDir = "desc";
+      let mxQuery = "";
+      let mxMoverOnly = false;
 
-      const detailPanel = document.getElementById("estPrioPanel");
-      const expandBtn = document.getElementById("estTableExpandBtn");
-      const syncExpandUi = () => {
-        const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
-        const expanded = Boolean(fsEl === detailPanel || detailPanel?.classList.contains("is-expanded"));
-        if (expandBtn) {
-          expandBtn.setAttribute("aria-pressed", expanded ? "true" : "false");
-          expandBtn.title = expanded ? "Voltar ao radar" : "Abrir prioridades em tela cheia";
-        }
-        document.body.classList.toggle("table-focus-open", expanded);
+      const compactBrl = (n) => {
+        const v = Number(n || 0);
+        if (Math.abs(v) >= 1e6) return `R$ ${num(v / 1e6, 1)} mi`;
+        return brl(v);
       };
-      const enterTableExpand = async () => {
-        if (!detailPanel) return;
-        const req =
-          detailPanel.requestFullscreen ||
-          detailPanel.webkitRequestFullscreen ||
-          detailPanel.msRequestFullscreen;
+      const pct = (part, all) => (all ? `${num((Number(part || 0) / all) * 100, 0)}%` : "—");
+      const esc = (s) =>
+        String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+      const dt = dist.totais || {};
+      const totEmp = Number(dt.empresa || 0);
+      const totCd = Number(dt.cd || 0);
+      const tot17 = Number(dt.loja17 || 0);
+      const totLojas = Number(dt.lojas || 0);
+      const tot12 = totLojas - tot17;
+      document.getElementById("estMatrizKpis").innerHTML = `
+        <article>
+          <small>Empresa</small>
+          <strong>${compactBrl(totEmp)}</strong>
+          <span>${num(dt.subgrupos || 0)} subgrupos</span>
+        </article>
+        <article class="is-cd">
+          <small>CD 70</small>
+          <strong>${compactBrl(totCd)}</strong>
+          <span>${pct(totCd, totEmp)} do total</span>
+        </article>
+        <article>
+          <small>12 lojas</small>
+          <strong>${compactBrl(tot12)}</strong>
+          <span>${pct(tot12, totEmp)} mesma base</span>
+        </article>
+        <article class="is-17">
+          <small>Loja 17</small>
+          <strong>${compactBrl(tot17)}</strong>
+          <span>${pct(tot17, totEmp)} P.Lucas</span>
+        </article>
+        <article class="is-move">
+          <small>Movimentar</small>
+          <strong>${num(dt.mover || 0)}</strong>
+          <span>CD com loja zerada</span>
+        </article>`;
+
+      const mxMark = (key) => {
+        const on = mxSortKey === key;
+        return `<span class="sort-ind" aria-hidden="true">${on ? (mxSortDir === "asc" ? "↑" : "↓") : "↕"}</span>`;
+      };
+
+      const renderMatrizHead = () => {
+        const storeThs = lojas
+          .map((l, i) => {
+            const sortKey = i === idxCd ? "cd" : `s${i}`;
+            const cls = [
+              "sortable",
+              i === idxCd ? "col-cd" : "",
+              i === idx17 ? "col-17" : "",
+              mxSortKey === sortKey ? "is-active" : "",
+            ]
+              .filter(Boolean)
+              .join(" ");
+            const label = l.id === "70" ? "70 CD" : l.id;
+            return `<th class="${cls}" data-sort="${sortKey}" title="${esc(l.nome)}">${label} ${mxMark(sortKey)}</th>`;
+          })
+          .join("");
+        document.getElementById("estMatrizHead").innerHTML = `<tr>
+          <th class="sortable ${mxSortKey === "subgrupo" ? "is-active" : ""}" data-sort="subgrupo">Subgrupo ${mxMark("subgrupo")}</th>
+          ${storeThs}
+          <th class="sortable ${mxSortKey === "total" ? "is-active" : ""}" data-sort="total" title="Soma CD + lojas">Total ${mxMark("total")}</th>
+          <th class="sortable ${mxSortKey === "zeradas" ? "is-active" : ""}" data-sort="zeradas" title="Lojas sem estoque deste subgrupo">Zeradas ${mxMark("zeradas")}</th>
+        </tr>`;
+      };
+
+      const mxVal = (row, key) => {
+        if (key === "subgrupo") return row.subgrupo || "";
+        if (key === "total") return row.total;
+        if (key === "cd") return row.cd;
+        if (key === "zeradas") return row.zeradas;
+        if (key.startsWith("s")) return (row.valores || [])[Number(key.slice(1))] || 0;
+        return row[key];
+      };
+
+      const renderMatriz = () => {
+        const q = mxQuery.trim().toLowerCase();
+        let rows = (dist.linhas || []).filter((r) => {
+          if (mxMoverOnly && !r.mover) return false;
+          if (!q) return true;
+          return `${r.subgrupo} ${r.grupo} ${r.secao}`.toLowerCase().includes(q);
+        });
+        rows = [...rows].sort((a, b) => {
+          const av = mxVal(a, mxSortKey);
+          const bv = mxVal(b, mxSortKey);
+          if (mxSortKey === "subgrupo") {
+            const cmp = String(av).localeCompare(String(bv), "pt-BR", { sensitivity: "base" });
+            return mxSortDir === "asc" ? cmp : -cmp;
+          }
+          return mxSortDir === "asc" ? Number(av || 0) - Number(bv || 0) : Number(bv || 0) - Number(av || 0);
+        });
+        renderMatrizHead();
+        const cd = Number(idxCd >= 0 ? idxCd : 0);
+        document.getElementById("estMatrizBody").innerHTML = rows
+          .map((r) => {
+            const vals = r.valores || [];
+            const tds = lojas
+              .map((l, i) => {
+                const v = Number(vals[i] || 0);
+                const gap = i !== cd && Number(r.cd || 0) > 0 && v <= 0;
+                const cls = [
+                  i === cd ? "col-cd" : "",
+                  i === idx17 ? "col-17" : "",
+                  gap ? "is-gap" : v <= 0 ? "is-zero" : "",
+                ]
+                  .filter(Boolean)
+                  .join(" ");
+                return `<td class="${cls}" title="${esc(l.nome)} · ${brl(v)}">${v ? num(v, 0) : "—"}</td>`;
+              })
+              .join("");
+            return `<tr>
+              <td title="${esc(r.subgrupo)} · ${esc(r.grupo)}">
+                <span class="sg-name">${esc(r.subgrupo)}</span>
+                <span class="sg-sub">${esc(r.grupo)}</span>
+              </td>
+              ${tds}
+              <td>${num(r.total, 0)}</td>
+              <td>${num(r.zeradas, 0)}</td>
+            </tr>`;
+          })
+          .join("");
+
+        const footVals = lojas.map((l) => Number(l.total || 0));
+        const footTds = lojas
+          .map((l, i) => {
+            const cls = i === cd ? "col-cd" : i === idx17 ? "col-17" : "";
+            return `<td class="${cls}">${num(footVals[i], 0)}</td>`;
+          })
+          .join("");
+        document.getElementById("estMatrizFoot").innerHTML = `<tr>
+          <td>Total (${num(rows.length)})</td>
+          ${footTds}
+          <td>${num(totEmp, 0)}</td>
+          <td></td>
+        </tr>`;
+      };
+
+      document.getElementById("estMatrizHead")?.addEventListener("click", (e) => {
+        const th = e.target.closest("th[data-sort]");
+        if (!th) return;
+        const key = th.dataset.sort;
+        if (mxSortKey === key) mxSortDir = mxSortDir === "desc" ? "asc" : "desc";
+        else {
+          mxSortKey = key;
+          mxSortDir = key === "subgrupo" ? "asc" : "desc";
+        }
+        renderMatriz();
+      });
+      document.getElementById("estMatrizQ")?.addEventListener("input", (e) => {
+        mxQuery = e.target.value || "";
+        renderMatriz();
+      });
+      document.getElementById("estMoverOnly")?.addEventListener("change", (e) => {
+        mxMoverOnly = Boolean(e.target.checked);
+        renderMatriz();
+      });
+
+      const expanders = [];
+      const syncAllExpand = () => {
+        const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+        let any = false;
+        expanders.forEach(({ panel, btn, titleEnter, titleExit }) => {
+          const on = Boolean(fsEl === panel || panel.classList.contains("is-expanded"));
+          any = any || on;
+          if (btn) {
+            btn.setAttribute("aria-pressed", on ? "true" : "false");
+            btn.title = on ? titleExit : titleEnter;
+          }
+        });
+        document.body.classList.toggle("table-focus-open", any);
+      };
+      const enterExpand = async (panel) => {
+        const req = panel.requestFullscreen || panel.webkitRequestFullscreen || panel.msRequestFullscreen;
         if (typeof req === "function") {
           try {
-            await req.call(detailPanel);
-            syncExpandUi();
+            await req.call(panel);
+            syncAllExpand();
             return;
-          } catch (_) {
-            /* fallback abaixo */
-          }
+          } catch (_) {}
         }
-        detailPanel.classList.add("is-expanded");
-        syncExpandUi();
+        panel.classList.add("is-expanded");
+        syncAllExpand();
       };
-      const exitTableExpand = async () => {
+      const exitExpand = async (panel) => {
         const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
         if (fsEl) {
           const exit = document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen;
@@ -598,29 +883,45 @@
             } catch (_) {}
           }
         }
-        detailPanel?.classList.remove("is-expanded");
-        syncExpandUi();
+        panel?.classList.remove("is-expanded");
+        syncAllExpand();
       };
-      if (expandBtn && detailPanel) {
-        expandBtn.addEventListener("click", () => {
+      const bindExpand = (panel, btn, titleEnter, titleExit) => {
+        if (!panel || !btn) return;
+        expanders.push({ panel, btn, titleEnter, titleExit });
+        btn.addEventListener("click", () => {
           const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
-          const expanded = Boolean(fsEl === detailPanel || detailPanel.classList.contains("is-expanded"));
-          if (expanded) exitTableExpand();
-          else enterTableExpand();
+          const on = Boolean(fsEl === panel || panel.classList.contains("is-expanded"));
+          if (on) exitExpand(panel);
+          else enterExpand(panel);
         });
-        document.addEventListener("fullscreenchange", syncExpandUi);
-        document.addEventListener("webkitfullscreenchange", syncExpandUi);
-        document.addEventListener("keydown", (e) => {
-          if (e.key === "Escape" && detailPanel.classList.contains("is-expanded")) {
-            exitTableExpand();
-          }
+      };
+      bindExpand(
+        document.getElementById("estPrioPanel"),
+        document.getElementById("estTableExpandBtn"),
+        "Abrir prioridades em tela cheia",
+        "Voltar ao radar"
+      );
+      bindExpand(
+        document.getElementById("estMatrizPanel"),
+        document.getElementById("estMatrizExpandBtn"),
+        "Abrir matriz em tela cheia",
+        "Voltar ao radar"
+      );
+      document.addEventListener("fullscreenchange", syncAllExpand);
+      document.addEventListener("webkitfullscreenchange", syncAllExpand);
+      document.addEventListener("keydown", (e) => {
+        if (e.key !== "Escape") return;
+        expanders.forEach(({ panel }) => {
+          if (panel.classList.contains("is-expanded")) exitExpand(panel);
         });
-      }
+      });
 
       applyTabDefaultSort();
       paintTabs();
       renderTable();
       renderExcessoMini();
+      renderMatriz();
     })();
   </script>
 </body>

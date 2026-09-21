@@ -69,12 +69,24 @@ function Get-BaseNameKey([string]$name) {
   return ($n -replace '\s*\(\d+\)\s*$', '').Trim()
 }
 
+function Test-SkipClosed([string]$loja) {
+  $n = Normalize-Name $loja
+  if ($n -match '^02\s*-' -or $n -match '^04\s*-') { return $true }
+  return $false
+}
+
 function Test-SkipStore([string]$loja) {
   $n = Normalize-Name $loja
   if ($n -match 'CENTRAL|\b70\b') { return $true }
   if ($n -match 'P\.?\s*LUCAS|\b17\s*-') { return $true }
-  if ($n -match '^02\s*-' -or $n -match '^04\s*-') { return $true }
+  if (Test-SkipClosed $loja) { return $true }
   return $false
+}
+
+function Get-StoreId([string]$loja) {
+  $n = Normalize-Name $loja
+  if ($n -match '^(\d+)') { return $Matches[1] }
+  return $n
 }
 
 function Parse-BrNum($s) {
@@ -86,10 +98,18 @@ function Parse-BrNum($s) {
 
 $estoques = @()
 $fonteNome = $null
+$mx = @{}
+$lojaMeta = @{}
+$lojaTot = @{}
+$distribuicao = [ordered]@{
+  lojas = @()
+  linhas = @()
+  totais = [ordered]@{ empresa = 0; cd = 0; lojas = 0; loja17 = 0; subgrupos = 0; mover = 0 }
+}
 
 if ($EstoqueCsv -and (Test-Path -LiteralPath $EstoqueCsv)) {
   $fonteNome = [IO.Path]::GetFileName($EstoqueCsv)
-  Write-Host "Estoque CSV (12 lojas mesma base, sem 70/17): $EstoqueCsv"
+  Write-Host "Estoque CSV (radar: 12 lojas; matriz: CD 70 + lojas + 17): $EstoqueCsv"
   $raw = [IO.File]::ReadAllText($EstoqueCsv, [Text.Encoding]::GetEncoding(1252))
   $lines = $raw -split "`r?`n"
   $hdr = $lines[0] -split ';'
@@ -119,18 +139,47 @@ if ($EstoqueCsv -and (Test-Path -LiteralPath $EstoqueCsv)) {
     $loja, $rest = $path.Split(':', 2)
     $loja = $loja.Trim()
     if ($loja -match 'TOTAL') { continue }
-    if (Test-SkipStore $loja) { continue }
+    if (Test-SkipClosed $loja) { continue }
     $parts = @($rest.Split('\') | ForEach-Object { $_.Trim() } | Where-Object { $_ })
-    if ($parts.Count -lt 3) { continue }
+    if ($parts.Count -lt 4) { continue }
     $grupo = $parts[2]
-    if ([string]::IsNullOrWhiteSpace($grupo)) { continue }
-    $key = Get-NameKey $grupo
+    $subgrupo = $parts[3]
+    if ([string]::IsNullOrWhiteSpace($grupo) -or [string]::IsNullOrWhiteSpace($subgrupo)) { continue }
     $skus = if ($iSku -ge 0) { Parse-BrNum $cols[$iSku] } else { 0 }
     $valor = if ($iCusto -ge 0) { Parse-BrNum $cols[$iCusto] } else { 0 }
     $media = if ($iMedia -ge 0) { Parse-BrNum $cols[$iMedia] } else { 0 }
     $dias = if ($iDias -ge 0) { Parse-BrNum $cols[$iDias] } else { $null }
     $pend = if ($iPend -ge 0) { Parse-BrNum $cols[$iPend] } else { 0 }
     if ($valor -lt 0) { continue }
+
+    $sid = Get-StoreId $loja
+    if (-not $lojaMeta.ContainsKey($sid)) {
+      $papel = if ($sid -eq "70") { "cd" } else { "loja" }
+      $short = ($loja -replace '^\d+\s*-\s*', '').Trim()
+      $lojaMeta[$sid] = [ordered]@{
+        id = $sid
+        nome = $loja
+        short = $short
+        papel = $papel
+      }
+    }
+    if (-not $lojaTot.ContainsKey($sid)) { $lojaTot[$sid] = 0.0 }
+    $lojaTot[$sid] += $valor
+
+    $mk = Normalize-Name $subgrupo
+    if (-not $mx.ContainsKey($mk)) {
+      $mx[$mk] = @{
+        subgrupo = $subgrupo.Trim()
+        grupo = $grupo.Trim()
+        secao = $parts[1]
+        by = @{}
+      }
+    }
+    if (-not $mx[$mk].by.ContainsKey($sid)) { $mx[$mk].by[$sid] = 0.0 }
+    $mx[$mk].by[$sid] += $valor
+
+    if (Test-SkipStore $loja) { continue }
+    $key = Get-NameKey $grupo
     if (-not $acc.ContainsKey($key)) {
       $acc[$key] = [pscustomobject]@{
         nome = $grupo.Trim()
@@ -156,6 +205,68 @@ if ($EstoqueCsv -and (Test-Path -LiteralPath $EstoqueCsv)) {
     $_.estoquePendente = [math]::Round($_.estoquePendente, 2)
     $_
   })
+
+  $lojaIds = @($lojaMeta.Keys | Where-Object { $_ -eq "70" }) +
+    @($lojaMeta.Keys | Where-Object { $_ -ne "70" } | Sort-Object { [int]$_ })
+  $lojasOut = @()
+  foreach ($id in $lojaIds) {
+    $metaL = $lojaMeta[$id]
+    $lojasOut += [ordered]@{
+      id = [string]$metaL.id
+      nome = [string]$metaL.nome
+      short = [string]$metaL.short
+      papel = [string]$metaL.papel
+      total = [math]::Round([double]$lojaTot[$id], 0)
+    }
+  }
+  $linhasOut = @()
+  $moverN = 0
+  foreach ($row in @($mx.Values)) {
+    $vals = @()
+    $totalLinha = 0.0
+    $cdVal = 0.0
+    $zeradas = 0
+    foreach ($id in $lojaIds) {
+      $v = 0.0
+      if ($row.by.ContainsKey($id)) { $v = [double]$row.by[$id] }
+      $vals += [math]::Round($v, 0)
+      $totalLinha += $v
+      if ($id -eq "70") { $cdVal = $v }
+      elseif ($v -le 0) { $zeradas += 1 }
+    }
+    $mover = [int](($cdVal -gt 0) -and ($zeradas -gt 0))
+    if ($totalLinha -le 0) { continue }
+    if ($mover) { $moverN += 1 }
+    $linhasOut += [ordered]@{
+      subgrupo = [string]$row.subgrupo
+      grupo = [string]$row.grupo
+      secao = [string]$row.secao
+      valores = $vals
+      total = [math]::Round($totalLinha, 0)
+      cd = [math]::Round($cdVal, 0)
+      zeradas = [int]$zeradas
+      mover = $mover
+    }
+  }
+  $linhasOut = @($linhasOut | Sort-Object { -$_.cd }, { -$_.total })
+  $totEmpresa = [math]::Round((($lojaTot.Values | Measure-Object -Sum).Sum), 0)
+  $totCd = if ($lojaTot.ContainsKey("70")) { [math]::Round([double]$lojaTot["70"], 0) } else { 0 }
+  $tot17 = if ($lojaTot.ContainsKey("17")) { [math]::Round([double]$lojaTot["17"], 0) } else { 0 }
+  $totLojas = $totEmpresa - $totCd
+  $distribuicao = [ordered]@{
+    lojas = $lojasOut
+    linhas = $linhasOut
+    totais = [ordered]@{
+      empresa = $totEmpresa
+      cd = $totCd
+      lojas = $totLojas
+      loja17 = $tot17
+      subgrupos = $linhasOut.Count
+      mover = $moverN
+    }
+  }
+  Write-Host ("Matriz subgrupo x loja: {0} linhas, empresa R$ {1:N0}, CD R$ {2:N0}, Loja 17 R$ {3:N0}" -f `
+    $linhasOut.Count, $totEmpresa, $totCd, $tot17)
 } else {
   if (-not $EstoqueXlsx) { throw "Arquivo de estoque nao encontrado (PosicaoEstoques*.csv ou Estoques*.xlsx)" }
   $fonteNome = [IO.Path]::GetFileName($EstoqueXlsx)
@@ -474,6 +585,7 @@ $payload = [ordered]@{
     [ordered]@{ status = "excesso"; label = "Excesso"; count = $excesso.Count; tom = "warn" }
     [ordered]@{ status = "saudavel"; label = "Saudavel"; count = $saudavel.Count; tom = "ok" }
   )
+  distribuicao = $distribuicao
 }
 
 New-Item -ItemType Directory -Path $OutDir -Force | Out-Null
