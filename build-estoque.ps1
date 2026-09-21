@@ -9,7 +9,8 @@
 [CmdletBinding()]
 param(
   [string]$EstoqueXlsx = "",
-  [string]$PosicaoData = "21/08/2026",
+  [string]$EstoqueCsv = "",
+  [string]$PosicaoData = "18/09/2026",
   [double]$DiasCriticoBaixo = 7,
   [double]$DiasAtencaoBaixo = 14,
   [double]$DiasExcesso = 60,
@@ -47,14 +48,118 @@ function Test-Excluded([string]$name) {
   return $false
 }
 
-if (-not $EstoqueXlsx) {
-  $hit = Get-ChildItem -LiteralPath (Join-Path $Root "entradas\semana-nova") -File -Filter "Estoques*.xlsx" |
+$EstoqueDir = Join-Path $Root "entradas\estoque"
+if (-not $EstoqueCsv) {
+  $csvHit = Get-ChildItem -LiteralPath $EstoqueDir -File -Filter "PosicaoEstoques*.csv" -ErrorAction SilentlyContinue |
     Sort-Object LastWriteTime -Descending | Select-Object -First 1
-  if (-not $hit) { throw "Arquivo Estoques*.xlsx nao encontrado em entradas\semana-nova" }
-  $EstoqueXlsx = $hit.FullName
+  if ($csvHit) { $EstoqueCsv = $csvHit.FullName }
+}
+if (-not $EstoqueXlsx) {
+  $hit = Get-ChildItem -LiteralPath (Join-Path $Root "entradas\semana-nova") -File -Filter "Estoques*.xlsx" -ErrorAction SilentlyContinue |
+    Sort-Object LastWriteTime -Descending | Select-Object -First 1
+  if (-not $hit) {
+    $hit = Get-ChildItem -LiteralPath $EstoqueDir -File -Filter "Estoque*.xlsx" -ErrorAction SilentlyContinue |
+      Sort-Object LastWriteTime -Descending | Select-Object -First 1
+  }
+  if ($hit) { $EstoqueXlsx = $hit.FullName }
 }
 
-Write-Host "Estoque: $EstoqueXlsx"
+function Get-BaseNameKey([string]$name) {
+  $n = Normalize-Name $name
+  return ($n -replace '\s*\(\d+\)\s*$', '').Trim()
+}
+
+function Test-SkipStore([string]$loja) {
+  $n = Normalize-Name $loja
+  if ($n -match 'CENTRAL|\b70\b') { return $true }
+  if ($n -match 'P\.?\s*LUCAS|\b17\s*-') { return $true }
+  if ($n -match '^02\s*-' -or $n -match '^04\s*-') { return $true }
+  return $false
+}
+
+function Parse-BrNum($s) {
+  if ($null -eq $s) { return 0 }
+  $t = ([string]$s).Trim().Trim('"')
+  if (-not $t) { return 0 }
+  return [double]($t -replace '\.', '' -replace ',', '.')
+}
+
+$estoques = @()
+$fonteNome = $null
+
+if ($EstoqueCsv -and (Test-Path -LiteralPath $EstoqueCsv)) {
+  $fonteNome = [IO.Path]::GetFileName($EstoqueCsv)
+  Write-Host "Estoque CSV (12 lojas mesma base, sem 70/17): $EstoqueCsv"
+  $raw = [IO.File]::ReadAllText($EstoqueCsv, [Text.Encoding]::GetEncoding(1252))
+  $lines = $raw -split "`r?`n"
+  $hdr = $lines[0] -split ';'
+  # colunas por nome aproximado
+  function Find-Col([string[]]$h, [string]$needle) {
+    for ($i = 0; $i -lt $h.Count; $i++) {
+      $n = Normalize-Name ($h[$i].Trim().Trim('"'))
+      if ($n -match $needle) { return $i }
+    }
+    return -1
+  }
+  $iPath = Find-Col $hdr 'NIVEL\s*4'
+  if ($iPath -lt 0) { $iPath = 1 }
+  $iSku = Find-Col $hdr 'ITENS|SKU'
+  $iQtd = Find-Col $hdr 'QUANTIDADE EM ESTOQUE'
+  $iCusto = Find-Col $hdr 'CUSTO LIQUIDO'
+  $iMedia = Find-Col $hdr 'MEDIA VDA'
+  $iDias = Find-Col $hdr 'DIAS DE ESTOQUE'
+  $iPend = Find-Col $hdr 'PEND. PED.COMPRA|PEND.*COMPRA'
+  $acc = @{}
+  for ($li = 1; $li -lt $lines.Count; $li++) {
+    if ([string]::IsNullOrWhiteSpace($lines[$li])) { continue }
+    $cols = $lines[$li] -split ';'
+    if ($cols.Count -le $iPath) { continue }
+    $path = $cols[$iPath].Trim().Trim('"')
+    if ($path -notmatch ':') { continue }
+    $loja, $rest = $path.Split(':', 2)
+    $loja = $loja.Trim()
+    if ($loja -match 'TOTAL') { continue }
+    if (Test-SkipStore $loja) { continue }
+    $parts = @($rest.Split('\') | ForEach-Object { $_.Trim() } | Where-Object { $_ })
+    if ($parts.Count -lt 3) { continue }
+    $grupo = $parts[2]
+    if ([string]::IsNullOrWhiteSpace($grupo)) { continue }
+    $key = Get-NameKey $grupo
+    $skus = if ($iSku -ge 0) { Parse-BrNum $cols[$iSku] } else { 0 }
+    $valor = if ($iCusto -ge 0) { Parse-BrNum $cols[$iCusto] } else { 0 }
+    $media = if ($iMedia -ge 0) { Parse-BrNum $cols[$iMedia] } else { 0 }
+    $dias = if ($iDias -ge 0) { Parse-BrNum $cols[$iDias] } else { $null }
+    $pend = if ($iPend -ge 0) { Parse-BrNum $cols[$iPend] } else { 0 }
+    if ($valor -lt 0) { continue }
+    if (-not $acc.ContainsKey($key)) {
+      $acc[$key] = [pscustomobject]@{
+        nome = $grupo.Trim()
+        key = $key
+        skus = 0.0
+        valor = 0.0
+        mediaCustoDia = 0.0
+        diasCobertura = $null
+        estoquePendente = 0.0
+        excluido = [bool](Test-Excluded $grupo)
+      }
+    }
+    $acc[$key].skus += $skus
+    $acc[$key].valor += $valor
+    $acc[$key].mediaCustoDia += $media
+    $acc[$key].estoquePendente += $pend
+    if ($null -ne $dias) { $acc[$key].diasCobertura = $dias }
+  }
+  $estoques = @($acc.Values | ForEach-Object {
+    $_.skus = [math]::Round($_.skus, 0)
+    $_.valor = [math]::Round($_.valor, 2)
+    $_.mediaCustoDia = [math]::Round($_.mediaCustoDia, 2)
+    $_.estoquePendente = [math]::Round($_.estoquePendente, 2)
+    $_
+  })
+} else {
+  if (-not $EstoqueXlsx) { throw "Arquivo de estoque nao encontrado (PosicaoEstoques*.csv ou Estoques*.xlsx)" }
+  $fonteNome = [IO.Path]::GetFileName($EstoqueXlsx)
+  Write-Host "Estoque: $EstoqueXlsx"
 
 # --- Parse xlsx sheet1 ---
 $Tmp = Join-Path $env:TEMP ("estoq_build_" + [guid]::NewGuid().ToString("N"))
@@ -116,6 +221,7 @@ try {
   }
 } finally {
   Remove-Item -LiteralPath $Tmp -Recurse -Force -ErrorAction SilentlyContinue
+}
 }
 
 Write-Host ("Grupos estoque: {0}" -f $estoques.Count)
@@ -204,6 +310,21 @@ foreach ($key in $series.Keys) {
 }
 Write-Host ("Grupos com venda 4s: {0}" -f $vendaMap.Count)
 
+$vendaByBase = @{}
+foreach ($key in $vendaMap.Keys) {
+  $base = Get-BaseNameKey $vendaMap[$key].nome
+  if ($base -and -not $vendaByBase.ContainsKey($base)) {
+    $vendaByBase[$base] = $vendaMap[$key]
+  }
+}
+
+function Resolve-Venda($e) {
+  if ($vendaMap.ContainsKey($e.key)) { return $vendaMap[$e.key] }
+  $base = Get-BaseNameKey $e.nome
+  if ($base -and $vendaByBase.ContainsKey($base)) { return $vendaByBase[$base] }
+  return $null
+}
+
 function Get-Cobertura($valor, $v, $excelDias) {
   if ($valor -le 0) {
     return @{ dias = 0; semanas = 0; demanda = $null; base = "zerado" }
@@ -269,13 +390,12 @@ function Classify-Row($e, $v, $cob) {
 
 $rowsOut = @()
 foreach ($e in $estoques) {
-  $v = $null
-  if ($vendaMap.ContainsKey($e.key)) { $v = $vendaMap[$e.key] }
+  $v = Resolve-Venda $e
   $cob = Get-Cobertura $e.valor $v $e.diasCobertura
   $cls = Classify-Row $e $v $cob
   $rowsOut += [pscustomobject]@{
-    nome = $e.nome
-    key = $e.key
+    nome = if ($v) { $v.nome } else { $e.nome }
+    key = if ($v) { Get-NameKey $v.nome } else { $e.key }
     skus = $e.skus
     valorEstoque = $e.valor
     mediaVendaCustoDia = $e.mediaCustoDia
@@ -318,7 +438,7 @@ $payload = [ordered]@{
     titulo = "Radar de Estoque Critico"
     posicaoEm = $PosicaoData
     nivel = "Grupo (Categoria 3)"
-    fonteEstoque = [IO.Path]::GetFileName($EstoqueXlsx)
+    fonteEstoque = $fonteNome
     baseVenda = "Cobertura = estoque R$ / CMV medio semanal 2026 (mesma base, 4 semanas)"
     periodosVenda = $periodos
     regras = [ordered]@{
