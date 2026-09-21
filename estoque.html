@@ -699,7 +699,6 @@
       const totCd = Number(dt.cd || 0);
       const tot17 = Number(dt.loja17 || 0);
       const totLojas = Number(dt.lojas || 0);
-      const tot12 = totLojas - tot17;
       document.getElementById("estMatrizKpis").innerHTML = `
         <article>
           <small>Empresa</small>
@@ -712,9 +711,9 @@
           <span>${pct(totCd, totEmp)} do total</span>
         </article>
         <article>
-          <small>12 lojas</small>
-          <strong>${compactBrl(tot12)}</strong>
-          <span>${pct(tot12, totEmp)} mesma base</span>
+          <small>13 lojas</small>
+          <strong>${compactBrl(totLojas)}</strong>
+          <span>${pct(totLojas, totEmp)} do total · inclui a 17</span>
         </article>
         <article class="is-17">
           <small>Loja 17</small>
