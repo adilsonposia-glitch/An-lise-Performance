@@ -69,7 +69,7 @@
     .est-matriz-table td:not(:first-child) {
       min-width: 4.6rem;
     }
-    .est-matriz-panel .table-tools { align-items: center; }
+    .est-matriz-panel .chip { padding: 6px 12px; font-size: 0.76rem; }
     .est-mover-toggle {
       display: inline-flex;
       align-items: center;
@@ -353,9 +353,13 @@
           <div class="panel-head row">
             <div>
               <h2>Estoque por loja</h2>
-              <p>Subgrupo · CD 70 · cada loja (inclui 17) · valor de custo</p>
+              <p id="estMatrizSub">Subgrupo · CD 70 · cada loja (inclui 17) · valor de custo</p>
             </div>
             <div class="table-tools">
+              <div class="chip-group metric-group" id="estMxMetric" role="group" aria-label="Métrica do estoque">
+                <button type="button" class="chip active" data-mx="valor">Valor R$</button>
+                <button type="button" class="chip" data-mx="qtd">Quantidade</button>
+              </div>
               <label class="est-mover-toggle">
                 <input type="checkbox" id="estMoverOnly" />
                 CD com loja zerada
@@ -684,47 +688,83 @@
       let mxSortDir = "desc";
       let mxQuery = "";
       let mxMoverOnly = false;
+      let mxMetric = "valor";
 
       const compactBrl = (n) => {
         const v = Number(n || 0);
         if (Math.abs(v) >= 1e6) return `R$ ${num(v / 1e6, 1)} mi`;
         return brl(v);
       };
+      const compactQtd = (n) => {
+        const v = Number(n || 0);
+        if (Math.abs(v) >= 1e6) return `${num(v / 1e6, 1)} mi un`;
+        return `${num(v, 0)} un`;
+      };
       const pct = (part, all) => (all ? `${num((Number(part || 0) / all) * 100, 0)}%` : "—");
       const esc = (s) =>
         String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
       const dt = dist.totais || {};
-      const totEmp = Number(dt.empresa || 0);
-      const totCd = Number(dt.cd || 0);
-      const tot17 = Number(dt.loja17 || 0);
-      const totLojas = Number(dt.lojas || 0);
-      document.getElementById("estMatrizKpis").innerHTML = `
+      const isQtd = () => mxMetric === "qtd";
+      const rowSeries = (r) => (isQtd() ? r.qtds || [] : r.valores || []);
+      const rowCd = (r) => Number(isQtd() ? r.cdQtd : r.cd) || 0;
+      const rowTotal = (r) => Number(isQtd() ? r.totalQtd : r.total) || 0;
+      const fmtCell = (n) => (isQtd() ? num(n, 0) : num(n, 0));
+      const fmtTip = (n) => (isQtd() ? `${num(n, 0)} un` : brl(n));
+      const fmtKpi = (n) => (isQtd() ? compactQtd(n) : compactBrl(n));
+
+      const metricTotals = () => {
+        if (isQtd()) {
+          return {
+            emp: Number(dt.empresaQtd || 0),
+            cd: Number(dt.cdQtd || 0),
+            lojas: Number(dt.lojasQtd || 0),
+            l17: Number(dt.loja17Qtd || 0),
+          };
+        }
+        return {
+          emp: Number(dt.empresa || 0),
+          cd: Number(dt.cd || 0),
+          lojas: Number(dt.lojas || 0),
+          l17: Number(dt.loja17 || 0),
+        };
+      };
+
+      const renderMatrizKpis = () => {
+        const tmx = metricTotals();
+        document.getElementById("estMatrizKpis").innerHTML = `
         <article>
           <small>Empresa</small>
-          <strong>${compactBrl(totEmp)}</strong>
+          <strong>${fmtKpi(tmx.emp)}</strong>
           <span>${num(dt.subgrupos || 0)} subgrupos</span>
         </article>
         <article class="is-cd">
           <small>CD 70</small>
-          <strong>${compactBrl(totCd)}</strong>
-          <span>${pct(totCd, totEmp)} do total</span>
+          <strong>${fmtKpi(tmx.cd)}</strong>
+          <span>${pct(tmx.cd, tmx.emp)} do total</span>
         </article>
         <article>
           <small>13 lojas</small>
-          <strong>${compactBrl(totLojas)}</strong>
-          <span>${pct(totLojas, totEmp)} do total · inclui a 17</span>
+          <strong>${fmtKpi(tmx.lojas)}</strong>
+          <span>${pct(tmx.lojas, tmx.emp)} do total · inclui a 17</span>
         </article>
         <article class="is-17">
           <small>Loja 17</small>
-          <strong>${compactBrl(tot17)}</strong>
-          <span>${pct(tot17, totEmp)} P.Lucas</span>
+          <strong>${fmtKpi(tmx.l17)}</strong>
+          <span>${pct(tmx.l17, tmx.emp)} P.Lucas</span>
         </article>
         <article class="is-move">
           <small>Movimentar</small>
           <strong>${num(dt.mover || 0)}</strong>
           <span>CD com loja zerada</span>
         </article>`;
+        const sub = document.getElementById("estMatrizSub");
+        if (sub) {
+          sub.textContent = isQtd()
+            ? "Subgrupo · CD 70 · cada loja (inclui 17) · quantidade em estoque"
+            : "Subgrupo · CD 70 · cada loja (inclui 17) · valor de custo";
+        }
+      };
 
       const mxMark = (key) => {
         const on = mxSortKey === key;
@@ -757,14 +797,15 @@
 
       const mxVal = (row, key) => {
         if (key === "subgrupo") return row.subgrupo || "";
-        if (key === "total") return row.total;
-        if (key === "cd") return row.cd;
+        if (key === "total") return rowTotal(row);
+        if (key === "cd") return rowCd(row);
         if (key === "zeradas") return row.zeradas;
-        if (key.startsWith("s")) return (row.valores || [])[Number(key.slice(1))] || 0;
+        if (key.startsWith("s")) return rowSeries(row)[Number(key.slice(1))] || 0;
         return row[key];
       };
 
       const renderMatriz = () => {
+        renderMatrizKpis();
         const q = mxQuery.trim().toLowerCase();
         let rows = (dist.linhas || []).filter((r) => {
           if (mxMoverOnly && !r.mover) return false;
@@ -784,11 +825,12 @@
         const cd = Number(idxCd >= 0 ? idxCd : 0);
         document.getElementById("estMatrizBody").innerHTML = rows
           .map((r) => {
-            const vals = r.valores || [];
+            const vals = rowSeries(r);
+            const cdNow = rowCd(r);
             const tds = lojas
               .map((l, i) => {
                 const v = Number(vals[i] || 0);
-                const gap = i !== cd && Number(r.cd || 0) > 0 && v <= 0;
+                const gap = i !== cd && cdNow > 0 && v <= 0;
                 const cls = [
                   i === cd ? "col-cd" : "",
                   i === idx17 ? "col-17" : "",
@@ -796,7 +838,7 @@
                 ]
                   .filter(Boolean)
                   .join(" ");
-                return `<td class="${cls}" title="${esc(l.nome)} · ${brl(v)}">${v ? num(v, 0) : "—"}</td>`;
+                return `<td class="${cls}" title="${esc(l.nome)} · ${fmtTip(v)}">${v ? fmtCell(v) : "—"}</td>`;
               })
               .join("");
             return `<tr>
@@ -805,23 +847,24 @@
                 <span class="sg-sub">${esc(r.grupo)}</span>
               </td>
               ${tds}
-              <td>${num(r.total, 0)}</td>
+              <td>${fmtCell(rowTotal(r))}</td>
               <td>${num(r.zeradas, 0)}</td>
             </tr>`;
           })
           .join("");
 
-        const footVals = lojas.map((l) => Number(l.total || 0));
+        const tmx = metricTotals();
         const footTds = lojas
           .map((l, i) => {
             const cls = i === cd ? "col-cd" : i === idx17 ? "col-17" : "";
-            return `<td class="${cls}">${num(footVals[i], 0)}</td>`;
+            const v = Number(isQtd() ? l.totalQtd : l.total) || 0;
+            return `<td class="${cls}">${fmtCell(v)}</td>`;
           })
           .join("");
         document.getElementById("estMatrizFoot").innerHTML = `<tr>
           <td>Total (${num(rows.length)})</td>
           ${footTds}
-          <td>${num(totEmp, 0)}</td>
+          <td>${fmtCell(tmx.emp)}</td>
           <td></td>
         </tr>`;
       };
@@ -844,6 +887,13 @@
       document.getElementById("estMoverOnly")?.addEventListener("change", (e) => {
         mxMoverOnly = Boolean(e.target.checked);
         renderMatriz();
+      });
+      document.getElementById("estMxMetric")?.querySelectorAll(".chip").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          mxMetric = btn.getAttribute("data-mx") || "valor";
+          document.querySelectorAll("#estMxMetric .chip").forEach((c) => c.classList.toggle("active", c === btn));
+          renderMatriz();
+        });
       });
 
       const expanders = [];

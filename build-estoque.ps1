@@ -101,10 +101,11 @@ $fonteNome = $null
 $mx = @{}
 $lojaMeta = @{}
 $lojaTot = @{}
+$lojaQtd = @{}
 $distribuicao = [ordered]@{
   lojas = @()
   linhas = @()
-  totais = [ordered]@{ empresa = 0; cd = 0; lojas = 0; loja17 = 0; subgrupos = 0; mover = 0 }
+  totais = [ordered]@{ empresa = 0; cd = 0; lojas = 0; loja17 = 0; empresaQtd = 0; cdQtd = 0; lojasQtd = 0; loja17Qtd = 0; subgrupos = 0; mover = 0 }
 }
 
 if ($EstoqueCsv -and (Test-Path -LiteralPath $EstoqueCsv)) {
@@ -146,6 +147,7 @@ if ($EstoqueCsv -and (Test-Path -LiteralPath $EstoqueCsv)) {
     $subgrupo = $parts[3]
     if ([string]::IsNullOrWhiteSpace($grupo) -or [string]::IsNullOrWhiteSpace($subgrupo)) { continue }
     $skus = if ($iSku -ge 0) { Parse-BrNum $cols[$iSku] } else { 0 }
+    $qtdEst = if ($iQtd -ge 0) { Parse-BrNum $cols[$iQtd] } else { 0 }
     $valor = if ($iCusto -ge 0) { Parse-BrNum $cols[$iCusto] } else { 0 }
     $media = if ($iMedia -ge 0) { Parse-BrNum $cols[$iMedia] } else { 0 }
     $dias = if ($iDias -ge 0) { Parse-BrNum $cols[$iDias] } else { $null }
@@ -164,7 +166,9 @@ if ($EstoqueCsv -and (Test-Path -LiteralPath $EstoqueCsv)) {
       }
     }
     if (-not $lojaTot.ContainsKey($sid)) { $lojaTot[$sid] = 0.0 }
+    if (-not $lojaQtd.ContainsKey($sid)) { $lojaQtd[$sid] = 0.0 }
     $lojaTot[$sid] += $valor
+    $lojaQtd[$sid] += $qtdEst
 
     $mk = Normalize-Name $subgrupo
     if (-not $mx.ContainsKey($mk)) {
@@ -175,8 +179,11 @@ if ($EstoqueCsv -and (Test-Path -LiteralPath $EstoqueCsv)) {
         by = @{}
       }
     }
-    if (-not $mx[$mk].by.ContainsKey($sid)) { $mx[$mk].by[$sid] = 0.0 }
-    $mx[$mk].by[$sid] += $valor
+    if (-not $mx[$mk].by.ContainsKey($sid)) {
+      $mx[$mk].by[$sid] = @{ valor = 0.0; qtd = 0.0 }
+    }
+    $mx[$mk].by[$sid].valor += $valor
+    $mx[$mk].by[$sid].qtd += $qtdEst
 
     if (Test-SkipStore $loja) { continue }
     $key = Get-NameKey $grupo
@@ -217,33 +224,46 @@ if ($EstoqueCsv -and (Test-Path -LiteralPath $EstoqueCsv)) {
       short = [string]$metaL.short
       papel = [string]$metaL.papel
       total = [math]::Round([double]$lojaTot[$id], 0)
+      totalQtd = [math]::Round($(if ($lojaQtd.ContainsKey($id)) { [double]$lojaQtd[$id] } else { 0 }), 0)
     }
   }
   $linhasOut = @()
   $moverN = 0
   foreach ($row in @($mx.Values)) {
     $vals = @()
+    $qtds = @()
     $totalLinha = 0.0
+    $totalQtdLinha = 0.0
     $cdVal = 0.0
+    $cdQtd = 0.0
     $zeradas = 0
     foreach ($id in $lojaIds) {
       $v = 0.0
-      if ($row.by.ContainsKey($id)) { $v = [double]$row.by[$id] }
+      $q = 0.0
+      if ($row.by.ContainsKey($id)) {
+        $v = [double]$row.by[$id].valor
+        $q = [double]$row.by[$id].qtd
+      }
       $vals += [math]::Round($v, 0)
+      $qtds += [math]::Round($q, 0)
       $totalLinha += $v
-      if ($id -eq "70") { $cdVal = $v }
-      elseif ($v -le 0) { $zeradas += 1 }
+      $totalQtdLinha += $q
+      if ($id -eq "70") { $cdVal = $v; $cdQtd = $q }
+      elseif ($v -le 0 -and $q -le 0) { $zeradas += 1 }
     }
-    $mover = [int](($cdVal -gt 0) -and ($zeradas -gt 0))
-    if ($totalLinha -le 0) { continue }
+    $mover = [int]((($cdVal -gt 0) -or ($cdQtd -gt 0)) -and ($zeradas -gt 0))
+    if ($totalLinha -le 0 -and $totalQtdLinha -le 0) { continue }
     if ($mover) { $moverN += 1 }
     $linhasOut += [ordered]@{
       subgrupo = [string]$row.subgrupo
       grupo = [string]$row.grupo
       secao = [string]$row.secao
       valores = $vals
+      qtds = $qtds
       total = [math]::Round($totalLinha, 0)
+      totalQtd = [math]::Round($totalQtdLinha, 0)
       cd = [math]::Round($cdVal, 0)
+      cdQtd = [math]::Round($cdQtd, 0)
       zeradas = [int]$zeradas
       mover = $mover
     }
@@ -253,6 +273,10 @@ if ($EstoqueCsv -and (Test-Path -LiteralPath $EstoqueCsv)) {
   $totCd = if ($lojaTot.ContainsKey("70")) { [math]::Round([double]$lojaTot["70"], 0) } else { 0 }
   $tot17 = if ($lojaTot.ContainsKey("17")) { [math]::Round([double]$lojaTot["17"], 0) } else { 0 }
   $totLojas = $totEmpresa - $totCd
+  $totEmpresaQtd = [math]::Round((($lojaQtd.Values | Measure-Object -Sum).Sum), 0)
+  $totCdQtd = if ($lojaQtd.ContainsKey("70")) { [math]::Round([double]$lojaQtd["70"], 0) } else { 0 }
+  $tot17Qtd = if ($lojaQtd.ContainsKey("17")) { [math]::Round([double]$lojaQtd["17"], 0) } else { 0 }
+  $totLojasQtd = $totEmpresaQtd - $totCdQtd
   $distribuicao = [ordered]@{
     lojas = $lojasOut
     linhas = $linhasOut
@@ -261,12 +285,17 @@ if ($EstoqueCsv -and (Test-Path -LiteralPath $EstoqueCsv)) {
       cd = $totCd
       lojas = $totLojas
       loja17 = $tot17
+      empresaQtd = $totEmpresaQtd
+      cdQtd = $totCdQtd
+      lojasQtd = $totLojasQtd
+      loja17Qtd = $tot17Qtd
       subgrupos = $linhasOut.Count
       mover = $moverN
     }
   }
   Write-Host ("Matriz subgrupo x loja: {0} linhas, empresa R$ {1:N0}, CD R$ {2:N0}, Loja 17 R$ {3:N0}" -f `
     $linhasOut.Count, $totEmpresa, $totCd, $tot17)
+  Write-Host ("Quantidade empresa={0:N0} | CD={1:N0} | Loja 17={2:N0}" -f $totEmpresaQtd, $totCdQtd, $tot17Qtd)
 } else {
   if (-not $EstoqueXlsx) { throw "Arquivo de estoque nao encontrado (PosicaoEstoques*.csv ou Estoques*.xlsx)" }
   $fonteNome = [IO.Path]::GetFileName($EstoqueXlsx)
