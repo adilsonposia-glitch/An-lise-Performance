@@ -304,14 +304,33 @@
       top: 0;
       right: 0;
       z-index: 4001;
-      width: min(480px, 100vw);
+      width: min(420px, 100vw);
       height: 100%;
       background: #fff;
-      padding: 18px 18px 28px;
+      padding: 14px 14px 16px;
       overflow: auto;
       box-sizing: border-box;
       border-left: 1px solid var(--line);
     }
+    .est-help-drawer.is-gabarito {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .est-help-drawer[hidden],
+    .est-help-drawer.is-gabarito[hidden] {
+      display: none !important;
+    }
+    .est-help-drawer.is-gabarito #estHelpGabarito {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .est-help-drawer.is-gabarito .est-help-head { margin-bottom: 6px; }
+    .est-help-drawer.is-gabarito .est-help-head h2 { font-size: 1rem; }
+    .est-help-drawer.is-gabarito .est-help-tabs { margin-bottom: 6px; }
     .est-help-head {
       display: flex;
       align-items: center;
@@ -354,20 +373,65 @@
     .est-help-card.warn { background: #fff7ed; border-color: #fed7aa; }
     .est-help-mini {
       width: 100%;
+      min-width: 0 !important;
+      max-width: 100%;
       border-collapse: collapse;
-      font-size: 0.74rem;
-      margin-top: 8px;
+      font-size: 0.68rem;
+      table-layout: fixed;
+      margin: 0;
     }
-    .est-help-mini th,
-    .est-help-mini td {
-      padding: 5px 6px;
+    .est-gab-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin: 0 0 6px;
+      font-size: 0.68rem;
+      color: var(--ink-soft);
+    }
+    .est-gab-head strong { color: var(--ink); }
+    .est-gab-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 10px;
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow: auto;
+      align-content: start;
+    }
+    .est-gab-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto auto;
+      gap: 4px;
+      align-items: baseline;
+      padding: 0;
+      line-height: 1.28;
       border-bottom: 1px solid var(--line);
-      text-align: right;
+      font-size: 0.62rem;
       font-variant-numeric: tabular-nums;
     }
-    .est-help-mini th:first-child,
-    .est-help-mini td:first-child { text-align: left; }
-    .est-help-mini tfoot td { font-weight: 800; }
+    .est-gab-row b {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .est-gab-row span { color: var(--ink); white-space: nowrap; }
+    .est-gab-row i { font-style: normal; color: var(--ink-soft); white-space: nowrap; }
+    .est-gab-foot {
+      margin-top: 6px;
+      padding: 5px 6px;
+      border-radius: 8px;
+      background: #eef7f9;
+      font-size: 0.7rem;
+      font-weight: 800;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    @media (max-width: 360px) {
+      .est-gab-grid { grid-template-columns: 1fr; }
+    }
     .est-journey {
       display: grid;
       grid-template-columns: auto 1fr auto;
@@ -403,16 +467,28 @@
       gap: 8px;
       margin-bottom: 12px;
     }
-    .est-fora-kpis article {
+    .est-fora-kpis article,
+    .est-fora-kpis button.est-fora-card {
       padding: 8px 10px;
       border-radius: 12px;
       border: 1px solid var(--line);
       background: #fff;
+      text-align: left;
+      font: inherit;
+      cursor: pointer;
+      width: 100%;
+    }
+    .est-fora-kpis button.est-fora-card:hover { border-color: var(--teal-500); }
+    .est-fora-kpis button.est-fora-card.is-active {
+      outline: 2px solid var(--teal-800);
+      outline-offset: 1px;
     }
     .est-fora-kpis small { display: block; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; color: var(--ink-soft); }
-    .est-fora-kpis strong { display: block; margin-top: 2px; }
-    .est-fora-kpis article.is-over { background: #fff1f2; border-color: #fecaca; }
-    .est-fora-kpis article.is-ok { background: #f0fdfa; border-color: #99f6e4; }
+    .est-fora-kpis strong { display: block; margin-top: 2px; font-size: 1.05rem; }
+    .est-fora-kpis span { display: block; font-size: 0.7rem; color: var(--ink-soft); }
+    .est-fora-kpis .is-over { background: #fff1f2; border-color: #fecaca; }
+    .est-fora-kpis .is-far { background: #fff1f2; border-color: #fecaca; }
+    .est-fora-kpis .is-ok { background: #f0fdfa; border-color: #99f6e4; }
     .est-fora-table { min-width: 780px; font-size: 0.78rem; }
     .est-fora-table th,
     .est-fora-table td {
@@ -426,6 +502,8 @@
     .est-fora-table tr.is-far td:first-child { box-shadow: inset 4px 0 0 #be123c; }
     .est-fora-table .delta-over { color: #9f1239; font-weight: 800; }
     .est-fora-table .delta-ok { color: #0f766e; font-weight: 700; }
+    .est-fora-table tr.is-ok td { background: #f0fdfa; }
+    .est-fora-table tr.is-ok td:first-child { box-shadow: inset 4px 0 0 #0f766e; }
     .meta-track {
       position: relative;
       height: 8px;
@@ -1216,13 +1294,12 @@
         meta27.linhas
           .map(([nome, dias, part]) => {
             const alvo = dias * metaFator;
-            return `<tr>
-              <td>${esc(nome)}</td>
-              <td>${num(dias, 2)}</td>
-              <td>${num(part, 2)}%</td>
-              <td>${num(alvo, 2)}</td>
-              <td>${num(alvo - dias, 2)}</td>
-            </tr>`;
+            const short = nome.split("\\").pop().trim();
+            return `<div class="est-gab-row" title="${esc(nome)} · ${num(part, 2)}% venda">
+              <b>${esc(short)}</b>
+              <span>${num(dias, 1)}→${num(alvo, 1)}</span>
+              <i>${num(alvo - dias, 1)}</i>
+            </div>`;
           })
           .join("");
 
@@ -1232,6 +1309,9 @@
         });
         document.getElementById("estHelpRegras").hidden = key !== "regras";
         document.getElementById("estHelpGabarito").hidden = key !== "gabarito";
+        document.getElementById("estHelpDrawer").classList.toggle("is-gabarito", key === "gabarito");
+        document.getElementById("estHelpTitle").textContent =
+          key === "gabarito" ? "Gabarito 30→27" : "Regras do radar";
       };
       const openHelp = (tab) => {
         document.getElementById("estHelpBackdrop").hidden = false;
@@ -1242,6 +1322,7 @@
       const closeHelp = () => {
         document.getElementById("estHelpBackdrop").hidden = true;
         document.getElementById("estHelpDrawer").hidden = true;
+        document.getElementById("estHelpDrawer").classList.remove("is-gabarito");
         document.getElementById("estHelpBtn").setAttribute("aria-expanded", "false");
       };
 
@@ -1261,22 +1342,12 @@
           <p>Partida = 30,51 dias da loja (gabarito nível 2). Meta = 27 dias. Fator 27 ÷ 30,51 = −11,5% no estoque, mantendo a % de venda de cada seção. Dias-meta da seção = dias atuais × esse fator. Grupo acima da meta = cobertura do grupo maior que o dias-meta da seção.</p>
         `;
         document.getElementById("estHelpGabarito").innerHTML = `
-          <p>Realidade <strong>30,51 d</strong> → objetivo <strong>27 d</strong>. Participações de venda ficam iguais; cada seção reduz 11,5% dos dias.</p>
-          <table class="est-help-mini">
-            <thead>
-              <tr><th>Nível 2</th><th>Atual</th><th>% venda</th><th>Meta 27d</th><th>Δ</th></tr>
-            </thead>
-            <tbody>${gabaritoRowsHtml()}</tbody>
-            <tfoot>
-              <tr>
-                <td>LOJA</td>
-                <td>${num(meta27.atual, 2)}</td>
-                <td>100%</td>
-                <td>${num(meta27.alvo, 2)}</td>
-                <td>${num(meta27.alvo - meta27.atual, 2)}</td>
-              </tr>
-            </tfoot>
-          </table>
+          <p class="est-gab-head"><strong>Atual → meta 27 d</strong><span>−11,5% · % venda igual</span></p>
+          <div class="est-gab-grid">${gabaritoRowsHtml()}</div>
+          <div class="est-gab-foot">
+            <span>LOJA</span>
+            <span>${num(meta27.atual, 2)} → ${num(meta27.alvo, 2)} d (${num(meta27.alvo - meta27.atual, 2)})</span>
+          </div>
         `;
       };
 
@@ -1294,40 +1365,44 @@
         `;
       };
 
-      const renderForaMeta = () => {
-        const grupos = data.grupos || [];
-        const rows = grupos
-          .map((g) => {
-            const meta = metaBySecao[normKey(g.secao)];
-            if (!meta || g.diasCobertura == null) return null;
-            const delta = Number(g.diasCobertura) - meta.alvo;
-            return { ...g, meta, delta, over: delta > 0.05 };
-          })
-          .filter(Boolean)
-          .sort((a, b) => b.delta - a.delta);
-        const over = rows.filter((r) => r.over);
-        const far = over.filter((r) => r.delta / r.meta.alvo >= 0.2);
-        document.getElementById("estForaKpis").innerHTML = `
-          <article class="is-over"><small>Acima da meta</small><strong>${over.length}</strong><span>grupos a reduzir</span></article>
-          <article class="is-over"><small>Bem acima (+20%)</small><strong>${far.length}</strong><span>prioridade</span></article>
-          <article class="is-ok"><small>Na meta ou abaixo</small><strong>${rows.length - over.length}</strong><span>já no caminho</span></article>
-        `;
+      let foraFilter = "over";
+      let foraRows = [];
+
+      const isFar = (r) => r.over && r.delta / r.meta.alvo >= 0.2;
+
+      const paintForaTable = () => {
+        const shown = foraRows.filter((r) => {
+          if (foraFilter === "far") return isFar(r);
+          if (foraFilter === "ok") return !r.over;
+          return r.over;
+        });
+        const labels = {
+          over: "acima da meta",
+          far: "bem acima da meta (+20%)",
+          ok: "na meta ou abaixo",
+        };
         document.getElementById("estForaSub").textContent =
-          `${over.length} grupos acima do dias-meta da seção · barra laranja/vermelha = fora · traço = meta`;
-        const shown = rows.filter((r) => r.over);
+          `${shown.length} grupos ${labels[foraFilter] || ""} · clique no card para filtrar`;
+        document.querySelectorAll("#estForaKpis [data-filter]").forEach((btn) => {
+          const on = btn.getAttribute("data-filter") === foraFilter;
+          btn.classList.toggle("is-active", on);
+          btn.setAttribute("aria-pressed", on ? "true" : "false");
+        });
         document.getElementById("estForaBody").innerHTML = shown
           .map((r) => {
             const scale = Math.max(r.diasCobertura, r.meta.alvo, 1);
             const fill = Math.min(100, (r.diasCobertura / scale) * 100);
             const mark = Math.min(100, (r.meta.alvo / scale) * 100);
-            const farRow = r.delta / r.meta.alvo >= 0.2;
-            const tone = farRow ? "danger" : "warn";
-            return `<tr class="${farRow ? "is-far" : "is-over"}">
+            const farRow = isFar(r);
+            const tone = r.over ? (farRow ? "danger" : "warn") : "ok";
+            const cls = r.over ? (farRow ? "is-far" : "is-over") : "is-ok";
+            const deltaTxt = `${r.delta > 0 ? "+" : ""}${num(r.delta, 1)}`;
+            return `<tr class="${cls}">
               <td><strong>${esc(r.nome)}</strong></td>
               <td>${esc(r.secao || r.meta.secao)}</td>
               <td class="num">${num(r.diasCobertura, 1)}</td>
               <td class="num">${num(r.meta.alvo, 1)}</td>
-              <td class="num delta-over">+${num(r.delta, 1)}</td>
+              <td class="num ${r.over ? "delta-over" : "delta-ok"}">${deltaTxt}</td>
               <td>
                 <div class="meta-track" title="${num(r.diasCobertura, 1)} d vs meta ${num(r.meta.alvo, 1)} d">
                   <div class="meta-fill ${tone}" style="width:${fill}%"></div>
@@ -1337,6 +1412,39 @@
             </tr>`;
           })
           .join("");
+      };
+
+      const renderForaMeta = () => {
+        const grupos = data.grupos || [];
+        foraRows = grupos
+          .map((g) => {
+            const meta = metaBySecao[normKey(g.secao)];
+            if (!meta || g.diasCobertura == null) return null;
+            const delta = Number(g.diasCobertura) - meta.alvo;
+            return { ...g, meta, delta, over: delta > 0.05 };
+          })
+          .filter(Boolean)
+          .sort((a, b) => b.delta - a.delta);
+        const over = foraRows.filter((r) => r.over);
+        const far = over.filter(isFar);
+        const ok = foraRows.length - over.length;
+        document.getElementById("estForaKpis").innerHTML = `
+          <button type="button" class="est-fora-card is-over" data-filter="over" aria-pressed="true">
+            <small>Acima da meta</small><strong>${over.length}</strong><span>clique para ver</span>
+          </button>
+          <button type="button" class="est-fora-card is-far" data-filter="far" aria-pressed="false">
+            <small>Bem acima (+20%)</small><strong>${far.length}</strong><span>clique para ver</span>
+          </button>
+          <button type="button" class="est-fora-card is-ok" data-filter="ok" aria-pressed="false">
+            <small>Na meta ou abaixo</small><strong>${ok}</strong><span>clique para ver</span>
+          </button>`;
+        document.querySelectorAll("#estForaKpis [data-filter]").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            foraFilter = btn.getAttribute("data-filter") || "over";
+            paintForaTable();
+          });
+        });
+        paintForaTable();
       };
 
       renderHelp();
