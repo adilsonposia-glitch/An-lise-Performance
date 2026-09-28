@@ -399,7 +399,8 @@
       min-height: 420px;
     }
     .est-gab-view[hidden],
-    #estForaMain[hidden] {
+    #estForaMain[hidden],
+    #estFornMain[hidden] {
       display: none !important;
     }
     .est-gab-board {
@@ -817,6 +818,10 @@
       border-color: #3dd6e0;
     }
     html.theme-dark .est-gab-foot { background: #eef4f8; }
+    .est-forn-tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .est-gab-tile.is-over { border-color: #fdba74; }
+    .est-gab-tile.is-ruptura { border-color: #fecaca; background: #fff7f7; }
+    .est-gab-tile.is-critico { border-color: #fecaca; }
     html.theme-dark .footer { color: #243044; }
     html.theme-dark .footer .muted { color: #3a4658; }
     html.theme-dark .footer-logo { filter: drop-shadow(0 8px 16px rgba(15, 23, 42, 0.25)); }
@@ -1000,6 +1005,53 @@
           <div class="est-gab-view" id="estGabaritoView" hidden></div>
         </section>
 
+        <section class="panel table-panel est-meta-panel" id="estFornPanel">
+          <div class="panel-head row">
+            <div>
+              <h2>Gabarito fornecedor</h2>
+              <p id="estFornSub">Estoque das lojas ÷ venda da semana × 7 · meta 27 dias · clique no tile para filtrar</p>
+            </div>
+            <div class="table-tools est-forn-tools">
+              <div class="chip-group" id="estFornBase" role="group" aria-label="Base de lojas">
+                <button type="button" class="chip active" data-forn-base="todas">Todas (13)</button>
+                <button type="button" class="chip" data-forn-base="mesma">Mesma base (12)</button>
+              </div>
+              <div class="chip-group" id="estFornScope" role="group" aria-label="Estoque">
+                <button type="button" class="chip active" data-forn-scope="lojas">Lojas</button>
+                <button type="button" class="chip" data-forn-scope="all">Lojas + CD</button>
+              </div>
+              <div class="search">
+                <input type="search" id="estFornQ" placeholder="Buscar fornecedor" autocomplete="off" />
+              </div>
+              <button type="button" class="expand-btn" id="estFornGabBtn" aria-pressed="true" title="Abrir gabarito atual × meta">
+                Ver gabarito
+              </button>
+            </div>
+          </div>
+          <div id="estFornMain" hidden>
+            <div class="est-journey" id="estFornJourney"></div>
+            <div class="est-fora-kpis" id="estFornKpis"></div>
+            <div class="table-wrap">
+              <table class="est-fora-table" id="estFornTable">
+                <thead>
+                  <tr>
+                    <th>Fornecedor</th>
+                    <th class="num sortable is-active" data-forn-sort="venda">Venda <span class="sort-ind">↓</span></th>
+                    <th class="num">Part %</th>
+                    <th class="num sortable" data-forn-sort="estoque">Estoque <span class="sort-ind"></span></th>
+                    <th class="num sortable" data-forn-sort="dias">Dias <span class="sort-ind"></span></th>
+                    <th class="num">Meta</th>
+                    <th class="num sortable" data-forn-sort="delta">Δ <span class="sort-ind"></span></th>
+                    <th>Vs meta</th>
+                  </tr>
+                </thead>
+                <tbody id="estFornBody"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="est-gab-view" id="estFornGabView"></div>
+        </section>
+
       <footer class="footer">
         <div class="footer-copy">
           <p>Radar Estoque · Grupo · 4 semanas de demanda</p>
@@ -1044,7 +1096,8 @@
         `e ${t.excesso} em excesso (capital parado ≈ ${brl(t.valorEmExcesso)}). ` +
         `A cobertura usa o CMV médio semanal 2026 das últimas 4 semanas (mesmo unidade do estoque), não a quantidade. ` +
         `Fora do estoque: Bolsas e sacolas (Bazar), Lanchonete e Padaria fabricação própria — permanece Padaria industrializada. ` +
-        `A matriz de estoque por loja inclui o CD 70 e a Loja 17 para ver o total da empresa e o que pode ser movimentado.`;
+        `A matriz de estoque por loja inclui o CD 70 e a Loja 17 para ver o total da empresa e o que pode ser movimentado. ` +
+        `O gabarito de fornecedor compara o Estoque 5 com a venda de 18–24/09, com meta de 27 dias.`;
 
       document.getElementById("estKpis").innerHTML = [
         ["Valor em estoque", brl(t.valorEstoque), `${num(t.grupos)} grupos`, t.valorEstoque],
@@ -1625,6 +1678,8 @@
           <p>Subgrupo × CD 70 + 13 lojas (inclui 17). Célula vermelha = estoque no CD e zero na loja. Filtro Valor R$ / Quantidade.</p>
           <h3>Meta 27 dias</h3>
           <p>Partida = 30,51 dias da loja (gabarito nível 2). Meta = 27 dias. Fator 27 ÷ 30,51 = −11,5% no estoque, mantendo a % de venda de cada seção. Dias-meta da seção = dias atuais × esse fator. Grupo acima da meta = cobertura do grupo maior que o dias-meta da seção. Qtd e Valor mostram o peso do estoque; o filtro de seção lista todos os grupos daquela seção. Excesso acima de 60 dias continua na aba Excesso do card de prioridades.</p>
+          <h3>Gabarito fornecedor</h3>
+          <p>Estoque 5 (loja × fornecedor) cruzado com a venda da semana 18–24/09. Dias = estoque das lojas ÷ (venda da semana ÷ 7). Meta fixa de 27 dias. Mesma base tira a loja 17. Lojas + CD soma o 70 no numerador. Tile = 18 maiores vendas; a tabela lista os 551 fornecedores da semana.</p>
         `;
         document.getElementById("estHelpGabarito").innerHTML = "";
         document.getElementById("estGabaritoView").innerHTML = `
@@ -1864,12 +1919,243 @@
         }
       });
 
+      const fornData = data.fornecedores;
+      let fornBase = "todas";
+      let fornScope = "lojas";
+      let fornFilter = "over";
+      let fornSortKey = "venda";
+      let fornSortDir = "desc";
+      let fornQ = "";
+      let fornGabOpen = true;
+
+      const shortForn = (n) =>
+        String(n || "")
+          .replace(/\s+(LTDA|S\.?A\.?|EIRELI|EIRELI\.)\b.*$/i, "")
+          .trim()
+          .slice(0, 32);
+
+      const fornRows = () => {
+        if (!fornData) return [];
+        return fornBase === "mesma" ? fornData.rowsMesma || [] : fornData.rowsTodas || [];
+      };
+      const fornTot = () => (fornData && fornData.totais ? fornData.totais[fornBase] : null);
+      const fornDias = (r) => (fornScope === "all" ? r.diasAll : r.diasLojas);
+      const fornEstq = (r) => (fornScope === "all" ? r.estoqueAll : r.estoqueLojas);
+      const fornOver = (r) => {
+        const d = fornDias(r);
+        return d != null && d > 27;
+      };
+      const fornFar = (r) => {
+        const d = fornDias(r);
+        return d != null && d > 27 * 1.2;
+      };
+
+      const setFornGab = (open) => {
+        fornGabOpen = open;
+        document.getElementById("estFornMain").hidden = open;
+        document.getElementById("estFornGabView").hidden = !open;
+        const btn = document.getElementById("estFornGabBtn");
+        if (btn) {
+          btn.textContent = open ? "Ver tabela" : "Ver gabarito";
+          btn.setAttribute("aria-pressed", open ? "true" : "false");
+        }
+        document.getElementById("estFornPanel")?.classList.toggle("is-gabarito", open);
+        document.getElementById("estFornSub").textContent = open
+          ? "Passe o cursor no fornecedor · atual e meta se destacam · clique para abrir na tabela"
+          : "Estoque das lojas ÷ venda da semana × 7 · meta 27 dias";
+      };
+
+      const paintFornJourney = () => {
+        const tot = fornTot();
+        if (!tot) return;
+        const atual = fornScope === "all"
+          ? (tot.venda ? (tot.estoqueLojas + tot.estoqueCd) / (tot.venda / 7) : 0)
+          : tot.diasLojas;
+        const maxD = Math.max(atual, 27, 1);
+        document.getElementById("estFornJourney").innerHTML = `
+          <div><small>Atual</small><strong>${num(atual, 1)} d</strong></div>
+          <div class="est-journey-bar" title="Cobertura da rede vs 27 dias">
+            <i class="est-journey-now" style="left:${(atual / maxD) * 100}%"></i>
+            <i class="est-journey-goal" style="left:${(27 / maxD) * 100}%"></i>
+          </div>
+          <div><small>Meta</small><strong>27,00 d</strong></div>
+        `;
+      };
+
+      const paintFornCards = (rows) => {
+        const over = rows.filter(fornOver);
+        const far = rows.filter(fornFar);
+        const rup = rows.filter((r) => r.status === "ruptura");
+        const ok = rows.length - over.length - rup.length;
+        document.getElementById("estFornKpis").innerHTML = `
+          <button type="button" class="est-fora-card is-over" data-forn-filter="over" aria-pressed="${fornFilter === "over"}">
+            <small>Acima de 27 d</small><strong>${over.length}</strong><span>clique para ver</span>
+          </button>
+          <button type="button" class="est-fora-card is-far" data-forn-filter="far" aria-pressed="${fornFilter === "far"}">
+            <small>Bem acima (+20%)</small><strong>${far.length}</strong><span>clique para ver</span>
+          </button>
+          <button type="button" class="est-fora-card is-ok" data-forn-filter="ruptura" aria-pressed="${fornFilter === "ruptura"}">
+            <small>Ruptura (estoque 0)</small><strong>${rup.length}</strong><span>clique para ver</span>
+          </button>
+          <button type="button" class="est-fora-card is-ok" data-forn-filter="ok" aria-pressed="${fornFilter === "ok"}">
+            <small>Na meta ou abaixo</small><strong>${Math.max(ok, 0)}</strong><span>clique para ver</span>
+          </button>`;
+        document.querySelectorAll("#estFornKpis [data-forn-filter]").forEach((btn) => {
+          btn.classList.toggle("is-active", btn.getAttribute("data-forn-filter") === fornFilter);
+          btn.addEventListener("click", () => {
+            fornFilter = btn.getAttribute("data-forn-filter") || "over";
+            paintForn();
+          });
+        });
+      };
+
+      const paintFornTable = (rows) => {
+        let list = rows;
+        if (fornQ) {
+          const q = normKey(fornQ);
+          list = list.filter((r) => normKey(r.nome).includes(q));
+        }
+        if (fornFilter === "over") list = list.filter(fornOver);
+        else if (fornFilter === "far") list = list.filter(fornFar);
+        else if (fornFilter === "ruptura") list = list.filter((r) => r.status === "ruptura");
+        else if (fornFilter === "ok") list = list.filter((r) => !fornOver(r) && r.status !== "ruptura");
+        list = [...list].sort((a, b) => {
+          const map = { venda: "venda", estoque: fornScope === "all" ? "estoqueAll" : "estoqueLojas", dias: fornScope === "all" ? "diasAll" : "diasLojas", delta: "delta" };
+          const key = map[fornSortKey] || "venda";
+          const av = key === "delta" ? fornDias(a) - 27 : a[key];
+          const bv = key === "delta" ? fornDias(b) - 27 : b[key];
+          if (av == null && bv == null) return 0;
+          if (av == null) return 1;
+          if (bv == null) return -1;
+          return fornSortDir === "asc" ? av - bv : bv - av;
+        });
+        document.getElementById("estFornBody").innerHTML = list
+          .slice(0, 120)
+          .map((r) => {
+            const d = fornDias(r);
+            const e = fornEstq(r);
+            const delta = d == null ? null : d - 27;
+            const tag = r.status === "ruptura"
+              ? "Ruptura"
+              : fornFar(r)
+                ? "Bem acima"
+                : fornOver(r)
+                  ? "Acima"
+                  : "Na meta";
+            const cls = r.status === "ruptura" || fornFar(r) ? "danger" : fornOver(r) ? "warn" : "ok";
+            return `<tr>
+              <td>${esc(r.nome)}</td>
+              <td class="num">${brl(r.venda)}</td>
+              <td class="num">${num(r.part, 2)}%</td>
+              <td class="num">${brl(e)}</td>
+              <td class="num">${diasTxt(d)}</td>
+              <td class="num">27,0 d</td>
+              <td class="num">${delta == null ? "—" : num(delta, 1)}</td>
+              <td><span class="pill-status ${cls}">${tag}</span></td>
+            </tr>`;
+          })
+          .join("");
+      };
+
+      const paintFornGab = (rows) => {
+        const top = [...rows].sort((a, b) => b.venda - a.venda).slice(0, 18);
+        const tot = fornTot() || {};
+        const atual = fornScope === "all"
+          ? (tot.venda ? (tot.estoqueLojas + tot.estoqueCd) / (tot.venda / 7) : 0)
+          : tot.diasLojas;
+        const tiles = top
+          .map((r) => {
+            const d = fornDias(r);
+            const cls = r.status === "ruptura" ? "is-ruptura" : fornOver(r) ? "is-over" : "";
+            return `<button type="button" class="est-gab-tile ${cls}" data-forn="${esc(normKey(r.nome))}" title="${esc(r.nome)}">
+              <b class="gab-name">${esc(shortForn(r.nome))}</b>
+              <div class="gab-metrics">
+                <span class="gab-atual"><small>Atual</small><strong>${d == null ? "—" : num(d, 1)}</strong></span>
+                <span class="gab-meta"><small>Meta</small><strong>27,0</strong></span>
+              </div>
+              <em class="gab-part">${num(r.part, 2)}% venda · ${d == null || d - 27 === 0 ? "0" : num(d - 27, 1)} d</em>
+            </button>`;
+          })
+          .join("");
+        document.getElementById("estFornGabView").innerHTML = `
+          <p class="est-gab-head"><strong>Gabarito fornecedor · 27 d</strong><span>18 maiores vendas da semana 18–24/09</span></p>
+          <div class="est-gab-board">${tiles}</div>
+          <div class="est-gab-foot">
+            <span>REDE</span>
+            <span>Atual ${num(atual, 2)} d → Meta 27,00 d (${num(27 - atual, 2)})</span>
+          </div>
+        `;
+        document.querySelectorAll("#estFornGabView .est-gab-tile").forEach((tile) => {
+          tile.addEventListener("click", () => {
+            const key = tile.getAttribute("data-forn") || "";
+            const row = rows.find((r) => normKey(r.nome) === key);
+            if (row) {
+              document.getElementById("estFornQ").value = row.nome;
+              fornQ = row.nome;
+              fornFilter = "all";
+            }
+            setFornGab(false);
+            paintForn();
+          });
+        });
+      };
+
+      const paintForn = () => {
+        if (!fornData) {
+          document.getElementById("estFornPanel").hidden = true;
+          return;
+        }
+        const rows = fornRows();
+        paintFornJourney();
+        paintFornCards(rows);
+        paintFornTable(rows);
+        paintFornGab(rows);
+      };
+
+      document.querySelectorAll("#estFornBase [data-forn-base]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          fornBase = btn.getAttribute("data-forn-base") || "todas";
+          document.querySelectorAll("#estFornBase .chip").forEach((b) => b.classList.toggle("active", b === btn));
+          paintForn();
+        });
+      });
+      document.querySelectorAll("#estFornScope [data-forn-scope]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          fornScope = btn.getAttribute("data-forn-scope") || "lojas";
+          document.querySelectorAll("#estFornScope .chip").forEach((b) => b.classList.toggle("active", b === btn));
+          paintForn();
+        });
+      });
+      document.getElementById("estFornGabBtn")?.addEventListener("click", () => {
+        setFornGab(!fornGabOpen);
+      });
+      document.getElementById("estFornQ")?.addEventListener("input", (ev) => {
+        fornQ = ev.target.value || "";
+        if (fornGabOpen) setFornGab(false);
+        paintForn();
+      });
+      document.querySelectorAll("#estFornTable [data-forn-sort]").forEach((th) => {
+        th.addEventListener("click", () => {
+          const key = th.getAttribute("data-forn-sort");
+          if (fornSortKey === key) fornSortDir = fornSortDir === "desc" ? "asc" : "desc";
+          else { fornSortKey = key; fornSortDir = "desc"; }
+          document.querySelectorAll("#estFornTable [data-forn-sort]").forEach((x) => {
+            x.classList.toggle("is-active", x === th);
+            const ind = x.querySelector(".sort-ind");
+            if (ind) ind.textContent = x === th ? (fornSortDir === "desc" ? "↓" : "↑") : "";
+          });
+          paintForn();
+        });
+      });
+
       applyTabDefaultSort();
       paintTabs();
       renderTable();
       renderMatriz();
       renderJourney();
       renderForaMeta();
+      setFornGab(true);
+      paintForn();
 
       const themeBtn = document.getElementById("themeToggle");
       if (themeBtn) {

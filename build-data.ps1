@@ -858,7 +858,9 @@ function Add-WeekToBundle($bundle, $payload, [int]$replaceWeek) {
   return $bundle
 }
 
-# --- main ---
+# --- main (pulado quando o arquivo e pontuado com ".") ---
+if ($MyInvocation.InvocationName -eq ".") { return }
+
 try {
   New-Item -ItemType Directory -Path (Join-Path $Root "entradas\semana-nova") -Force | Out-Null
   New-Item -ItemType Directory -Path $HistoricoDir -Force | Out-Null
