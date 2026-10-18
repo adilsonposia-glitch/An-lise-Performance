@@ -1,0 +1,31 @@
+ATUALIZAR A SEMANA SEM IA
+=========================
+
+1) Apague os arquivos antigos desta pasta (ou substitua).
+2) Copie para AQUI os 4 arquivos da semana (sexta a quinta):
+
+   Venda GBO 09a15Out26.xlsx     <- venda do ano atual (2026 no nome)
+   Venda GBO 10a16Out25.xlsx     <- venda do ano anterior (2025 no nome)
+   Venda Rede 09a15Out26.csv     <- rede (ja traz 2025 e 2026)
+   Estoques GBO15Out.xlsx        <- posicao de estoque (dia no nome, ex. 15Out)
+
+   O script acha pelo padrao do nome (GBO + 26/25, Rede, Estoques).
+   Nao precisa renomear, desde que 2026/2025 e GBO/Rede/Estoques estejam no nome.
+
+3) Abra o PowerShell na pasta "Analise Performance" e rode:
+
+   .\atualizar-semana.ps1
+
+   (O arquivo atualizar-semana.bat so abre essa mesma janela do PowerShell.)
+
+4) Abra index.html, rede.html e estoque.html (ou publique no GitHub).
+
+O que o script faz
+- Dashboard YoY: inclui a semana nova (maximo 4; a mais antiga sai).
+- Loja nova = sem venda no ano anterior. Se a 17 ja vende em 2025, entra na mesma base.
+- Os botoes Todas / Mesma base continuam visiveis.
+- Rede: le o CSV.
+- Radar: estoque do Excel GBO x CMV medio das 4 semanas do dashboard.
+  O Excel atual so trouxe algumas lojas + CD 70 — o radar usa so o que veio no arquivo.
+
+Nao rode build-data.ps1 na pasta semana-nova (mistura semanas antigas).

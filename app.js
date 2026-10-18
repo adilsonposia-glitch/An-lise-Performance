@@ -325,6 +325,10 @@
   }
 
   function updateStoreBaseUi(phase) {
+    if (els.storeBaseGroup) {
+      els.storeBaseGroup.hidden = false;
+      els.storeBaseGroup.classList.remove("hidden");
+    }
     document.querySelectorAll("[data-store-base]").forEach((btn) => {
       btn.classList.toggle("active", btn.dataset.storeBase === state.storeBase);
     });
@@ -340,9 +344,15 @@
     const phaseName = phaseLabels[state.phaseKey] || "esta visão";
 
     if (state.storeBase === "mesma") {
-      els.storeBaseNote.innerHTML = `<strong>Mesma base:</strong> cálculos de <em>${phaseName}</em> com ${comparableCount} lojas comparáveis. Excluídas ${novasCount} loja(s) sem venda em 2025${novasTxt}.`;
-    } else {
+      if (novasCount > 0) {
+        els.storeBaseNote.innerHTML = `<strong>Mesma base:</strong> cálculos de <em>${phaseName}</em> com ${comparableCount} lojas comparáveis. Excluídas ${novasCount} loja(s) sem venda em 2025${novasTxt}.`;
+      } else {
+        els.storeBaseNote.innerHTML = `<strong>Mesma base:</strong> cálculos de <em>${phaseName}</em> com ${comparableCount} lojas com venda nos dois anos. Nenhuma loja nova neste período — o botão permanece para futuras inaugurações.`;
+      }
+    } else if (novasCount > 0) {
       els.storeBaseNote.innerHTML = `<strong>Todas as lojas:</strong> cálculos de <em>${phaseName}</em> com ${allCount} lojas, incluindo ${novasCount} sem base no ano anterior${novasTxt ? ` — ${novasNames.join(", ")}` : ""}.`;
+    } else {
+      els.storeBaseNote.innerHTML = `<strong>Todas as lojas:</strong> cálculos de <em>${phaseName}</em> com ${allCount} lojas. Nenhuma loja nova neste período — o botão permanece para futuras inaugurações.`;
     }
   }
 

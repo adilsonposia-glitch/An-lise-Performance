@@ -320,6 +320,22 @@ function Test-IsStoreLoja17([string]$storeName) {
   )
 }
 
+function Test-IsNewStoreRow($row) {
+  $v25 = 0.0
+  $v26 = 0.0
+  if ($null -ne $row.venda2025) { $v25 = [double]$row.venda2025 }
+  if ($null -ne $row.venda2026) { $v26 = [double]$row.venda2026 }
+  return ($v25 -le 0) -and ($v26 -gt 0)
+}
+
+function Split-StoreBases($all) {
+  # Nova = sem venda no ano anterior e com venda no atual (qualquer loja, inclusive a 17).
+  # Mesma base = venda nos dois anos. Se a 17 ja vende em 2025, entra na mesma base.
+  $mesma = @($all | Where-Object { $_.venda2025 -gt 0 -and $_.venda2026 -gt 0 })
+  $novas = @($all | Where-Object { Test-IsNewStoreRow $_ })
+  return @{ mesma = $mesma; novas = $novas }
+}
+
 function Get-ExtractYear([string]$name) {
   $n = Normalize-Name $name
   # Compacta espacos em periodos: "07A 13AGO2026" -> "07A13AGO2026"
@@ -631,16 +647,13 @@ function Build-LojasBases {
     Write-Host "         Reexporte sem filtro de Categoria 1 / Eixo Y Dinamico — so Agrupamento Lojas, como na 1a semana."
   }
   $all = @(Compare-Years $rows25 $rows26)
-  # Loja 17 nunca entra na mesma base (mesmo com residual minimo em 2025)
-  $mesma = @($all | Where-Object {
-    $_.venda2025 -gt 0 -and $_.venda2026 -gt 0 -and -not (Test-IsStoreLoja17 $_.nome)
-  })
-  $novas = @($all | Where-Object {
-    (Test-IsStoreLoja17 $_.nome -and $_.venda2026 -gt 0) -or
-    (-not (Test-IsStoreLoja17 $_.nome) -and $_.venda2025 -le 0 -and $_.venda2026 -gt 0)
-  })
+  $split = Split-StoreBases $all
+  $mesma = $split.mesma
+  $novas = $split.novas
   if ($novas.Count -gt 0) {
     Write-Host ("  Lojas novas (fora da mesma base): {0}" -f (($novas | ForEach-Object { $_.nome }) -join ", "))
+  } else {
+    Write-Host "  Nenhuma loja nova neste periodo (mesma base = lojas com venda nos dois anos)."
   }
   return [ordered]@{
     key = "lojas"; label = "Lojas"; hasClients = $true
